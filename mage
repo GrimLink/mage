@@ -20,11 +20,12 @@ help)
   echo -e "\n${BOLD}Options:${RESET}"
   echo -e "- ${BLUE}info${RESET}    (Show base config for store)"
   echo -e "- ${BLUE}open${RESET}    (Open store in browser)"
-  echo -e "- ${BLUE}install${RESET} (Install Magento)"
+  echo -e "- ${BLUE}install${RESET} (Run Magento install command)"
   echo -e "- ${BLUE}key${RESET}     (Create auth.json in root of project)"
   echo -e "- ${BLUE}config${RESET}  (Set configs for dev env)"
   echo -e "- ${BLUE}reindex${RESET} (Run indexer:reindex)"
   echo -e "- ${BLUE}admin${RESET}   (Create new admin)"
+  echo -e "- ${BLUE}run${RESET}     (Run magerun2)"
   echo -e "\n${ITALIC}Anything else will run ${BLUE}bin/magento${RESET}"
   echo -e "${ITALIC}To see those cmd's just run ${BLUE}mage${RESET}"
   ;;
