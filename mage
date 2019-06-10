@@ -1,0 +1,212 @@
+#!/bin/bash
+
+# Mage is collection of easy cmd's and alias for bin/magento
+# For those that hate typing long shell cmd's
+
+RESET='\033[0m'
+BOLD='\033[1m'
+ITALIC='\033[3m'
+GREEN='\033[1;32m'
+BLUE='\033[1;34m'
+
+GITEMAIL="$(git config --global --get user.email)"
+
+OPTION=${1}
+PARAM=${2}
+PARAM2=${3}
+
+case "${OPTION}" in
+help)
+  echo -e "\n${BOLD}Options:${RESET}"
+  echo -e "- ${BLUE}info${RESET}    (Show base config for store)"
+  echo -e "- ${BLUE}open${RESET}    (Open store in browser)"
+  echo -e "- ${BLUE}install${RESET} (Install Magento)"
+  echo -e "- ${BLUE}key${RESET}     (Create auth.json in root of project)"
+  echo -e "- ${BLUE}config${RESET}  (Set configs for dev env)"
+  echo -e "- ${BLUE}reindex${RESET} (Run indexer:reindex)"
+  echo -e "- ${BLUE}admin${RESET}   (Create new admin)"
+  echo -e "\n${ITALIC}Anything else will run ${BLUE}bin/magento${RESET}"
+  echo -e "${ITALIC}To see those cmd's just run ${BLUE}mage${RESET}"
+  ;;
+
+info)
+  bin/magento config:show web
+  echo -e "Admin URI: $(grep frontName app/etc/env.php | tail -1 | cut -d ">" -f2 | cut -d "'" -f2)"
+  echo -e "dbname: $(grep dbname app/etc/env.php | tail -1 | cut -d ">" -f2 | cut -d "'" -f2)"
+  bin/magento config:show general/locale
+  bin/magento config:show currency
+  bin/magento config:show admin
+  ;;
+
+open)
+  STORE=${PARAM:-default}
+
+  if [[ "$(bin/magento config:show web/secure/use_in_frontend)" == "1" ]]; then
+    HTTP="secure"
+  else
+    HTTP="unsecure"
+  fi
+
+  # Set url to open
+  if [[ "$STORE" == "admin" ]]; then
+    ADMIN="$(grep frontName app/etc/env.php | tail -1 | cut -d ">" -f2 | cut -d "'" -f2)"
+    URL="$(bin/magento config:show web/${HTTP}/base_url)${ADMIN}"
+  elif [[ "$STORE" == "default" ]]; then
+    URL="$(bin/magento config:show web/${HTTP}/base_url)"
+  else
+    # Use solution via magerun, to get store views
+    # TODO: create open without magerun
+    # e.g. --scope="store" --scope-code="default"
+    URL=$(
+      magerun2 sys:store:config:base-url:list --format csv | grep $STORE | cut -d ',' -f3
+    )
+  fi
+
+  # Open url
+  if [[ -z "$URL" ]]; then
+    echo "Could not find url for store $STORE"
+  else
+    echo "Opening url $URL"
+    open $URL
+  fi
+  ;;
+
+install)
+  read -p "DB Host (localhost) or: " DBHOST
+  echo ""
+  if [[ -z "$DBHOST" ]]; then DBHOST="localhost"; fi
+  read -p "DB Name: " DBNAME
+  echo ""
+  read -p "DB User (root) or: " DBUSER
+  echo ""
+  if [[ -z "$DBUSER" ]]; then DBUSER="root"; fi
+  read -p "DB Password (root) or: " DBPASS
+  echo ""
+  if [[ -z "$DBPASS" ]]; then DBPASS="root"; fi
+  echo "Set URL"
+  echo " - empty = http://${DBNAME}.test/"
+  echo " - s or secure = https://${DBNAME}.test/"
+  echo " - Or use your own"
+  read URL
+  if [[ -z "$URL" ]]; then
+    URL="http://${DBNAME}.test/"
+  elif [[ "$URL" == "s" ]] || [[ "$URL" == "secure" ]]; then
+    URL="https://${DBNAME}.test/"
+    if command -v valet &> /dev/null; then valet secure; fi
+  fi
+  read -p "Email (${GITEMAIL}) or: " USEREMAIL
+  echo ""
+  if [[ -z "$USEREMAIL" ]]; then USEREMAIL="$GITEMAIL"; fi
+  read -p "Firstname: " USERFIRST
+  echo ""
+  read -p "Lastname: " USERLAST
+  TOLOWERNAME="$(echo "$USERFIRST" | tr '[:upper:]' '[:lower:]')"
+  read -p "User name (admin_${TOLOWERNAME}) or: " USERNAME
+  echo ""
+  if [[ -z "$USERNAME" ]]; then USERNAME="admin_${TOLOWERNAME}"; fi
+  read -sp "Password (admin123) or: " USERPASS
+  echo ""
+  if [[ -z "$USERPASS" ]]; then USERPASS="admin123"; fi
+  read -p "Language (en_US) or: " LANG
+  echo ""
+  if [[ -z "$LANG" ]]; then LANG="en_US"; fi
+  read -p "Currency (EUR) or: " CUR
+  echo ""
+  if [[ -z "$CUR" ]]; then CUR="EUR"; fi
+  read -p "Timezone (Europe/Amsterdam) or: " ZONE
+  echo ""
+  if [[ -z "$ZONE" ]]; then ZONE="Europe/Amsterdam"; fi
+  read -p "BackendURL (admin) or: " BACKURL
+  echo ""
+  if [[ -z "$BACKURL" ]]; then BACKURL="admin"; fi
+
+  bin/magento setup:install \
+    --base-url="${URL}" \
+    --db-host="${DBHOST}" \
+    --db-name="${DBNAME}" \
+    --db-user="${DBUSER}" \
+    --db-password="${DBPASS}" \
+    --admin-firstname="${USERFIRST}" \
+    --admin-lastname="${USERLAST}" \
+    --admin-email="${USEREMAIL}" \
+    --admin-user="${USERNAME}" \
+    --admin-password="${USERPASS}" \
+    --language="${LANG}" \
+    --currency="${CUR}" \
+    --timezone="${ZONE}" \
+    --use-rewrites="1" \
+    --backend-frontname="${BACKURL}"
+  ;;
+
+key)
+  if [[ -e auth.json ]]; then
+    echo "auth key already set"
+  elif [[ -e var/composer_home/auth.json ]]; then
+    echo "Getting auth from var/composer_home"
+    cp var/composer_home/auth.json auth.json
+  elif [[ -e ~/.composer/auth.json ]]; then
+    echo "Getting auth from ~/.composer"
+    cp ~/.composer/auth.json auth.json
+  else
+    echo -e "Authentication for (${GREEN}repo.magento.com${RESET}):" &&
+    read -p "  Username: " AUTH_NAME &&
+    read -sp "  Password: " AUTH_PASS &&
+    echo ""
+
+    cp auth.json.sample auth.json &&
+    sed -i '.bak' -e "s/<public-key>/$AUTH_NAME/g" auth.json
+    sed -i '.bak' -e "s/<private-key>/$AUTH_PASS/g" auth.json
+    rm -f auth.json.bak
+  fi
+  ;;
+
+config)
+  bin/magento cache:disable layout block_html full_page
+  echo "setting session lifetime 86400"
+  bin/magento config:set admin/security/session_lifetime 86400
+  echo "setting admin password lifetime ∞"
+  bin/magento config:set admin/security/password_lifetime ""
+  ;;
+
+reindex)
+  bin/magento indexer:reindex
+  ;;
+
+admin)
+  read -p "Email (${GITEMAIL}) or: " USEREMAIL
+  echo ""
+  if [[ -z "$USEREMAIL" ]]; then USEREMAIL="$GITEMAIL"; fi
+  read -p "Firstname: " USERFIRST
+  echo ""
+  read -p "Lastname: " USERLAST
+  echo ""
+  TOLOWERNAME="$(echo "$USERFIRST" | tr '[:upper:]' '[:lower:]')"
+  read -p "User name (admin_${TOLOWERNAME}) or: " USERNAME
+  echo ""
+  if [[ -z "$USERNAME" ]]; then USERNAME="admin_${TOLOWERNAME}"; fi
+  read -sp "Password (admin123) or: " USERPASS
+  echo ""
+  if [[ -z "$USERPASS" ]]; then USERPASS="admin123"; fi
+
+  bin/magento admin:user:create \
+    --admin-user="${USERNAME}" \
+    --admin-password="${USERPASS}" \
+    --admin-email="${USEREMAIL}" \
+    --admin-firstname="${USERFIRST}" \
+    --admin-lastname="${USERLAST}"
+  ;;
+
+run)
+  if command -v magerun2 &>/dev/null; then
+    magerun2 ${@:2}
+  elif command -v n98-magerun2 &>/dev/null; then
+    n98-magerun2 ${@:2}
+  else
+    echo "Magerun2 is not installed"
+  fi
+  ;;
+
+*)
+  bin/magento $@
+  ;;
+esac
