@@ -8,7 +8,7 @@ on top of the base options that Magento2 has with `bin/magento`
 Download mage via:
 
 ```bash
-curl -O https://raw.githubusercontent.com/GrimLink/mage/master/mage && chmod -x mage
+curl -O https://raw.githubusercontent.com/GrimLink/mage/master/mage && chmod +x mage
 ```
 
 _Or download it via wget_
