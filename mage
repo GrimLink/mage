@@ -55,12 +55,24 @@ open)
   elif [[ "$STORE" == "default" ]]; then
     URL="$(bin/magento config:show web/${HTTP}/base_url)"
   else
-    # Use solution via magerun, to get store views
     # TODO: create open without magerun
-    # e.g. --scope="store" --scope-code="default"
-    URL=$(
-      magerun2 sys:store:config:base-url:list --format csv | grep $STORE | cut -d ',' -f3
-    )
+    # Use solution via magerun, to get store views
+    if command -v magerun2 &>/dev/null; then
+      URL=$(
+        magerun2 sys:store:config:base-url:list --format csv |
+        grep $STORE |
+        cut -d ',' -f3
+      )
+    elif command -v n98-magerun2 &>/dev/null; then
+      URL=$(
+        n98-magerun2 sys:store:config:base-url:list --format csv |
+        grep $STORE |
+        cut -d ',' -f3
+      )
+    else
+      URL=""
+      echo "Magerun2 is not installed"
+    fi
   fi
 
   # Open url
