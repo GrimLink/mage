@@ -9,6 +9,7 @@ ITALIC='\033[3m'
 GREEN='\033[1;32m'
 BLUE='\033[1;34m'
 
+GITNAME="$(git config --global --get user.name | head -n1 | cut -d " " -f1)"
 GITEMAIL="$(git config --global --get user.email)"
 
 OPTION=${1}
@@ -176,14 +177,17 @@ reindex)
 admin)
   read -p "Email (${GITEMAIL}) or: " USEREMAIL
   if [[ -z "$USEREMAIL" ]]; then USEREMAIL="$GITEMAIL"; fi
-  read -p "Firstname: " USERFIRST
-  read -p "Lastname: " USERLAST
+  read -p "Firstname (${GITNAME}) or: " USERFIRST
+  if [[ -z "$USERFIRST" ]]; then USERFIRST="$GITNAME"; fi
+  read -p "Lastname (admin) or: " USERLAST
+  if [[ -z "$USERLAST" ]]; then USERLAST="admin"; fi
   TOLOWERNAME="$(echo "$USERFIRST" | tr '[:upper:]' '[:lower:]')"
   read -p "User name (admin_${TOLOWERNAME}) or: " USERNAME
   if [[ -z "$USERNAME" ]]; then USERNAME="admin_${TOLOWERNAME}"; fi
   read -sp "Password (admin123) or: " USERPASS
   if [[ -z "$USERPASS" ]]; then USERPASS="admin123"; fi
   echo ""
+
   bin/magento admin:user:create \
     --admin-user="${USERNAME}" \
     --admin-password="${USERPASS}" \
