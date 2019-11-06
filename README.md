@@ -15,7 +15,7 @@ E.g.
 | ------------------------- | ----------------- | ---------- |
 | `bin/magento cache:flush` | `bin/magento c:f` | `mage c:f` |
 
-But next to this mage also commes packing with a few custom function.
+But next to this mage also commes packing with a few custom functions.
 
 [Check them out at the commands section](#commands)
 
