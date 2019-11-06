@@ -1,7 +1,23 @@
 # Mage
 
-Mage is a simple helper
-on top of the base options that Magento2 has with `bin/magento`
+Mage is a simple bash helper
+on top of the options that Magento2 offers with `bin/magento`.
+
+The main focus of mage is being a shorthand and alias for `bin/magento`.
+so your typing less for the same commands.
+
+`bin/magento` allready offers the option of typing all there commands
+in shorter versions.
+
+E.g.
+
+| Full                      | Short             | mage       |
+| ------------------------- | ----------------- | ---------- |
+| `bin/magento cache:flush` | `bin/magento c:f` | `mage c:f` |
+
+But next to this mage also commes packing with a few custom function.
+
+[Check them out at the commands section](#commands)
 
 ## Installation
 
@@ -15,19 +31,21 @@ _Or download it via wget_
 
 ## Commands
 
-| CMD     | Description                          |
-| ------- | ------------------------------------ |
-| help    | Show all options                     |
-| info    | Show base store info                 |
-| open    | Open store in browser                |
-| install | Install Magento *                    |
-| key     | Create auth.json in root of project  |
-| config  | Set configs for dev env              |
-| reindex | Run indexer:reindex                  |
-| admin   | Create new admin                     |
-| run     | Run magerun2 (requires n98-magerun2) |
+| CMD        | Description                                             |
+| ---------- | ------------------------------------------------------- |
+| help       | Show all options                                        |
+| info       | Show minimal store info (e.g. version, uri's, settings) |
+| open       | Open store in browser (optional pass storeview)         |
+| open admin | Open store admin in browser                             |
+| install    | Run Magento install steps _(#1)_                        |
+| key        | Create an auth.json in the root                         |
+| config     | Set configs for dev env                                 |
+| admin      | Create new admin user _(#2)_                            |
+| run        | Run magerun2 (requires n98-magerun2)                    |
 
 Any other command will run the same as `bin/magento`
 
-_*_ For the best experiences try [create-project](https://github.com/GrimLink/create-project).
-To easily install Magento or any other project
+_#1_ For the best experiences try [create-project](https://github.com/GrimLink/create-project).
+To easily install Magento or any other project.
+
+_#2_ Add the flag `--yes` or `-y` for using yes to all questions.
