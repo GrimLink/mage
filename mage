@@ -24,7 +24,6 @@ help)
   echo -e "- ${BLUE}install${RESET} (Run Magento install command)"
   echo -e "- ${BLUE}key${RESET}     (Create auth.json in root of project)"
   echo -e "- ${BLUE}config${RESET}  (Set configs for dev env)"
-  echo -e "- ${BLUE}reindex${RESET} (Run indexer:reindex)"
   echo -e "- ${BLUE}admin${RESET}   (Create new admin)"
   echo -e "- ${BLUE}run${RESET}     (Run magerun2)"
   echo -e "\n${ITALIC}Anything else will run ${BLUE}bin/magento${RESET}"
@@ -32,6 +31,7 @@ help)
   ;;
 
 info)
+  bin/magento --version
   bin/magento config:show web
   echo -e "Admin URI: $(grep frontName app/etc/env.php | tail -1 | cut -d ">" -f2 | cut -d "'" -f2)"
   echo -e "dbname: $(grep dbname app/etc/env.php | tail -1 | cut -d ">" -f2 | cut -d "'" -f2)"
@@ -56,8 +56,6 @@ open)
   elif [[ "$STORE" == "default" ]]; then
     URL="$(bin/magento config:show web/${HTTP}/base_url)"
   else
-    # TODO: create open without magerun
-    # Use solution via magerun, to get store views
     if command -v magerun2 &>/dev/null; then
       URL=$(
         magerun2 sys:store:config:base-url:list --format csv |
@@ -81,7 +79,12 @@ open)
     echo "Could not find url for store $STORE"
   else
     echo "Opening url $URL"
-    open $URL
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+      open $URL
+    else
+      # Works in most Linux distributions
+      xdg-open $URL
+    fi
   fi
   ;;
 
@@ -170,24 +173,28 @@ config)
   bin/magento config:set admin/security/password_lifetime ""
   ;;
 
-reindex)
-  bin/magento indexer:reindex
-  ;;
-
 admin)
-  read -p "Email (${GITEMAIL}) or: " USEREMAIL
-  if [[ -z "$USEREMAIL" ]]; then USEREMAIL="$GITEMAIL"; fi
-  read -p "Firstname (${GITNAME}) or: " USERFIRST
-  if [[ -z "$USERFIRST" ]]; then USERFIRST="$GITNAME"; fi
-  read -p "Lastname (admin) or: " USERLAST
-  if [[ -z "$USERLAST" ]]; then USERLAST="admin"; fi
-  TOLOWERNAME="$(echo "$USERFIRST" | tr '[:upper:]' '[:lower:]')"
-  read -p "User name (admin_${TOLOWERNAME}) or: " USERNAME
-  if [[ -z "$USERNAME" ]]; then USERNAME="admin_${TOLOWERNAME}"; fi
-  read -sp "Password (admin123) or: " USERPASS
-  if [[ -z "$USERPASS" ]]; then USERPASS="admin123"; fi
-  echo ""
-
+  if [ "$2" == "--yes" -o "$2" == "-y" ]; then
+    USEREMAIL="$GITEMAIL"
+    USERFIRST="$GITNAME"
+    USERLAST="admin"
+    TOLOWERNAME="$(echo "$USERFIRST" | tr '[:upper:]' '[:lower:]')"
+    USERNAME="admin_${TOLOWERNAME}"
+    USERPASS="admin123"
+  else
+    read -p "Email (${GITEMAIL}) or: " USEREMAIL
+    if [[ -z "$USEREMAIL" ]]; then USEREMAIL="$GITEMAIL"; fi
+    read -p "Firstname (${GITNAME}) or: " USERFIRST
+    if [[ -z "$USERFIRST" ]]; then USERFIRST="$GITNAME"; fi
+    read -p "Lastname (admin) or: " USERLAST
+    if [[ -z "$USERLAST" ]]; then USERLAST="admin"; fi
+    TOLOWERNAME="$(echo "$USERFIRST" | tr '[:upper:]' '[:lower:]')"
+    read -p "User name (admin_${TOLOWERNAME}) or: " USERNAME
+    if [[ -z "$USERNAME" ]]; then USERNAME="admin_${TOLOWERNAME}"; fi
+    read -sp "Password (admin123) or: " USERPASS
+    if [[ -z "$USERPASS" ]]; then USERPASS="admin123"; fi
+    echo ""
+  fi
   bin/magento admin:user:create \
     --admin-user="${USERNAME}" \
     --admin-password="${USERPASS}" \
