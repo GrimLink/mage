@@ -18,12 +18,16 @@ PARAM2=${3}
 
 case "${OPTION}" in
 help)
-  echo -e "\n${BOLD}Options:${RESET}"
+  echo ""
+  echo -e "${BOLD}Mage ${GREEN}1.2.0${RESET}"
+  echo -e "${ITALIC}See https://github.com/GrimLink/mage for the last version${RESET}\n"
+  echo -e "${BOLD}CMD Options:${RESET}"
   echo -e "- ${BLUE}info${RESET}    (Show base config for store)"
   echo -e "- ${BLUE}open${RESET}    (Open store in browser)"
   echo -e "- ${BLUE}install${RESET} (Run Magento install command)"
   echo -e "- ${BLUE}key${RESET}     (Create auth.json in root of project)"
   echo -e "- ${BLUE}config${RESET}  (Set configs for dev env)"
+  echo -e "- ${BLUE}purge${RESET}   (Purge all static assets)"
   echo -e "- ${BLUE}admin${RESET}   (Create new admin)"
   echo -e "- ${BLUE}run${RESET}     (Run magerun2)"
   echo -e "\n${ITALIC}Anything else will run ${BLUE}bin/magento${RESET}"
@@ -171,6 +175,27 @@ config)
   bin/magento config:set admin/security/session_lifetime 86400
   echo "setting admin password lifetime ∞"
   bin/magento config:set admin/security/password_lifetime ""
+  ;;
+
+purge)
+  CLEANTASKS=(
+    'pub/static/*'
+    'generated/*'
+    'var/cache/*'
+    'var/di'
+    'var/composer_home/*'
+    'var/generation/*'
+    'var/page_cache/*'
+    'var/view_preprocessed/*'
+  );
+
+  for i in "${CLEANTASKS[@]}"; do
+    rm -rf ${i} &&
+    echo -e " [${GREEN}✓${RESET}] ${i}"
+  done
+
+  bin/magento cache:flush > /dev/null 2>&1 &&
+  echo -e " [${GREEN}✓${RESET}] caches flushed"
   ;;
 
 admin)

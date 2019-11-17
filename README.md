@@ -6,7 +6,7 @@ on top of the options that Magento2 offers with `bin/magento`.
 The main focus of mage is being a shorthand and alias for `bin/magento`.
 so your typing less for the same commands.
 
-`bin/magento` allready offers the option of typing all there commands
+`bin/magento` already offers the option of typing all there commands
 in shorter versions.
 
 E.g.
@@ -15,7 +15,8 @@ E.g.
 | ------------------------- | ----------------- | ---------- |
 | `bin/magento cache:flush` | `bin/magento c:f` | `mage c:f` |
 
-But next to this mage also commes packing with a few custom functions.
+But next to making typing less.
+mage also commes packing with a few custom functions.
 
 [Check them out at the commands section](#commands)
 
@@ -40,6 +41,7 @@ _Or download it via wget_
 | install    | Run Magento install steps _(#1)_                        |
 | key        | Create an auth.json in the root                         |
 | config     | Set configs for dev env                                 |
+| purge      | Purge all static assets                                 |
 | admin      | Create new admin user _(#2)_                            |
 | run        | Run magerun2 (requires n98-magerun2)                    |
 
