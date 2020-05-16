@@ -20,13 +20,14 @@ help)
   echo -e "${BOLD}Mage ${GREEN}1.2.0${RESET}"
   echo -e "${ITALIC}See https://github.com/GrimLink/mage for the last version${RESET}\n"
   echo -e "${BOLD}CMD Options:${RESET}"
-  echo -e "- ${BLUE}info${RESET}    (Show base config for store)"
-  echo -e "- ${BLUE}open${RESET}    (Open store in browser)"
-  echo -e "- ${BLUE}auth${RESET}    (Copy the auth.json from root)"
-  echo -e "- ${BLUE}config${RESET}  (Set configs for dev env)"
-  echo -e "- ${BLUE}purge${RESET}   (Purge all static assets)"
-  echo -e "- ${BLUE}admin${RESET}   (Create new admin)"
-  echo -e "- ${BLUE}run${RESET}     (Run magerun2)"
+  echo -e "- ${BLUE}info${RESET}      (Show base config for store)"
+  echo -e "- ${BLUE}open${RESET}      (Open store in browser)"
+  echo -e "- ${BLUE}auth${RESET}      (Copy the auth.json from root)"
+  echo -e "- ${BLUE}config${RESET}    (Set configs for dev env)"
+  echo -e "- ${BLUE}purge${RESET}     (Purge all static assets)"
+  echo -e "- ${BLUE}new-admin${RESET} (Create new admin)"
+  echo -e "- ${BLUE}new-theme${RESET} (Create Magento theme)"
+  echo -e "- ${BLUE}run${RESET}       (Run magerun2)"
   echo -e "\n${ITALIC}Anything else will run ${BLUE}bin/magento${RESET}"
   echo -e "${ITALIC}To see those cmd's just run ${BLUE}mage${RESET}"
   ;;
@@ -119,7 +120,7 @@ purge)
   echo -e " [${GREEN}✓${RESET}] caches flushed"
   ;;
 
-admin)
+new-admin)
   if [[ "$2" == "--yes" ]] || [[ "$2" == "-y" ]]; then
     SKIP="true"
   fi
@@ -141,6 +142,46 @@ admin)
   bin/magento admin:user:create --admin-user="${USERNAME}" \
     --admin-password="${USERPASS}" --admin-email="${USEREMAIL}" \
     --admin-firstname="${USERFIRST}" --admin-lastname="${USERLAST}"
+  ;;
+
+new-theme)
+  if [[ "$2" == "--yes" ]] || [[ "$2" == "-y" ]]; then
+    SKIP="true"
+  fi
+
+  read -p "Theme vendor (e.g. Magento): " VENDOR
+  read -p "Theme name (blank) or: " NAME
+  LEADING_NAME="$(tr '[:lower:]' '[:upper:]' <<< ${NAME:0:1})${NAME:1}"
+
+  if [[ $SKIP == "false" ]]; then
+    read -p "Theme Folder (${NAME}-theme) or: " FOLDER
+    read -p "Theme Title (${VENDOR} ${LEADING_NAME}) or: " TITLE
+    read -p "Theme parent (Magento/blank) or: " PARENT
+  fi
+  
+  if [[ -z "$NAME" ]]; then NAME="blank"; fi
+  if [[ -z "$FOLDER" ]]; then FOLDER="${NAME}-theme"; fi
+  if [[ -z "$TITLE" ]]; then TITLE="${VENDOR} ${LEADING_NAME}"; fi
+  if [[ -z "$PARENT" ]]; then PARENT="Magento/blank"; fi
+  
+  THEME="app/design/frontend/$VENDOR/${FOLDER}"
+  mkdir -p $THEME
+
+  touch $THEME/registration.php &&
+  echo -e "<?php
+use \Magento\Framework\Component\ComponentRegistrar;
+
+ComponentRegistrar::register(
+    ComponentRegistrar::THEME,
+    'frontend/${VENDOR}/${FOLDER}',
+    __DIR__
+);" >> $THEME/registration.php
+
+  touch $THEME/theme.xml &&
+  echo -e "<theme xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:noNamespaceSchemaLocation=\"urn:magento:framework:Config/etc/theme.xsd\">
+    <title>${TITLE}</title>
+    <parent>${PARENT}</parent>
+</theme>" >> $THEME/theme.xml
   ;;
 
 run)
