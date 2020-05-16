@@ -11,12 +11,10 @@ BLUE='\033[1;34m'
 
 GITNAME="$(git config --global --get user.name | head -n1 | cut -d " " -f1)"
 GITEMAIL="$(git config --global --get user.email)"
+ADMINNAME="admin_$(echo "$GITNAME" | tr '[:upper:]' '[:lower:]')"
+SKIP="false"
 
-OPTION=${1}
-PARAM=${2}
-PARAM2=${3}
-
-case "${OPTION}" in
+case "${1}" in
 help)
   echo ""
   echo -e "${BOLD}Mage ${GREEN}1.2.0${RESET}"
@@ -24,8 +22,7 @@ help)
   echo -e "${BOLD}CMD Options:${RESET}"
   echo -e "- ${BLUE}info${RESET}    (Show base config for store)"
   echo -e "- ${BLUE}open${RESET}    (Open store in browser)"
-  echo -e "- ${BLUE}install${RESET} (Run Magento install command)"
-  echo -e "- ${BLUE}key${RESET}     (Create auth.json in root of project)"
+  echo -e "- ${BLUE}auth${RESET}    (Copy the auth.json from root)"
   echo -e "- ${BLUE}config${RESET}  (Set configs for dev env)"
   echo -e "- ${BLUE}purge${RESET}   (Purge all static assets)"
   echo -e "- ${BLUE}admin${RESET}   (Create new admin)"
@@ -45,40 +42,29 @@ info)
   ;;
 
 open)
-  STORE=${PARAM:-default}
+  STORE=${2:-default}
+  HTTP="unsecure"
+  URL=""
 
   if [[ "$(bin/magento config:show web/secure/use_in_frontend)" == "1" ]]; then
     HTTP="secure"
-  else
-    HTTP="unsecure"
   fi
 
-  # Set url to open
-  if [[ "$STORE" == "admin" ]]; then
+  if [[ "$STORE" == "default" ]]; then
+    URL="$(bin/magento config:show web/${HTTP}/base_url)"
+  elif [[ "$STORE" == "admin" ]]; then
     ADMIN="$(grep frontName app/etc/env.php | tail -1 | cut -d ">" -f2 | cut -d "'" -f2)"
     URL="$(bin/magento config:show web/${HTTP}/base_url)${ADMIN}"
-  elif [[ "$STORE" == "default" ]]; then
-    URL="$(bin/magento config:show web/${HTTP}/base_url)"
   else
     if command -v magerun2 &>/dev/null; then
-      URL=$(
-        magerun2 sys:store:config:base-url:list --format csv |
-        grep $STORE |
-        cut -d ',' -f3
-      )
+      URL=$(magerun2 sys:store:config:base-url:list --format csv | grep $STORE | cut -d ',' -f3)
     elif command -v n98-magerun2 &>/dev/null; then
-      URL=$(
-        n98-magerun2 sys:store:config:base-url:list --format csv |
-        grep $STORE |
-        cut -d ',' -f3
-      )
+      URL=$(n98-magerun2 sys:store:config:base-url:list --format csv | grep $STORE | cut -d ',' -f3)
     else
-      URL=""
       echo "Magerun2 is not installed"
     fi
   fi
 
-  # Open url
   if [[ -z "$URL" ]]; then
     echo "Could not find url for store $STORE"
   else
@@ -86,94 +72,29 @@ open)
     if [[ "$OSTYPE" == "darwin"* ]]; then
       open $URL
     else
-      # Works in most Linux distributions
       xdg-open $URL
     fi
   fi
   ;;
 
-install)
-  read -p "DB Host (localhost) or: " DBHOST
-  if [[ -z "$DBHOST" ]]; then DBHOST="localhost"; fi
-  read -p "DB Name: " DBNAME
-  read -p "DB User (root) or: " DBUSER
-  if [[ -z "$DBUSER" ]]; then DBUSER="root"; fi
-  read -p "DB Password (root) or: " DBPASS
-  if [[ -z "$DBPASS" ]]; then DBPASS="root"; fi
-  echo "Set URL"
-  echo " - empty = http://${DBNAME}.test/"
-  echo " - s or secure = https://${DBNAME}.test/"
-  echo " - Or use your own"
-  read URL
-  if [[ -z "$URL" ]]; then
-    URL="http://${DBNAME}.test/"
-  elif [[ "$URL" == "s" ]] || [[ "$URL" == "secure" ]]; then
-    URL="https://${DBNAME}.test/"
-    if command -v valet &> /dev/null; then valet secure; fi
-  fi
-  read -p "Email (${GITEMAIL}) or: " USEREMAIL
-  if [[ -z "$USEREMAIL" ]]; then USEREMAIL="$GITEMAIL"; fi
-  read -p "Firstname: " USERFIRST
-  read -p "Lastname: " USERLAST
-  TOLOWERNAME="$(echo "$USERFIRST" | tr '[:upper:]' '[:lower:]')"
-  read -p "User name (admin_${TOLOWERNAME}) or: " USERNAME
-  if [[ -z "$USERNAME" ]]; then USERNAME="admin_${TOLOWERNAME}"; fi
-  read -sp "Password (admin123) or: " USERPASS
-  if [[ -z "$USERPASS" ]]; then USERPASS="admin123"; fi
-  read -p "Language (en_US) or: " LANG
-  if [[ -z "$LANG" ]]; then LANG="en_US"; fi
-  read -p "Currency (EUR) or: " CUR
-  if [[ -z "$CUR" ]]; then CUR="EUR"; fi
-  read -p "Timezone (Europe/Amsterdam) or: " ZONE
-  if [[ -z "$ZONE" ]]; then ZONE="Europe/Amsterdam"; fi
-  read -p "BackendURL (admin) or: " BACKURL
-  if [[ -z "$BACKURL" ]]; then BACKURL="admin"; fi
-  echo ""
-  bin/magento setup:install \
-    --base-url="${URL}" \
-    --db-host="${DBHOST}" \
-    --db-name="${DBNAME}" \
-    --db-user="${DBUSER}" \
-    --db-password="${DBPASS}" \
-    --admin-firstname="${USERFIRST}" \
-    --admin-lastname="${USERLAST}" \
-    --admin-email="${USEREMAIL}" \
-    --admin-user="${USERNAME}" \
-    --admin-password="${USERPASS}" \
-    --language="${LANG}" \
-    --currency="${CUR}" \
-    --timezone="${ZONE}" \
-    --use-rewrites="1" \
-    --backend-frontname="${BACKURL}"
-  ;;
-
-key)
+auth)
   if [[ -e auth.json ]]; then
-    echo "auth key already set"
+    echo "Auth key already set"
   elif [[ -e var/composer_home/auth.json ]]; then
     echo "Getting auth from var/composer_home"
     cp var/composer_home/auth.json auth.json
-  elif [[ -e ~/.composer/auth.json ]]; then
-    echo "Getting auth from ~/.composer"
-    cp ~/.composer/auth.json auth.json
   else
-    echo -e "Authentication for (${GREEN}repo.magento.com${RESET}):" &&
-    read -p "  Username: " AUTH_NAME &&
-    read -sp "  Password: " AUTH_PASS &&
-    echo ""
-
-    cp auth.json.sample auth.json &&
-    sed -i '.bak' -e "s/<public-key>/$AUTH_NAME/g" auth.json
-    sed -i '.bak' -e "s/<private-key>/$AUTH_PASS/g" auth.json
-    rm -f auth.json.bak
+    echo "Copying composer authentication"
+    test -f ~/.composer/auth.json &&
+    cp ~/.composer/auth.json var/composer_home/auth.json
   fi
   ;;
 
 config)
   bin/magento cache:disable layout block_html full_page
-  echo "setting session lifetime 86400"
+  echo "Setting session lifetime 86400"
   bin/magento config:set admin/security/session_lifetime 86400
-  echo "setting admin password lifetime ∞"
+  echo "Setting admin password lifetime ∞"
   bin/magento config:set admin/security/password_lifetime ""
   ;;
 
