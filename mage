@@ -120,33 +120,27 @@ purge)
   ;;
 
 admin)
-  if [ "$2" == "--yes" -o "$2" == "-y" ]; then
-    USEREMAIL="$GITEMAIL"
-    USERFIRST="$GITNAME"
-    USERLAST="admin"
-    TOLOWERNAME="$(echo "$USERFIRST" | tr '[:upper:]' '[:lower:]')"
-    USERNAME="admin_${TOLOWERNAME}"
-    USERPASS="admin123"
-  else
-    read -p "Email (${GITEMAIL}) or: " USEREMAIL
-    if [[ -z "$USEREMAIL" ]]; then USEREMAIL="$GITEMAIL"; fi
-    read -p "Firstname (${GITNAME}) or: " USERFIRST
-    if [[ -z "$USERFIRST" ]]; then USERFIRST="$GITNAME"; fi
-    read -p "Lastname (admin) or: " USERLAST
-    if [[ -z "$USERLAST" ]]; then USERLAST="admin"; fi
-    TOLOWERNAME="$(echo "$USERFIRST" | tr '[:upper:]' '[:lower:]')"
-    read -p "User name (admin_${TOLOWERNAME}) or: " USERNAME
-    if [[ -z "$USERNAME" ]]; then USERNAME="admin_${TOLOWERNAME}"; fi
-    read -sp "Password (admin123) or: " USERPASS
-    if [[ -z "$USERPASS" ]]; then USERPASS="admin123"; fi
-    echo ""
+  if [[ "$2" == "--yes" ]] || [[ "$2" == "-y" ]]; then
+    SKIP="true"
   fi
-  bin/magento admin:user:create \
-    --admin-user="${USERNAME}" \
-    --admin-password="${USERPASS}" \
-    --admin-email="${USEREMAIL}" \
-    --admin-firstname="${USERFIRST}" \
-    --admin-lastname="${USERLAST}"
+
+  if [[ $SKIP == "false" ]]; then
+    read -p "Email (${GITEMAIL}) or: " USEREMAIL
+    read -p "Firstname (${GITNAME}) or: " USERFIRST
+    read -p "Lastname (admin) or: " USERLAST
+    read -p "User name (${ADMINNAME}) or: " USERNAME
+    read -sp "Password (admin123) or: " USERPASS
+  fi
+
+  if [[ -z "$USEREMAIL" ]]; then USEREMAIL="$GITEMAIL"; fi
+  if [[ -z "$USERFIRST" ]]; then USERFIRST="$GITNAME"; fi
+  if [[ -z "$USERLAST" ]]; then USERLAST="admin"; fi
+  if [[ -z "$USERNAME" ]]; then USERNAME="${ADMINNAME}"; fi
+  if [[ -z "$USERPASS" ]]; then USERPASS="admin123"; fi
+
+  bin/magento admin:user:create --admin-user="${USERNAME}" \
+    --admin-password="${USERPASS}" --admin-email="${USEREMAIL}" \
+    --admin-firstname="${USERFIRST}" --admin-lastname="${USERLAST}"
   ;;
 
 run)
