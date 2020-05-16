@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.3.0 - (2020-05-16)
+* ADD:
+  * new cmd `new-theme`
+* IMP:
+  * code quality
+  * renamed `admin` cmd to `new-admin`
+  * Skip steps for `new-admin` and `new-theme` via `--yes` flag
+* DEL: cms install as this is never used,
+  [Use create-project instead](https://github.com/GrimLink/create-project)
+
 ## 1.2.0 - (2019-11-17)
 * ADD:
   * purge based on https://github.com/BenButterfield/m2purge
