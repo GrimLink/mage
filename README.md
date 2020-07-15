@@ -25,7 +25,7 @@ mage also commes packing with a few custom functions.
 Download mage via:
 
 ```bash
-curl -O https://raw.githubusercontent.com/GrimLink/mage/master/mage && chmod +x mage
+curl -O https://raw.githubusercontent.com/GrimLink/mage/main/mage && chmod +x mage
 ```
 
 _Or download it via wget_
