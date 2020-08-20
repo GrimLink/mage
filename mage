@@ -149,27 +149,31 @@ new-theme)
     SKIP="true"
   fi
 
-  read -p "Theme vendor (e.g. Magento): " VENDOR
-  read -p "Theme name (blank) or: " NAME
-  LEADING_NAME="$(tr '[:lower:]' '[:upper:]' <<< ${NAME:0:1})${NAME:1}"
+  read -p "Vendor: " VENDOR
+  if [[ -z "$VENDOR" ]]; then echo "The 'Vendor' can not be empty" && exit 1; fi
+  read -p "Name: " NAME
+  if [[ -z "$NAME" ]]; then echo "The 'Name' can not be empty" && exit 1; fi
+
+  VENDOR="$(echo $VENDOR | tr '[:upper:]' '[:lower:]' | awk '{for(i=1;i<=NF;i++){ $i=toupper(substr($i,1,1)) substr($i,2) }}1' | tr -d '[:blank:]')";
+
+  CAMEL_NAME="$(echo $NAME | tr '[:upper:]' '[:lower:]' | awk '{for(i=1;i<=NF;i++){ $i=toupper(substr($i,1,1)) substr($i,2) }}1' | tr -d '[:blank:]')";
+  LOWER_NAME="$(tr '[:upper:][:blank:]' '[:lower:]-' <<< ${NAME})"
 
   if [[ $SKIP == "false" ]]; then
-    read -p "Theme Folder (${NAME}-theme) or: " FOLDER
-    read -p "Theme Title (${VENDOR} ${LEADING_NAME}) or: " TITLE
-    read -p "Theme parent (Magento/blank) or: " PARENT
+    read -p "Folder (${LOWER_NAME}-theme) or: " FOLDER
+    read -p "Parent (${VENDOR}/blank) or: " PARENT
   fi
   
-  if [[ -z "$NAME" ]]; then NAME="blank"; fi
-  if [[ -z "$FOLDER" ]]; then FOLDER="${NAME}-theme"; fi
-  if [[ -z "$TITLE" ]]; then TITLE="${VENDOR} ${LEADING_NAME}"; fi
-  if [[ -z "$PARENT" ]]; then PARENT="Magento/blank"; fi
+  if [[ -z "$FOLDER" ]]; then FOLDER="${LOWER_NAME}-theme"; fi
+  if [[ -z "$PARENT" ]]; then PARENT="${VENDOR}/blank"; fi
   
   THEME="app/design/frontend/$VENDOR/${FOLDER}"
   mkdir -p $THEME
 
   touch $THEME/registration.php &&
   echo -e "<?php
-use \Magento\Framework\Component\ComponentRegistrar;
+
+use Magento\Framework\Component\ComponentRegistrar;
 
 ComponentRegistrar::register(
     ComponentRegistrar::THEME,
@@ -178,8 +182,10 @@ ComponentRegistrar::register(
 );" >> $THEME/registration.php
 
   touch $THEME/theme.xml &&
-  echo -e "<theme xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:noNamespaceSchemaLocation=\"urn:magento:framework:Config/etc/theme.xsd\">
-    <title>${TITLE}</title>
+  echo -e "<theme
+    xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" 
+    xsi:noNamespaceSchemaLocation=\"urn:magento:framework:Config/etc/theme.xsd\">
+    <title>${VENDOR} ${CAMEL_NAME}</title>
     <parent>${PARENT}</parent>
 </theme>" >> $THEME/theme.xml
   ;;
