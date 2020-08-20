@@ -43,6 +43,7 @@ _Or download it via wget_
 | purge      | Purge all static assets                         |
 | new-admin  | Create new admin user _(*)_                     |
 | new-theme  | Create new theme in app _(*)_                   |
+| new-module | Create new module in app                        |
 | run        | Run magerun2 (requires n98-magerun2)            |
 
 Any other command will run the same as `bin/magento`

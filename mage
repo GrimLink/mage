@@ -20,14 +20,15 @@ help)
   echo -e "${BOLD}Mage ${GREEN}1.3.0${RESET}"
   echo -e "${ITALIC}See https://github.com/GrimLink/mage for the last version${RESET}\n"
   echo -e "${BOLD}CMD Options:${RESET}"
-  echo -e "- ${BLUE}info${RESET}      (Show base config for store)"
-  echo -e "- ${BLUE}open${RESET}      (Open store in browser)"
-  echo -e "- ${BLUE}auth${RESET}      (Copy the auth.json from root)"
-  echo -e "- ${BLUE}config${RESET}    (Set configs for dev env)"
-  echo -e "- ${BLUE}purge${RESET}     (Purge all static assets)"
-  echo -e "- ${BLUE}new-admin${RESET} (Create new admin user)"
-  echo -e "- ${BLUE}new-theme${RESET} (Create new theme in app)"
-  echo -e "- ${BLUE}run${RESET}       (Run magerun2)"
+  echo -e "- ${BLUE}info${RESET}       (Show base config for store)"
+  echo -e "- ${BLUE}open${RESET}       (Open store in browser)"
+  echo -e "- ${BLUE}auth${RESET}       (Copy the auth.json from root)"
+  echo -e "- ${BLUE}config${RESET}     (Set configs for dev env)"
+  echo -e "- ${BLUE}purge${RESET}      (Purge all static assets)"
+  echo -e "- ${BLUE}new-admin${RESET}  (Create new admin user)"
+  echo -e "- ${BLUE}new-theme${RESET}  (Create new theme in app)"
+  echo -e "- ${BLUE}new-module${RESET} (Create new module in app)"
+  echo -e "- ${BLUE}run${RESET}        (Run magerun2)"
   echo -e "\n${ITALIC}Anything else will run ${BLUE}bin/magento${RESET}"
   echo -e "${ITALIC}To see those cmd's just run ${BLUE}mage${RESET}"
   ;;
@@ -188,6 +189,44 @@ ComponentRegistrar::register(
     <title>${VENDOR} ${CAMEL_NAME}</title>
     <parent>${PARENT}</parent>
 </theme>" >> $THEME/theme.xml
+  ;;
+
+new-module)
+  read -p "Vendor: " VENDOR
+  if [[ -z "$VENDOR" ]]; then echo "The 'Vendor' can not be empty" && exit 1; fi
+  read -p "Name: " NAME
+  if [[ -z "$NAME" ]]; then echo "The 'Name' can not be empty" && exit 1; fi
+
+  VENDOR="$(echo $VENDOR | tr '[:upper:]' '[:lower:]' | awk '{for(i=1;i<=NF;i++){ $i=toupper(substr($i,1,1)) substr($i,2) }}1' | tr -d '[:blank:]')";
+
+  CAMEL_NAME="$(echo $NAME | tr '[:upper:]' '[:lower:]' | awk '{for(i=1;i<=NF;i++){ $i=toupper(substr($i,1,1)) substr($i,2) }}1' | tr -d '[:blank:]')";
+  LOWER_NAME="$(tr '[:upper:][:blank:]' '[:lower:]-' <<< ${NAME})"
+
+  MODULE="app/code/$VENDOR/${CAMEL_NAME}"
+  mkdir -p $MODULE/etc
+
+  touch $MODULE/registration.php &&
+  echo -e "<?php
+
+use Magento\Framework\Component\ComponentRegistrar;
+
+ComponentRegistrar::register(
+    ComponentRegistrar::MODULE,
+    '${VENDOR}_${CAMEL_NAME}',
+    __DIR__
+);" >> $MODULE/registration.php
+
+  touch $MODULE/etc/module.xml &&
+  echo -e "<?xml version=\"1.0\"?>
+<config
+    xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
+    xsi:noNamespaceSchemaLocation=\"urn:magento:framework:Module/etc/module.xsd\">
+    <module name=\"${VENDOR}_${CAMEL_NAME}\" setup_version=\"1.0.0\">
+        <sequence>
+          <module name=\"Magento_Theme\" />
+        </sequence>
+    </module>
+</config>" >> $MODULE/etc/module.xml
   ;;
 
 run)

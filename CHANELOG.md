@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.4.0 - (2020-08-21)
+* ADD:
+  * new cmd `new-module`
+* IMP:
+  * casing of variables in `new-theme`
+
 ## 1.3.0 - (2020-05-16)
 * ADD:
   * new cmd `new-theme`
