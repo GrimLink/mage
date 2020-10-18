@@ -44,6 +44,8 @@ _Or download it via wget_
 | new-admin  | Create new admin user _(*)_                     |
 | new-theme  | Create new theme in app _(*)_                   |
 | new-module | Create new module in app                        |
+| sample     | Add sample data                                 |
+| replace    | Removal of (optional) core modules)             |
 | run        | Run magerun2 (requires n98-magerun2)            |
 
 Any other command will run the same as `bin/magento`

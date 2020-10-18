@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.5.0 - (2020-10-18)
+* ADD:
+  * new cmd `sample`, for adding sample data
+  * new cmd `replace`, for removing (optional) core module
+
 ## 1.4.0 - (2020-08-21)
 * ADD:
   * new cmd `new-module`
