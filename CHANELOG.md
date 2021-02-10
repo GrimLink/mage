@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.6.0 - (2021-02-10)
 * ADD:
   * new cmd option `--redis`, to purge
   * new cmd `new-customer`
