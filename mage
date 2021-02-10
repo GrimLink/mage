@@ -20,17 +20,18 @@ help)
   echo -e "${BOLD}Mage ${GREEN}1.3.0${RESET}"
   echo -e "${ITALIC}See https://github.com/GrimLink/mage for the last version${RESET}\n"
   echo -e "${BOLD}CMD Options:${RESET}"
-  echo -e "- ${BLUE}info${RESET}       (Show base config for store)"
-  echo -e "- ${BLUE}open${RESET}       (Open store in browser)"
-  echo -e "- ${BLUE}auth${RESET}       (Copy the auth.json from root)"
-  echo -e "- ${BLUE}config${RESET}     (Set configs for dev env)"
-  echo -e "- ${BLUE}purge${RESET}      (Purge all static assets)"
-  echo -e "- ${BLUE}new-admin${RESET}  (Create new admin user)"
-  echo -e "- ${BLUE}new-theme${RESET}  (Create new theme in app)"
-  echo -e "- ${BLUE}new-module${RESET} (Create new module in app)"
-  echo -e "- ${BLUE}sample${RESET}     (Add sample data)"
-  echo -e "- ${BLUE}replace${RESET}    (Removal of (optional) core modules)"
-  echo -e "- ${BLUE}run${RESET}        (Run magerun2)"
+  echo -e "- ${BLUE}info${RESET}         (Show base config for store)"
+  echo -e "- ${BLUE}open${RESET}         (Open store in browser)"
+  echo -e "- ${BLUE}auth${RESET}         (Copy the auth.json from root)"
+  echo -e "- ${BLUE}config${RESET}       (Set configs for dev env)"
+  echo -e "- ${BLUE}purge${RESET}        (Purge all static assets)"
+  echo -e "- ${BLUE}new-admin${RESET}    (Create new admin user)"
+  echo -e "- ${BLUE}new-customer${RESET} (Create new customer)"
+  echo -e "- ${BLUE}new-theme${RESET}    (Create new theme in app)"
+  echo -e "- ${BLUE}new-module${RESET}   (Create new module in app)"
+  echo -e "- ${BLUE}sample${RESET}       (Add sample data)"
+  echo -e "- ${BLUE}replace${RESET}      (Removal of (optional) core modules)"
+  echo -e "- ${BLUE}run${RESET}          (Run magerun2)"
   echo -e "\n${ITALIC}Anything else will run ${BLUE}bin/magento${RESET}"
   echo -e "${ITALIC}To see those cmd's just run ${BLUE}mage${RESET}"
   ;;
@@ -148,6 +149,16 @@ new-admin)
   bin/magento admin:user:create --admin-user="${USERNAME}" \
     --admin-password="${USERPASS}" --admin-email="${USEREMAIL}" \
     --admin-firstname="${USERFIRST}" --admin-lastname="${USERLAST}"
+  ;;
+
+new-customer)
+  if command -v magerun2 &>/dev/null; then
+    magerun2 customer:create
+  elif command -v n98-magerun2 &>/dev/null; then
+    n98-magerun2 customer:create
+  else
+    echo "Magerun2 is not installed"
+  fi
   ;;
 
 new-theme)

@@ -3,6 +3,7 @@
 ## Unreleased
 * ADD:
   * new cmd option `--redis`, to purge
+  * new cmd `new-customer`
 
 ## 1.5.0 - (2020-10-18)
 * ADD:
