@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+* ADD:
+  * new cmd option `--redis`, to purge
+
 ## 1.5.0 - (2020-10-18)
 * ADD:
   * new cmd `sample`, for adding sample data

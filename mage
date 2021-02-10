@@ -107,9 +107,7 @@ purge)
     'pub/static/*'
     'generated/*'
     'var/cache/*'
-    'var/di'
     'var/composer_home/*'
-    'var/generation/*'
     'var/page_cache/*'
     'var/view_preprocessed/*'
   );
@@ -118,6 +116,11 @@ purge)
     rm -rf ${i} &&
     echo -e " [${GREEN}✓${RESET}] ${i}"
   done
+
+  if [[ "$2" == "--redis" ]] || [[ "$2" == "-r" ]]; then
+    redis-cli flushall > /dev/null 2>&1 &&
+    echo -e " [${GREEN}✓${RESET}] Redis caches flushed"
+  fi
 
   bin/magento cache:flush > /dev/null 2>&1 &&
   echo -e " [${GREEN}✓${RESET}] caches flushed"
