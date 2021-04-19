@@ -34,8 +34,6 @@ or if you prefer to use Curl:
 curl -O https://raw.githubusercontent.com/GrimLink/mage/main/mage && chmod +x mage
 ```
 
-_Or download it via wget_
-
 ## Commands
 
 | CMD          | Description                                         |
