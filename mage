@@ -38,12 +38,11 @@ help)
 
 info)
   bin/magento --version
-  bin/magento config:show web
+  echo -e "Base URI: $(bin/magento config:show web/unsecure/base_url)"
   echo -e "Admin URI: $(grep frontName app/etc/env.php | tail -1 | cut -d ">" -f2 | cut -d "'" -f2)"
-  echo -e "dbname: $(grep dbname app/etc/env.php | tail -1 | cut -d ">" -f2 | cut -d "'" -f2)"
-  bin/magento config:show general/locale
-  bin/magento config:show currency
-  bin/magento config:show admin
+  echo -e "Databse: $(grep dbname app/etc/env.php | tail -1 | cut -d ">" -f2 | cut -d "'" -f2)"
+  bin/magento maintenance:status
+  bin/magento deploy:mode:show
   ;;
 
 open)
