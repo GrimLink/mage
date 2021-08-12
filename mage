@@ -40,7 +40,7 @@ info)
   bin/magento --version
   echo -e "Base URI: $(bin/magento config:show web/unsecure/base_url)"
   echo -e "Admin URI: $(grep frontName app/etc/env.php | tail -1 | cut -d ">" -f2 | cut -d "'" -f2)"
-  echo -e "Databse: $(grep dbname app/etc/env.php | tail -1 | cut -d ">" -f2 | cut -d "'" -f2)"
+  echo -e "Database: $(grep dbname app/etc/env.php | tail -1 | cut -d ">" -f2 | cut -d "'" -f2)"
   bin/magento maintenance:status
   bin/magento deploy:mode:show
   ;;
