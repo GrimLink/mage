@@ -14,6 +14,12 @@ GITEMAIL="$(git config --global --get user.email)"
 ADMINNAME="admin_$(echo "$GITNAME" | tr '[:upper:]' '[:lower:]')"
 SKIP="false"
 
+MAGENTO_CLI="bin/magento"
+
+if [ -f .env ] && grep --silent 'WARDEN_ENV_NAME' .env; then
+    MAGENTO_CLI="warden env exec php-fpm bin/magento"
+fi
+
 case "${1}" in
 help)
   echo ""
@@ -37,12 +43,12 @@ help)
   ;;
 
 info)
-  bin/magento --version
-  echo -e "Base URI: $(bin/magento config:show web/unsecure/base_url)"
+  $MAGENTO_CLI --version
+  echo -e "Base URI: $($MAGENTO_CLI config:show web/secure/base_url)"
   echo -e "Admin URI: $(grep frontName app/etc/env.php | tail -1 | cut -d ">" -f2 | cut -d "'" -f2)"
   echo -e "Database: $(grep dbname app/etc/env.php | tail -1 | cut -d ">" -f2 | cut -d "'" -f2)"
-  bin/magento maintenance:status
-  bin/magento deploy:mode:show
+  $MAGENTO_CLI maintenance:status
+  $MAGENTO_CLI deploy:mode:show
   ;;
 
 open)
@@ -50,15 +56,15 @@ open)
   HTTP="unsecure"
   URL=""
 
-  if [[ "$(bin/magento config:show web/secure/use_in_frontend)" == "1" ]]; then
+  if [[ "$($MAGENTO_CLI config:show web/secure/use_in_frontend)" == "1" ]]; then
     HTTP="secure"
   fi
 
   if [[ "$STORE" == "default" ]]; then
-    URL="$(bin/magento config:show web/${HTTP}/base_url)"
+    URL="$($MAGENTO_CLI config:show web/${HTTP}/base_url)"
   elif [[ "$STORE" == "admin" ]]; then
     ADMIN="$(grep frontName app/etc/env.php | tail -1 | cut -d ">" -f2 | cut -d "'" -f2)"
-    URL="$(bin/magento config:show web/${HTTP}/base_url)${ADMIN}"
+    URL="$($MAGENTO_CLI config:show web/${HTTP}/base_url)${ADMIN}"
   else
     if command -v magerun2 &>/dev/null; then
       URL=$(magerun2 sys:store:config:base-url:list --format csv | grep $STORE | cut -d ',' -f3)
@@ -95,11 +101,11 @@ auth)
   ;;
 
 config)
-  bin/magento cache:disable layout block_html full_page
+  $MAGENTO_CLI cache:disable layout block_html full_page
   echo "Setting session lifetime 86400"
-  bin/magento config:set admin/security/session_lifetime 86400
+  $MAGENTO_CLI config:set admin/security/session_lifetime 86400
   echo "Setting admin password lifetime ∞"
-  bin/magento config:set admin/security/password_lifetime ""
+  $MAGENTO_CLI config:set admin/security/password_lifetime ""
   ;;
 
 purge)
@@ -122,7 +128,7 @@ purge)
     echo -e " [${GREEN}✓${RESET}] Redis caches flushed"
   fi
 
-  bin/magento cache:flush > /dev/null 2>&1 &&
+  $MAGENTO_CLI cache:flush > /dev/null 2>&1 &&
   echo -e " [${GREEN}✓${RESET}] caches flushed"
   ;;
 
@@ -145,7 +151,7 @@ new-admin)
   if [[ -z "$USERNAME" ]]; then USERNAME="${ADMINNAME}"; fi
   if [[ -z "$USERPASS" ]]; then USERPASS="admin123"; fi
 
-  bin/magento admin:user:create --admin-user="${USERNAME}" \
+  $MAGENTO_CLI admin:user:create --admin-user="${USERNAME}" \
     --admin-password="${USERPASS}" --admin-email="${USEREMAIL}" \
     --admin-firstname="${USERFIRST}" --admin-lastname="${USERLAST}"
   ;;
@@ -293,6 +299,6 @@ run)
   ;;
 
 *)
-  bin/magento $@
+  $MAGENTO_CLI $@
   ;;
 esac
