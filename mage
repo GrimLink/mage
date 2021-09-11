@@ -9,6 +9,7 @@ ITALIC='\033[3m'
 GREEN='\033[1;32m'
 BLUE='\033[1;34m'
 
+VERSION="1.7.0"
 GITNAME="$(git config --global --get user.name | head -n1 | cut -d " " -f1)"
 GITEMAIL="$(git config --global --get user.email)"
 ADMINNAME="admin_$(echo "$GITNAME" | tr '[:upper:]' '[:lower:]')"
@@ -27,7 +28,7 @@ fi
 case "${1}" in
 help)
   echo ""
-  echo -e "${BOLD}Mage ${GREEN}1.6.0${RESET}"
+  echo -e "${BOLD}Mage ${GREEN}${VERSION}${RESET}"
   echo -e "${ITALIC}See https://github.com/GrimLink/mage for the last version${RESET}\n"
   echo -e "${BOLD}CMD Options:${RESET}"
   echo -e "- ${BLUE}info${RESET}         (Show base config for store)"
