@@ -27,10 +27,10 @@ elif command -v n98-magerun2 &>/dev/null; then
 fi
 
 if [ -f .env ] && grep --silent 'WARDEN_ENV_NAME' .env; then
-    WARDEN=1
-    MAGENTO_CLI="warden env exec php-fpm bin/magento"
-    MAGERUN_CLI="warden env exec php-fpm n98-magerun"
-    REDIS_CLI="warden env exec redis redis-cli"
+  WARDEN=1
+  MAGENTO_CLI="warden env exec php-fpm bin/magento"
+  MAGERUN_CLI="warden env exec php-fpm n98-magerun"
+  REDIS_CLI="warden env exec redis redis-cli"
 fi
 
 case "${1}" in
