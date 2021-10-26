@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Make `mage run` work with [Warden](https://github.com/davidalger/warden)
 
-### Fixes
+### Fixed
 - `mage open` now also works with [Warden](https://github.com/davidalger/warden)
 
 ## [1.7.0] - 2021-09-11
