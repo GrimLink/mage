@@ -19,6 +19,12 @@ WARDEN=0
 MAGENTO_CLI="bin/magento"
 MAGERUN_CLI=""
 REDIS_CLI="redis-cli"
+OPEN_CLI="xdg-open" # Linux
+
+# OSX
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  OPEN_CLI="open"
+fi
 
 if command -v magerun2 &>/dev/null; then
   MAGERUN_CLI="magerun2"
@@ -88,13 +94,11 @@ open)
 
   if [[ -z "$URL" ]]; then
     echo "Could not find url for store $STORE"
+  elif [[ $WARDEN == 1 ]]; then
+    echo $URL
   else
     echo "Opening url $URL"
-    if [[ "$OSTYPE" == "darwin"* ]]; then
-      open $URL
-    else
-      xdg-open $URL
-    fi
+    $OPEN_CLI $URL
   fi
   ;;
 
