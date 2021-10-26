@@ -17,11 +17,19 @@ SKIP="false"
 
 WARDEN=0
 MAGENTO_CLI="bin/magento"
+MAGERUN_CLI=""
 REDIS_CLI="redis-cli"
+
+if command -v magerun2 &>/dev/null; then
+  MAGERUN_CLI="magerun2"
+elif command -v n98-magerun2 &>/dev/null; then
+  MAGERUN_CLI="n98-magerun2"
+fi
 
 if [ -f .env ] && grep --silent 'WARDEN_ENV_NAME' .env; then
     WARDEN=1
     MAGENTO_CLI="warden env exec php-fpm bin/magento"
+    MAGERUN_CLI="warden env exec php-fpm n98-magerun"
     REDIS_CLI="warden env exec redis redis-cli"
 fi
 
@@ -71,10 +79,8 @@ open)
     ADMIN="$(grep frontName app/etc/env.php | tail -1 | cut -d ">" -f2 | cut -d "'" -f2)"
     URL="$($MAGENTO_CLI config:show web/${HTTP}/base_url)${ADMIN}"
   else
-    if command -v magerun2 &>/dev/null; then
-      URL=$(magerun2 sys:store:config:base-url:list --format csv | grep $STORE | cut -d ',' -f3)
-    elif command -v n98-magerun2 &>/dev/null; then
-      URL=$(n98-magerun2 sys:store:config:base-url:list --format csv | grep $STORE | cut -d ',' -f3)
+    if [[ -n "$MAGERUN_CLI" ]]; then
+      URL=$($MAGERUN_CLI sys:store:config:base-url:list --format csv | grep $STORE | cut -d ',' -f3)
     else
       echo "Magerun2 is not installed"
     fi
@@ -169,10 +175,8 @@ new-admin)
   ;;
 
 new-customer)
-  if command -v magerun2 &>/dev/null; then
-    magerun2 customer:create
-  elif command -v n98-magerun2 &>/dev/null; then
-    n98-magerun2 customer:create
+  if [[ -n "$MAGERUN_CLI" ]]; then
+    $MAGERUN_CLI customer:create
   else
     echo "Magerun2 is not installed"
   fi
@@ -301,10 +305,8 @@ replace)
   ;;
 
 run)
-  if command -v magerun2 &>/dev/null; then
-    magerun2 ${@:2}
-  elif command -v n98-magerun2 &>/dev/null; then
-    n98-magerun2 ${@:2}
+  if [[ -n "$MAGERUN_CLI" ]]; then
+    $MAGERUN_CLI ${@:2}
   else
     echo "Magerun2 is not installed"
   fi
