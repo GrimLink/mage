@@ -60,8 +60,8 @@ _#_ Add the flag `--yes` or `-y` for using yes to all questions.
 
 ## Supported platforms/environments
 
-This scrips is tested in theses following platforms/environments
-without any extra work;
+This scrips is tested in theses following platforms/environments,
+and works without any extra work.
 
 - OSX + ValetPlus
 - Most Linux platforms
