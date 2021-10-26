@@ -65,4 +65,4 @@ without any extra work;
 
 - OSX + ValetPlus
 - Most Linux platforms
-- [Warden](https://github.com/davidalger/warden) _(thanks to @tdgroot)_
+- [Warden](https://github.com/davidalger/warden) _(thanks to [@tdgroot](https://github.com/tdgroot))_
