@@ -57,3 +57,12 @@ curl -O https://raw.githubusercontent.com/GrimLink/mage/main/mage && chmod +x ma
 Any other command will run the same as `bin/magento`
 
 _#_ Add the flag `--yes` or `-y` for using yes to all questions.
+
+## Supported platforms/environments
+
+This scrips is tested in theses following platforms/environments
+without any extra work;
+
+- OSX + ValetPlus
+- Most Linux platforms
+- [Warden](https://github.com/davidalger/warden) _(thanks to @tdgroot)_
