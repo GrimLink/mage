@@ -290,6 +290,46 @@ sample)
   php -f $HOME/.magento-sampledata/$MVERSION/dev/tools/build-sample-data.php -- --ce-source="$PWD"
   ;;
 
+hyva)
+  if [[ ! -d app/etc ]]; then echo "This does not look like the Magento 2 root folder, aborting.." && exit 1; fi
+
+  echo "Installing Hyva theme..."
+  echo "Make sure you have and license key or access to the gitlab env"
+  echo "else cancel with Ctrl+C"
+  echo ""
+  read -p "Is this a production setup (use license)? [Y/n] "
+  echo ""
+  if [[ ! $REPLY =~ ^[nN]|[nN][oO]$ ]]; then
+    read -p "License key: " HYVA_KEY && echo ""
+    read -p "Packagist url: " HYVA_URL && echo ""
+    composer config --auth http-basic.hyva-themes.repo.packagist.com token $HYVA_KEY
+    composer config repositories.private-packagist composer https://hyva-themes.repo.packagist.com/$HYVA_URL/
+    composer require hyva-themes/magento2-default-theme
+  else
+    # hosted on private gitlab:
+    composer config repositories.hyva-themes/magento2-theme-module git git@gitlab.hyva.io:hyva-themes/magento2-theme-module.git
+    composer config repositories.hyva-themes/magento2-reset-theme git git@gitlab.hyva.io:hyva-themes/magento2-reset-theme.git
+    composer config repositories.hyva-themes/magento2-email-module git git@gitlab.hyva.io:hyva-themes/magento2-email-module.git
+    composer config repositories.hyva-themes/magento2-default-theme git git@gitlab.hyva.io:hyva-themes/magento2-default-theme.git
+    # hosted on public github:
+    composer config repositories.hyva-themes/magento2-graphql-tokens git git@github.com:hyva-themes/magento2-graphql-tokens.git
+
+    composer require hyva-themes/magento2-default-theme --prefer-source
+  fi
+
+  bin/magento s:up
+
+  echo "Done!"
+  echo "Navigate to the Content > Design > Configuration admin section to activate the theme"
+  echo "Disbale the following modules:"
+  echo " - (Magento 2.4.0 - 2.4.2) Dotdigitalgroup_Email Dotdigitalgroup_Chat Dotdigitalgroup_Sms"
+  echo " - (Magento 2.4.3) Dotdigitalgroup_Email Dotdigitalgroup_Chat Dotdigitalgroup_Sms Dotdigitalgroup_ChatGraphQl Dotdigitalgroup_EmailGraphQl"
+  echo "And disable the captcha since Hyva does not support the Magento 2 old and default captcha"
+  echo "$ bin/magento config:set customer/captcha/enable 0"
+  echo ""
+  echo "For more see the docs -> https://docs.hyva.io/hyva-themes/getting-started/"
+  ;;
+
 replace)
   if [[ ! -f composer.json ]]; then echo "This does not look like the Magento 2 root folder, aborting.." && exit 1; fi
   read -p "What is your Magento sub version (sample: 4.1): " MVERSION && echo ""
