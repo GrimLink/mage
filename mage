@@ -10,7 +10,7 @@ RED='\033[0;31m'
 GREEN='\033[1;32m'
 BLUE='\033[1;34m'
 
-VERSION="1.7.0"
+VERSION="1.8.0"
 GITNAME="$(git config --global --get user.name | head -n1 | cut -d " " -f1)"
 GITEMAIL="$(git config --global --get user.email)"
 ADMINNAME="admin_$(echo "$GITNAME" | tr '[:upper:]' '[:lower:]')"
@@ -279,7 +279,6 @@ ComponentRegistrar::register(
 "new")
   echo ""
   echo -e "${RED}No ${BOLD}new${RESET}${RED} option given!${RESET}"
-  echo ""
   helpMessage
   ;;
 
@@ -346,7 +345,6 @@ ComponentRegistrar::register(
 "add")
   echo ""
   echo -e "${RED}No ${BOLD}add${RESET}${RED} option given!${RESET}"
-  echo ""
   helpMessage
   ;;
 
