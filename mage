@@ -39,8 +39,7 @@ if [ -f .env ] && grep --silent 'WARDEN_ENV_NAME' .env; then
   REDIS_CLI="warden env exec redis redis-cli"
 fi
 
-case "${1}" in
-help)
+function helpMessage() {
   echo ""
   echo -e "${BOLD}Mage ${GREEN}${VERSION}${RESET}"
   echo -e "${ITALIC}See https://github.com/GrimLink/mage for the last version${RESET}\n"
@@ -50,18 +49,24 @@ help)
   echo -e "- ${BLUE}auth${RESET}         (Copy the auth.json from root)"
   echo -e "- ${BLUE}config${RESET}       (Set configs for dev env)"
   echo -e "- ${BLUE}purge${RESET}        (Purge all static assets)"
-  echo -e "- ${BLUE}new-admin${RESET}    (Create new admin user)"
-  echo -e "- ${BLUE}new-customer${RESET} (Create new customer)"
-  echo -e "- ${BLUE}new-theme${RESET}    (Create new theme in app)"
-  echo -e "- ${BLUE}new-module${RESET}   (Create new module in app)"
-  echo -e "- ${BLUE}sample${RESET}       (Add sample data)"
+  echo -e "- ${BLUE}new admin${RESET}    (Create new admin user)"
+  echo -e "- ${BLUE}new customer${RESET} (Create new customer)"
+  echo -e "- ${BLUE}new theme${RESET}    (Create new theme in app)"
+  echo -e "- ${BLUE}new module${RESET}   (Create new module in app)"
+  echo -e "- ${BLUE}add sample${RESET}   (Add sample data)"
+  echo -e "- ${BLUE}add hyva${RESET}     (Add hyva theme)"
   echo -e "- ${BLUE}replace${RESET}      (Removal of (optional) core modules)"
   echo -e "- ${BLUE}run${RESET}          (Run magerun2)"
   echo -e "\n${ITALIC}Anything else will run ${BLUE}bin/magento${RESET}"
   echo -e "${ITALIC}To see those cmd's just run ${BLUE}mage${RESET}"
+}
+
+case "${@}" in
+"help")
+  helpMessage
   ;;
 
-info)
+"info")
   $MAGENTO_CLI --version
   echo -e "Base URI: $($MAGENTO_CLI config:show web/secure/base_url)"
   echo -e "Admin URI: $(grep frontName app/etc/env.php | tail -1 | cut -d ">" -f2 | cut -d "'" -f2)"
@@ -70,7 +75,7 @@ info)
   $MAGENTO_CLI deploy:mode:show
   ;;
 
-open)
+"open")
   STORE=${2:-default}
   HTTP="unsecure"
   URL=""
@@ -102,7 +107,7 @@ open)
   fi
   ;;
 
-auth)
+"auth")
   if [[ -e auth.json ]]; then
     echo "Auth key already set"
   elif [[ -e var/composer_home/auth.json ]]; then
@@ -115,7 +120,7 @@ auth)
   fi
   ;;
 
-config)
+"config")
   $MAGENTO_CLI cache:disable layout block_html full_page
   echo "Setting session lifetime 86400"
   $MAGENTO_CLI config:set admin/security/session_lifetime 86400
@@ -123,7 +128,7 @@ config)
   $MAGENTO_CLI config:set admin/security/password_lifetime ""
   ;;
 
-purge)
+"purge")
   CLEANTASKS=(
     'pub/static/*'
     'generated/*'
@@ -154,7 +159,7 @@ purge)
   
   ;;
 
-new-admin)
+"new admin")
   if [[ "$2" == "--yes" ]] || [[ "$2" == "-y" ]]; then
     SKIP="true"
   fi
@@ -178,7 +183,7 @@ new-admin)
     --admin-firstname="${USERFIRST}" --admin-lastname="${USERLAST}"
   ;;
 
-new-customer)
+"new customer")
   if [[ -n "$MAGERUN_CLI" ]]; then
     $MAGERUN_CLI customer:create
   else
@@ -186,7 +191,7 @@ new-customer)
   fi
   ;;
 
-new-theme)
+"new theme")
   if [[ "$2" == "--yes" ]] || [[ "$2" == "-y" ]]; then
     SKIP="true"
   fi
@@ -232,7 +237,7 @@ ComponentRegistrar::register(
 </theme>" >> $THEME/theme.xml
   ;;
 
-new-module)
+"new module")
   read -p "Vendor: " VENDOR
   if [[ -z "$VENDOR" ]]; then echo "The 'Vendor' can not be empty" && exit 1; fi
   read -p "Name: " NAME
@@ -270,7 +275,11 @@ ComponentRegistrar::register(
 </config>" >> $MODULE/etc/module.xml
   ;;
 
-sample)
+"new")
+  helpMessage
+  ;;
+
+"add sample")
   if [[ ! -d app/etc ]]; then echo "This does not look like the Magento 2 root folder, aborting.." && exit 1; fi
   read -p "What is your Magento base version (sample: 2.4): " MVERSION && echo ""
   if [[ -z "$MVERSION" ]]; then echo "The Magento 2 version is empty, aborting.." && exit 1; fi
@@ -290,7 +299,7 @@ sample)
   php -f $HOME/.magento-sampledata/$MVERSION/dev/tools/build-sample-data.php -- --ce-source="$PWD"
   ;;
 
-hyva)
+"add hyva")
   if [[ ! -d app/etc ]]; then echo "This does not look like the Magento 2 root folder, aborting.." && exit 1; fi
 
   echo "Installing Hyva theme..."
@@ -330,7 +339,11 @@ hyva)
   echo "For more see the docs -> https://docs.hyva.io/hyva-themes/getting-started/"
   ;;
 
-replace)
+"add")
+  helpMessage
+  ;;
+
+"replace")
   if [[ ! -f composer.json ]]; then echo "This does not look like the Magento 2 root folder, aborting.." && exit 1; fi
   read -p "What is your Magento sub version (sample: 4.1): " MVERSION && echo ""
   if [[ -z "$MVERSION" ]]; then echo "The Magento 2 version is empty, aborting.." && exit 1; fi
@@ -348,7 +361,7 @@ replace)
   composer require $OPTION
   ;;
 
-run)
+"run")
   if [[ -n "$MAGERUN_CLI" ]]; then
     $MAGERUN_CLI ${@:2}
   else

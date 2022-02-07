@@ -46,11 +46,12 @@ curl -O https://raw.githubusercontent.com/GrimLink/mage/main/mage && chmod +x ma
 | config       | Set configs for dev env                             |
 | purge        | Purge all static assets                             |
 |              | Use `--redis` or `-r` to also flush the redis cache |
-| new-admin    | Create new admin user _(*)_                         |
-| new-customer | Create new customer                                 |
-| new-theme    | Create new theme in app _(*)_                       |
-| new-module   | Create new module in app                            |
-| sample       | Add sample data                                     |
+| new admin    | Create new admin user _(*)_                         |
+| new customer | Create new customer                                 |
+| new theme    | Create new theme in app _(*)_                       |
+| new module   | Create new module in app                            |
+| add sample   | Add sample data                                     |
+| add hyva     | Add Hyva theme                                      |
 | replace      | Removal of (optional) core modules)                 |
 | run          | Run magerun2 (requires n98-magerun2)                |
 

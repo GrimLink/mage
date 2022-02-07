@@ -5,8 +5,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [1.8.0] - 2022-02-07
 ### Added
 - Hyva setup options
+
+### Changed
+- Renamed option sample to add sample
+- Made all commands with prefix `new` without hypen,
+  see the readme for how to the new command syntax
 
 ## [1.7.1] - 2021-09-11
 ### Changed
