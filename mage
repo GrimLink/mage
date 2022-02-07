@@ -125,7 +125,7 @@ case "${@}" in
   $MAGENTO_CLI deploy:mode:show
   ;;
 
-"open")
+"open"*)
   STORE=${2:-default}
   HTTP="unsecure"
   URL=""
