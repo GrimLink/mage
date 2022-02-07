@@ -52,6 +52,7 @@ function helpMessage() {
   echo -e "${ITALIC}See https://github.com/GrimLink/mage for the last version${RESET}\n"
   echo -e "${BOLD}CMD Options:${RESET}"
   echo -e "- ${BLUE}info${RESET}         (Show base config for store)"
+  echo -e "- ${BLUE}stores${RESET}       (Show all stores)"
   echo -e "- ${BLUE}open${RESET}         (Open store in browser)"
   echo -e "- ${BLUE}auth${RESET}         (Copy the auth.json from root)"
   echo -e "- ${BLUE}config${RESET}       (Set configs for dev env)"
@@ -123,6 +124,14 @@ case "${@}" in
   echo -e "Database: $(grep dbname app/etc/env.php | tail -1 | cut -d ">" -f2 | cut -d "'" -f2)"
   $MAGENTO_CLI maintenance:status
   $MAGENTO_CLI deploy:mode:show
+  ;;
+
+"stores")
+  if [[ -n "$MAGERUN_CLI" ]]; then
+    $MAGERUN_CLI sys:store:config:base-url:list --format txt
+  else
+    echo "Magerun2 is not installed"
+  fi
   ;;
 
 "open"*)
