@@ -6,6 +6,7 @@
 RESET='\033[0m'
 BOLD='\033[1m'
 ITALIC='\033[3m'
+RED='\033[0;31m'
 GREEN='\033[1;32m'
 BLUE='\033[1;34m'
 
@@ -276,6 +277,9 @@ ComponentRegistrar::register(
   ;;
 
 "new")
+  echo ""
+  echo -e "${RED}No ${BOLD}new${RESET}${RED} option given!${RESET}"
+  echo ""
   helpMessage
   ;;
 
@@ -340,6 +344,9 @@ ComponentRegistrar::register(
   ;;
 
 "add")
+  echo ""
+  echo -e "${RED}No ${BOLD}add${RESET}${RED} option given!${RESET}"
+  echo ""
   helpMessage
   ;;
 
