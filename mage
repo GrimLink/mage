@@ -134,7 +134,9 @@ case "${@}" in
     HTTP="secure"
   fi
 
-  if [[ "$STORE" == "default" ]]; then
+  if [[ $WARDEN == 1 ]]; then
+    URL=$($MAGERUN_CLI sys:store:config:base-url:list --format csv | grep $STORE | cut -d ',' -f3)
+  elif [[ "$STORE" == "default" ]]; then
     URL="$($MAGENTO_CLI config:show web/${HTTP}/base_url)"
   elif [[ "$STORE" == "admin" ]]; then
     ADMIN="$(grep frontName app/etc/env.php | tail -1 | cut -d ">" -f2 | cut -d "'" -f2)"
@@ -149,8 +151,6 @@ case "${@}" in
 
   if [[ -z "$URL" ]]; then
     echo "Could not find url for store $STORE"
-  elif [[ $WARDEN == 1 ]]; then
-    echo $URL
   else
     echo "Opening url $URL"
     $OPEN_CLI $URL
