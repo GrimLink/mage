@@ -62,6 +62,49 @@ function helpMessage() {
   echo -e "${ITALIC}To see those cmd's just run ${BLUE}mage${RESET}"
 }
 
+function newMagentoMod() {
+  if [[ "$2" == "--yes" ]] || [[ "$2" == "-y" ]]; then SKIP="true"; fi
+  
+  read -p "Vendor: " VENDOR
+  if [[ -z "$VENDOR" ]]; then echo "The 'Vendor' can not be empty" && exit 1; fi
+
+  read -p "Name: " NAME
+  if [[ -z "$NAME" ]]; then echo "The 'Name' can not be empty" && exit 1; fi
+
+  TAB="    "
+  VENDOR="$(echo $VENDOR | tr '[:upper:]' '[:lower:]' | awk '{for(i=1;i<=NF;i++){ $i=toupper(substr($i,1,1)) substr($i,2) }}1' | tr -d '[:blank:]')";
+  CAMEL_NAME="$(echo $NAME | tr '[:upper:]' '[:lower:]' | awk '{for(i=1;i<=NF;i++){ $i=toupper(substr($i,1,1)) substr($i,2) }}1' | tr -d '[:blank:]')";
+  LOWER_NAME="$(tr '[:upper:][:blank:]' '[:lower:]-' <<< ${NAME})";
+  MOD_PATH="app/code/$VENDOR/${CAMEL_NAME}"
+
+  if [[ $1 == "theme" ]]; then
+    if [[ $SKIP == "false" ]]; then
+      read -p "Folder (${LOWER_NAME}-theme) or: " FOLDER
+      read -p "Parent (${VENDOR}/blank) or: " PARENT
+    fi
+  
+    if [[ -z "$FOLDER" ]]; then FOLDER="${LOWER_NAME}-theme"; fi
+    if [[ -z "$PARENT" ]]; then PARENT="${VENDOR}/blank"; fi
+  
+    MOD_PATH="app/design/frontend/$VENDOR/${FOLDER}"
+    mkdir -p $MOD_PATH
+
+    touch $MOD_PATH/registration.php &&
+    echo -e "<?php declare(strict_types=1);\n\nuse Magento\Framework\Component\ComponentRegistrar;\n\nComponentRegistrar::register(\n${TAB}ComponentRegistrar::THEME,\n${TAB}'frontend/${VENDOR}/${FOLDER}',\n${TAB}__DIR__\n);" >> $MOD_PATH/registration.php
+
+    touch $MOD_PATH/theme.xml &&
+    echo -e "<theme\n${TAB}xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n${TAB}xsi:noNamespaceSchemaLocation=\"urn:magento:framework:Config/etc/theme.xsd\">\n${TAB}<title>${VENDOR} ${CAMEL_NAME}</title>\n${TAB}<parent>${PARENT}</parent>\n</theme>" >> $MOD_PATH/theme.xml
+  else
+    mkdir -p $MOD_PATH/etc
+
+    touch $MOD_PATH/registration.php &&
+    echo -e "<?php declare(strict_types=1);\n\nuse Magento\Framework\Component\ComponentRegistrar;\n\nComponentRegistrar::register(\n${TAB}ComponentRegistrar::MODULE,\n${TAB}'${VENDOR}_${CAMEL_NAME}',\n${TAB}__DIR__\n);" >> $MOD_PATH/registration.php
+
+    touch $MOD_PATH/etc/module.xml &&
+    echo -e "<?xml version=\"1.0\"?>\n<config\n${TAB}xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n${TAB}xsi:noNamespaceSchemaLocation=\"urn:magento:framework:Module/etc/module.xsd\">\n${TAB}<module name=\"${VENDOR}_${CAMEL_NAME}\" setup_version=\"1.0.0\">\n${TAB}${TAB}<sequence>\n${TAB}${TAB}${TAB}<module name=\"Magento_Theme\"/>\n${TAB}${TAB}</sequence>\n${TAB}</module>\n</config>" >> $MOD_PATH/etc/module.xml
+  fi
+}
+
 case "${@}" in
 "help")
   helpMessage
@@ -193,87 +236,11 @@ case "${@}" in
   ;;
 
 "new theme")
-  if [[ "$2" == "--yes" ]] || [[ "$2" == "-y" ]]; then
-    SKIP="true"
-  fi
-
-  read -p "Vendor: " VENDOR
-  if [[ -z "$VENDOR" ]]; then echo "The 'Vendor' can not be empty" && exit 1; fi
-  read -p "Name: " NAME
-  if [[ -z "$NAME" ]]; then echo "The 'Name' can not be empty" && exit 1; fi
-
-  VENDOR="$(echo $VENDOR | tr '[:upper:]' '[:lower:]' | awk '{for(i=1;i<=NF;i++){ $i=toupper(substr($i,1,1)) substr($i,2) }}1' | tr -d '[:blank:]')";
-
-  CAMEL_NAME="$(echo $NAME | tr '[:upper:]' '[:lower:]' | awk '{for(i=1;i<=NF;i++){ $i=toupper(substr($i,1,1)) substr($i,2) }}1' | tr -d '[:blank:]')";
-  LOWER_NAME="$(tr '[:upper:][:blank:]' '[:lower:]-' <<< ${NAME})"
-
-  if [[ $SKIP == "false" ]]; then
-    read -p "Folder (${LOWER_NAME}-theme) or: " FOLDER
-    read -p "Parent (${VENDOR}/blank) or: " PARENT
-  fi
-  
-  if [[ -z "$FOLDER" ]]; then FOLDER="${LOWER_NAME}-theme"; fi
-  if [[ -z "$PARENT" ]]; then PARENT="${VENDOR}/blank"; fi
-  
-  THEME="app/design/frontend/$VENDOR/${FOLDER}"
-  mkdir -p $THEME
-
-  touch $THEME/registration.php &&
-  echo -e "<?php
-
-use Magento\Framework\Component\ComponentRegistrar;
-
-ComponentRegistrar::register(
-    ComponentRegistrar::THEME,
-    'frontend/${VENDOR}/${FOLDER}',
-    __DIR__
-);" >> $THEME/registration.php
-
-  touch $THEME/theme.xml &&
-  echo -e "<theme
-    xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" 
-    xsi:noNamespaceSchemaLocation=\"urn:magento:framework:Config/etc/theme.xsd\">
-    <title>${VENDOR} ${CAMEL_NAME}</title>
-    <parent>${PARENT}</parent>
-</theme>" >> $THEME/theme.xml
+  newMagentoMod "theme"
   ;;
 
 "new module")
-  read -p "Vendor: " VENDOR
-  if [[ -z "$VENDOR" ]]; then echo "The 'Vendor' can not be empty" && exit 1; fi
-  read -p "Name: " NAME
-  if [[ -z "$NAME" ]]; then echo "The 'Name' can not be empty" && exit 1; fi
-
-  VENDOR="$(echo $VENDOR | tr '[:upper:]' '[:lower:]' | awk '{for(i=1;i<=NF;i++){ $i=toupper(substr($i,1,1)) substr($i,2) }}1' | tr -d '[:blank:]')";
-
-  CAMEL_NAME="$(echo $NAME | tr '[:upper:]' '[:lower:]' | awk '{for(i=1;i<=NF;i++){ $i=toupper(substr($i,1,1)) substr($i,2) }}1' | tr -d '[:blank:]')";
-  LOWER_NAME="$(tr '[:upper:][:blank:]' '[:lower:]-' <<< ${NAME})"
-
-  MODULE="app/code/$VENDOR/${CAMEL_NAME}"
-  mkdir -p $MODULE/etc
-
-  touch $MODULE/registration.php &&
-  echo -e "<?php
-
-use Magento\Framework\Component\ComponentRegistrar;
-
-ComponentRegistrar::register(
-    ComponentRegistrar::MODULE,
-    '${VENDOR}_${CAMEL_NAME}',
-    __DIR__
-);" >> $MODULE/registration.php
-
-  touch $MODULE/etc/module.xml &&
-  echo -e "<?xml version=\"1.0\"?>
-<config
-    xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
-    xsi:noNamespaceSchemaLocation=\"urn:magento:framework:Module/etc/module.xsd\">
-    <module name=\"${VENDOR}_${CAMEL_NAME}\" setup_version=\"1.0.0\">
-        <sequence>
-          <module name=\"Magento_Theme\" />
-        </sequence>
-    </module>
-</config>" >> $MODULE/etc/module.xml
+  newMagentoMod "module"
   ;;
 
 "new")
