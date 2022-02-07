@@ -141,7 +141,7 @@ case "${@}" in
 
   # Prefetch admin URL data for open steps
   if [[ "$STORE" == "admin" ]]; then
-    ADMIN_PATH="$(grep frontName app/etc/env.php | tail -1 | cut -d ">" -f2 | cut -d "'" -f2)"
+    ADMIN_PATH=$(grep frontName app/etc/env.php | tail -1 | cut -d ">" -f2 | cut -d "'" -f2)
   fi
 
   # If Magerun does not exist, then make sure if the path is secure or not
