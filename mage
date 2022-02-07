@@ -56,12 +56,12 @@ function helpMessage() {
   echo -e "- ${BLUE}auth${RESET}         (Copy the auth.json from root)"
   echo -e "- ${BLUE}config${RESET}       (Set configs for dev env)"
   echo -e "- ${BLUE}purge${RESET}        (Purge all static assets)"
-  echo -e "- ${BLUE}new admin${RESET}    (Create new admin user)"
-  echo -e "- ${BLUE}new customer${RESET} (Create new customer)"
-  echo -e "- ${BLUE}new theme${RESET}    (Create new theme in app)"
-  echo -e "- ${BLUE}new module${RESET}   (Create new module in app)"
-  echo -e "- ${BLUE}add sample${RESET}   (Add sample data)"
-  echo -e "- ${BLUE}add hyva${RESET}     (Add hyva theme)"
+  echo -e "- ${BLUE}new-admin${RESET}    (Create new admin user)"
+  echo -e "- ${BLUE}new-customer${RESET} (Create new customer)"
+  echo -e "- ${BLUE}new-theme${RESET}    (Create new theme in app)"
+  echo -e "- ${BLUE}new-module${RESET}   (Create new module in app)"
+  echo -e "- ${BLUE}add-sample${RESET}   (Add sample data)"
+  echo -e "- ${BLUE}add-hyva${RESET}     (Add hyva theme)"
   echo -e "- ${BLUE}replace${RESET}      (Removal of (optional) core modules)"
   echo -e "- ${BLUE}run${RESET}          (Run magerun2)"
   echo -e "\n${ITALIC}Anything else will run ${BLUE}bin/magento${RESET}"
@@ -111,12 +111,12 @@ function newMagentoMod() {
   fi
 }
 
-case "${@}" in
-"help")
+case "${1}" in
+help)
   helpMessage
   ;;
 
-"info")
+info)
   $MAGENTO_CLI --version
   echo -e "Base URI: $($MAGENTO_CLI config:show web/secure/base_url)"
   echo -e "Admin URI: $(grep frontName app/etc/env.php | tail -1 | cut -d ">" -f2 | cut -d "'" -f2)"
@@ -125,7 +125,7 @@ case "${@}" in
   $MAGENTO_CLI deploy:mode:show
   ;;
 
-"open"*)
+open)
   STORE=${2:-default}
   HTTP="unsecure"
   URL=""
@@ -161,7 +161,7 @@ case "${@}" in
   fi
   ;;
 
-"auth")
+auth)
   if [[ -e auth.json ]]; then
     echo "Auth key already set"
   elif [[ -e var/composer_home/auth.json ]]; then
@@ -182,7 +182,7 @@ case "${@}" in
   $MAGENTO_CLI config:set admin/security/password_lifetime ""
   ;;
 
-"purge")
+purge)
   CLEANTASKS=(
     'pub/static/*'
     'generated/*'
@@ -213,7 +213,7 @@ case "${@}" in
   
   ;;
 
-"new admin")
+new-admin)
   if [[ "$2" == "--yes" ]] || [[ "$2" == "-y" ]]; then
     SKIP="true"
   fi
@@ -237,7 +237,7 @@ case "${@}" in
     --admin-firstname="${USERFIRST}" --admin-lastname="${USERLAST}"
   ;;
 
-"new customer")
+new-customer)
   if [[ -n "$MAGERUN_CLI" ]]; then
     $MAGERUN_CLI customer:create
   else
@@ -245,21 +245,15 @@ case "${@}" in
   fi
   ;;
 
-"new theme")
+new-theme)
   newMagentoMod "theme"
   ;;
 
-"new module")
+new-module)
   newMagentoMod "module"
   ;;
 
-"new")
-  echo ""
-  echo -e "${RED}No ${BOLD}new${RESET}${RED} option given!${RESET}"
-  helpMessage
-  ;;
-
-"add sample")
+add-sample)
   read -p "What is your Magento base version (sample: 2.4): " MVERSION && echo ""
   if [[ -z "$MVERSION" ]]; then echo "The Magento 2 version is empty, aborting.." && exit 1; fi
 
@@ -278,7 +272,7 @@ case "${@}" in
   php -f $HOME/.magento-sampledata/$MVERSION/dev/tools/build-sample-data.php -- --ce-source="$PWD"
   ;;
 
-"add hyva")
+add-hyva)
   echo "Installing Hyva theme..."
   echo "Make sure you have and license key or access to the gitlab env"
   echo "else cancel with Ctrl+C"
@@ -316,13 +310,7 @@ case "${@}" in
   echo "For more see the docs -> https://docs.hyva.io/hyva-themes/getting-started/"
   ;;
 
-"add")
-  echo ""
-  echo -e "${RED}No ${BOLD}add${RESET}${RED} option given!${RESET}"
-  helpMessage
-  ;;
-
-"replace")
+replace)
   if [[ ! -f composer.json ]]; then echo "This does not look like the Magento 2 root folder, aborting.." && exit 1; fi
   read -p "What is your Magento sub version (sample: 4.1): " MVERSION && echo ""
   if [[ -z "$MVERSION" ]]; then echo "The Magento 2 version is empty, aborting.." && exit 1; fi
@@ -340,7 +328,7 @@ case "${@}" in
   composer require $OPTION
   ;;
 
-"run")
+run)
   if [[ -n "$MAGERUN_CLI" ]]; then
     $MAGERUN_CLI ${@:2}
   else

@@ -11,9 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Hyva setup options
 
 ### Changed
-- Renamed option sample to add sample
-- Made all commands with prefix `new` without hypen,
-  see the readme for how to the new command syntax
+- Renamed option sample to `add-sample`
 
 ## [1.7.1] - 2021-09-11
 ### Changed
