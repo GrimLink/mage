@@ -142,7 +142,6 @@ case "${@}" in
   # Prefetch admin URL data for open steps
   if [[ "$STORE" == "admin" ]]; then
     ADMIN_PATH="$(grep frontName app/etc/env.php | tail -1 | cut -d ">" -f2 | cut -d "'" -f2)"
-    STORE="default"
   fi
 
   # If Magerun does not exist, then make sure if the path is secure or not
@@ -154,10 +153,11 @@ case "${@}" in
 
   # Fetch the url for the storeview
   if [[ -n "$MAGERUN_CLI" ]]; then
-    STORE_URL=$($MAGERUN_CLI sys:store:config:base-url:list --format csv | grep $STORE | cut -d ',' -f3)
     if [[ "$STORE" == "admin" ]]; then
+      STORE_URL=$($MAGERUN_CLI sys:store:config:base-url:list --format csv | grep default | cut -d ',' -f3)
       URL="${STORE_URL}${ADMIN_PATH}"
     else
+      STORE_URL=$($MAGERUN_CLI sys:store:config:base-url:list --format csv | grep $STORE | cut -d ',' -f3)
       URL="${STORE_URL}"
     fi
   elif [[ "$STORE" == "admin" ]]; then
