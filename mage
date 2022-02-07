@@ -130,30 +130,34 @@ case "${@}" in
   HTTP="unsecure"
   URL=""
 
-  if [[ "$($MAGENTO_CLI config:show web/secure/use_in_frontend)" == "1" ]]; then
-    HTTP="secure"
+  if [[ "$STORE" == "admin" ]]; then
+    ADMIN_PATH="$(grep frontName app/etc/env.php | tail -1 | cut -d ">" -f2 | cut -d "'" -f2)"
+    STORE="default"
   fi
 
-  if [[ $WARDEN == 1 ]]; then
-    URL=$($MAGERUN_CLI sys:store:config:base-url:list --format csv | grep $STORE | cut -d ',' -f3)
-  elif [[ "$STORE" == "default" ]]; then
-    URL="$($MAGENTO_CLI config:show web/${HTTP}/base_url)"
-  elif [[ "$STORE" == "admin" ]]; then
-    ADMIN="$(grep frontName app/etc/env.php | tail -1 | cut -d ">" -f2 | cut -d "'" -f2)"
-    URL="$($MAGENTO_CLI config:show web/${HTTP}/base_url)${ADMIN}"
-  else
-    if [[ -n "$MAGERUN_CLI" ]]; then
-      URL=$($MAGERUN_CLI sys:store:config:base-url:list --format csv | grep $STORE | cut -d ',' -f3)
-    else
-      echo "Magerun2 is not installed"
+  if [[ ! -n "$MAGERUN_CLI" ]]; then
+    if [[ "$($MAGENTO_CLI config:show web/secure/use_in_frontend)" == "1" ]]; then
+      HTTP="secure"
     fi
+  fi
+    
+  if [[ -n "$MAGERUN_CLI" ]]; then
+    STORE_URL=$($MAGERUN_CLI sys:store:config:base-url:list --format csv | grep $STORE | cut -d ',' -f3)
+    if [[ "$STORE" == "admin" ]]; then
+      URL="${STORE_URL}${ADMIN_PATH}"
+    else
+      URL="${STORE_URL}"
+    fi
+  elif [[ "$STORE" == "admin" ]]; then
+    URL="$($MAGENTO_CLI config:show web/${HTTP}/base_url)${ADMIN_PATH}"
+  else
+    URL="$($MAGENTO_CLI config:show web/${HTTP}/base_url)"
   fi
 
   if [[ -z "$URL" ]]; then
     echo "Could not find url for store $STORE"
   else
-    echo "Opening url $URL"
-    $OPEN_CLI $URL
+    echo "Opening url $URL" && $OPEN_CLI $URL
   fi
   ;;
 
