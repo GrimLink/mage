@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.8.1] - 2022-02-10
+### Fixes
+- Mage open with single quotes in admin url
+- Mage run, admin and theme with params
+
 ## [1.8.0] - 2022-02-07
 ### Added
 - Hyva setup options

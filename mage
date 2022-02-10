@@ -16,7 +16,7 @@ RED='\033[0;31m'
 GREEN='\033[1;32m'
 BLUE='\033[1;34m'
 
-VERSION="1.8.0"
+VERSION="1.8.1"
 GITNAME="$(git config --global --get user.name | head -n1 | cut -d " " -f1)"
 GITEMAIL="$(git config --global --get user.email)"
 ADMINNAME="admin_$(echo "$GITNAME" | tr '[:upper:]' '[:lower:]')"
@@ -141,7 +141,7 @@ case "${@}" in
 
   # Prefetch admin URL data for open steps
   if [[ "$STORE" == "admin" ]]; then
-    ADMIN_PATH=$(grep frontName app/etc/env.php | tail -1 | cut -d '>' -f2 | cut -d '"' -f2)
+    ADMIN_PATH=$(grep frontName app/etc/env.php | tail -1 | cut -d '>' -f2 | cut -d '"' -f2 | cut -d "'" -f2)
   fi
 
   # If Magerun does not exist, then make sure if the path is secure or not
@@ -227,8 +227,8 @@ case "${@}" in
   
   ;;
 
-"new admin")
-  if [[ "$2" == "--yes" ]] || [[ "$2" == "-y" ]]; then
+"new admin"*)
+  if [[ "$3" == "--yes" ]] || [[ "$3" == "-y" ]]; then
     SKIP="true"
   fi
 
@@ -259,15 +259,15 @@ case "${@}" in
   fi
   ;;
 
-"new theme")
-  newMagentoMod "theme"
+"new theme"*)
+  newMagentoMod "theme" "$3"
   ;;
 
 "new module")
   newMagentoMod "module"
   ;;
 
-"new "*)
+"new"*)
   echo ""
   echo -e "${RED}No ${BOLD}new${RESET}${RED} option given!${RESET}"
   helpMessage
@@ -330,7 +330,7 @@ case "${@}" in
   echo "For more see the docs -> https://docs.hyva.io/hyva-themes/getting-started/"
   ;;
 
-"add "*)
+"add"*)
   echo ""
   echo -e "${RED}No ${BOLD}add${RESET}${RED} option given!${RESET}"
   helpMessage
@@ -354,7 +354,7 @@ case "${@}" in
   composer require $OPTION
   ;;
 
-"run")
+"run"*)
   if [[ -n "$MAGERUN_CLI" ]]; then
     $MAGERUN_CLI ${@:2}
   else
