@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.8.2] - 2022-04-13
+### Fixes
+- Mage purge with agruments does not work
+
 ## [1.8.1] - 2022-02-10
 ### Fixes
 - Mage open with single quotes in admin url
