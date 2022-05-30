@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.8.3] - 2022-05-30
+### Fixes
+- `mage add hyva` now works with [Warden](https://github.com/davidalger/warden)
+- `mage add sample` will exit without running in warden and breaking stuff
+
 ## [1.8.2] - 2022-04-13
 ### Fixes
 - Mage purge with agruments does not work

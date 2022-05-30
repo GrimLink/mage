@@ -16,7 +16,7 @@ RED='\033[0;31m'
 GREEN='\033[1;32m'
 BLUE='\033[1;34m'
 
-VERSION="1.8.2"
+VERSION="1.8.3"
 GITNAME="$(git config --global --get user.name | head -n1 | cut -d " " -f1)"
 GITEMAIL="$(git config --global --get user.email)"
 ADMINNAME="admin_$(echo "$GITNAME" | tr '[:upper:]' '[:lower:]')"
@@ -26,6 +26,7 @@ WARDEN=0
 MAGENTO_CLI="bin/magento"
 MAGERUN_CLI=""
 REDIS_CLI="redis-cli"
+COMPOSER_CLI="composer"
 OPEN_CLI="xdg-open" # Linux
 
 # OSX
@@ -44,6 +45,7 @@ if [ -f .env ] && grep --silent 'WARDEN_ENV_NAME' .env; then
   MAGENTO_CLI="warden env exec php-fpm bin/magento"
   MAGERUN_CLI="warden env exec php-fpm n98-magerun"
   REDIS_CLI="warden env exec redis redis-cli"
+  COMPOSER_CLI="warden env exec php-fpm composer"
 fi
 
 function helpMessage() {
@@ -302,22 +304,22 @@ case "${@}" in
   if [[ ! $REPLY =~ ^[nN]|[nN][oO]$ ]]; then
     read -p "License key: " HYVA_KEY && echo ""
     read -p "Packagist url: " HYVA_URL && echo ""
-    composer config --auth http-basic.hyva-themes.repo.packagist.com token $HYVA_KEY
-    composer config repositories.private-packagist composer https://hyva-themes.repo.packagist.com/$HYVA_URL/
-    composer require hyva-themes/magento2-default-theme
+    $COMPOSER_CLI config --auth http-basic.hyva-themes.repo.packagist.com token $HYVA_KEY
+    $COMPOSER_CLI config repositories.private-packagist composer https://hyva-themes.repo.packagist.com/$HYVA_URL/
+    $COMPOSER_CLI require hyva-themes/magento2-default-theme
   else
     # hosted on private gitlab:
-    composer config repositories.hyva-themes/magento2-theme-module git git@gitlab.hyva.io:hyva-themes/magento2-theme-module.git
-    composer config repositories.hyva-themes/magento2-reset-theme git git@gitlab.hyva.io:hyva-themes/magento2-reset-theme.git
-    composer config repositories.hyva-themes/magento2-email-module git git@gitlab.hyva.io:hyva-themes/magento2-email-module.git
-    composer config repositories.hyva-themes/magento2-default-theme git git@gitlab.hyva.io:hyva-themes/magento2-default-theme.git
+    $COMPOSER_CLI config repositories.hyva-themes/magento2-theme-module git git@gitlab.hyva.io:hyva-themes/magento2-theme-module.git
+    $COMPOSER_CLI config repositories.hyva-themes/magento2-reset-theme git git@gitlab.hyva.io:hyva-themes/magento2-reset-theme.git
+    $COMPOSER_CLI config repositories.hyva-themes/magento2-email-module git git@gitlab.hyva.io:hyva-themes/magento2-email-module.git
+    $COMPOSER_CLI config repositories.hyva-themes/magento2-default-theme git git@gitlab.hyva.io:hyva-themes/magento2-default-theme.git
     # hosted on public github:
-    composer config repositories.hyva-themes/magento2-graphql-tokens git git@github.com:hyva-themes/magento2-graphql-tokens.git
+    $COMPOSER_CLI config repositories.hyva-themes/magento2-graphql-tokens git git@github.com:hyva-themes/magento2-graphql-tokens.git
 
-    composer require hyva-themes/magento2-default-theme --prefer-source
+    $COMPOSER_CLI require hyva-themes/magento2-default-theme --prefer-source
   fi
 
-  bin/magento s:up
+  $MAGENTO_CLI s:up
 
   echo "Done!"
   echo "Navigate to the Content > Design > Configuration admin section to activate the theme"
@@ -325,7 +327,7 @@ case "${@}" in
   echo " - (Magento 2.4.0 - 2.4.2) Dotdigitalgroup_Email Dotdigitalgroup_Chat Dotdigitalgroup_Sms"
   echo " - (Magento 2.4.3) Dotdigitalgroup_Email Dotdigitalgroup_Chat Dotdigitalgroup_Sms Dotdigitalgroup_ChatGraphQl Dotdigitalgroup_EmailGraphQl"
   echo "And disable the captcha since Hyva does not support the Magento 2 old and default captcha"
-  echo "$ bin/magento config:set customer/captcha/enable 0"
+  echo "$ mage config:set customer/captcha/enable 0"
   echo ""
   echo "For more see the docs -> https://docs.hyva.io/hyva-themes/getting-started/"
   ;;
@@ -351,7 +353,7 @@ case "${@}" in
   for i in "${OPTIONS_ARRAY[@]}"; do
     OPTION="$OPTION yireo/magento2-replace-${i}:^${MVERSION}"
   done
-  composer require $OPTION
+  $COMPOSER_CLI require $OPTION
   ;;
 
 "run"*)
