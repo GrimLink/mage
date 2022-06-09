@@ -42,6 +42,17 @@ elif command -v n98-magerun2 &>/dev/null; then
   MAGERUN_CLI="n98-magerun2"
 fi
 
+if [[ $(valet -V | cut -f1 -d '.') == "Laravel Valet 3" ]]; then
+  MAGENTO_CLI="valet bin/magento"
+  COMPOSER_CLI="valet composer"
+
+  if command -v magerun2 &>/dev/null; then
+    MAGERUN_CLI="valet magerun2"
+  elif command -v n98-magerun2 &>/dev/null; then
+    MAGERUN_CLI="valet n98-magerun2"
+  fi
+fi
+
 if [ -f .env ] && grep --silent 'WARDEN_ENV_NAME' .env; then
   WARDEN=1
   MAGENTO_CLI="warden env exec php-fpm bin/magento"

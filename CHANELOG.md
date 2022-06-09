@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.9.0] - 2022-06-09
 ### Added
 - `mage self-update` command
+- Support for scoped php version in Laravel Valet 3
 
 ## [1.8.3] - 2022-05-30
 ### Fixes

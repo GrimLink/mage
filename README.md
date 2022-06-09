@@ -70,5 +70,7 @@ This scrips is tested in theses following platforms/environments,
 and works without any extra work.
 
 - OSX + ValetPlus
+- OSX + Laravel Valet
+  - Also supports scoped php (`valet isolate`) in Laravel Valet 3
 - Most Linux platforms
 - [Warden](https://github.com/davidalger/warden) _(thanks to [@tdgroot](https://github.com/tdgroot))_
