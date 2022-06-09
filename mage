@@ -16,7 +16,7 @@ RED='\033[0;31m'
 GREEN='\033[1;32m'
 BLUE='\033[1;34m'
 
-VERSION="1.8.3"
+VERSION="1.9.0"
 GITNAME="$(git config --global --get user.name | head -n1 | cut -d " " -f1)"
 GITEMAIL="$(git config --global --get user.email)"
 ADMINNAME="admin_$(echo "$GITNAME" | tr '[:upper:]' '[:lower:]')"
@@ -88,45 +88,41 @@ function helpMessage() {
 }
 
 function newMagentoMod() {
+  SKIP="false"
+  CREATE_SRC="app/code"
+
   if [[ "$2" == "--yes" ]] || [[ "$2" == "-y" ]]; then SKIP="true"; fi
-  
+  if [[ $SKIP == "false" ]]; then
+    read -p "Create in package-source (If no app code will be used) ? [Y/n] "
+    echo ""
+    if [[ ! $REPLY =~ ^[nN]|[nN][oO]$ ]]; then CREATE_SRC="package-source"; fi
+  else
+    CREATE_SRC="package-source"
+  fi
+
   read -p "Vendor: " VENDOR
   if [[ -z "$VENDOR" ]]; then echo "The 'Vendor' can not be empty" && exit 1; fi
 
   read -p "Name: " NAME
   if [[ -z "$NAME" ]]; then echo "The 'Name' can not be empty" && exit 1; fi
 
-  TAB="    "
   VENDOR="$(echo $VENDOR | tr '[:upper:]' '[:lower:]' | awk '{for(i=1;i<=NF;i++){ $i=toupper(substr($i,1,1)) substr($i,2) }}1' | tr -d '[:blank:]')";
   CAMEL_NAME="$(echo $NAME | tr '[:upper:]' '[:lower:]' | awk '{for(i=1;i<=NF;i++){ $i=toupper(substr($i,1,1)) substr($i,2) }}1' | tr -d '[:blank:]')";
   LOWER_NAME="$(tr '[:upper:][:blank:]' '[:lower:]-' <<< ${NAME})";
-  MOD_PATH="app/code/$VENDOR/${CAMEL_NAME}"
 
   if [[ $1 == "theme" ]]; then
-    if [[ $SKIP == "false" ]]; then
-      read -p "Folder (${LOWER_NAME}-theme) or: " FOLDER
-      read -p "Parent (${VENDOR}/blank) or: " PARENT
-    fi
-  
-    if [[ -z "$FOLDER" ]]; then FOLDER="${LOWER_NAME}-theme"; fi
-    if [[ -z "$PARENT" ]]; then PARENT="${VENDOR}/blank"; fi
-  
-    MOD_PATH="app/design/frontend/$VENDOR/${FOLDER}"
-    mkdir -p $MOD_PATH
-
-    touch $MOD_PATH/registration.php &&
-    echo -e "<?php declare(strict_types=1);\n\nuse Magento\Framework\Component\ComponentRegistrar;\n\nComponentRegistrar::register(\n${TAB}ComponentRegistrar::THEME,\n${TAB}'frontend/${VENDOR}/${FOLDER}',\n${TAB}__DIR__\n);" >> $MOD_PATH/registration.php
-
-    touch $MOD_PATH/theme.xml &&
-    echo -e "<theme\n${TAB}xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n${TAB}xsi:noNamespaceSchemaLocation=\"urn:magento:framework:Config/etc/theme.xsd\">\n${TAB}<title>${VENDOR} ${CAMEL_NAME}</title>\n${TAB}<parent>${PARENT}</parent>\n</theme>" >> $MOD_PATH/theme.xml
+    echo "No theme templates available yet"
   else
-    mkdir -p $MOD_PATH/etc
+    mkdir -p $CREATE_SRC/$VENDOR/$LOWER_NAME &&
+    cd $CREATE_SRC/$VENDOR/$LOWER_NAME &&
+    git clone git@github.com:GrimLink/hyva-module-template.git . &&
+    rm -rf .git &&
 
-    touch $MOD_PATH/registration.php &&
-    echo -e "<?php declare(strict_types=1);\n\nuse Magento\Framework\Component\ComponentRegistrar;\n\nComponentRegistrar::register(\n${TAB}ComponentRegistrar::MODULE,\n${TAB}'${VENDOR}_${CAMEL_NAME}',\n${TAB}__DIR__\n);" >> $MOD_PATH/registration.php
-
-    touch $MOD_PATH/etc/module.xml &&
-    echo -e "<?xml version=\"1.0\"?>\n<config\n${TAB}xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n${TAB}xsi:noNamespaceSchemaLocation=\"urn:magento:framework:Module/etc/module.xsd\">\n${TAB}<module name=\"${VENDOR}_${CAMEL_NAME}\" setup_version=\"1.0.0\">\n${TAB}${TAB}<sequence>\n${TAB}${TAB}${TAB}<module name=\"Magento_Theme\"/>\n${TAB}${TAB}</sequence>\n${TAB}</module>\n</config>" >> $MOD_PATH/etc/module.xml
+    echo ""
+    echo -e "${BLUE}${BOLD}Replace the following values with your own;${RESET}"
+    echo -e "${ITALIC}<VENDOR>${RESET} (example: ${ITALIC}${VENDOR}${RESET})"
+    echo -e "${ITALIC}<MODULE>${RESET} (example: ${ITALIC}${CAMEL_NAME}${RESET})"
+    echo -e "${ITALIC}<MODULE_PKG>${RESET} (example: ${ITALIC}${LOWER_NAME}${RESET})"
   fi
 }
 
@@ -286,8 +282,8 @@ case "${@}" in
   newMagentoMod "theme" "$3"
   ;;
 
-"new module")
-  newMagentoMod "module"
+"new module"*)
+  newMagentoMod "module" "$3"
   ;;
 
 "new"*)

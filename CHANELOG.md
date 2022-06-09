@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support for scoped php version in Laravel Valet 3
 - Alias for composer install and require as `mage i`
 - Alias for composer remove as `mage rm`
+- **Breaking change** dropped static new module and new theme for git templates,
+  currently only module works, a theme template will be added in the next release
 
 ## [1.8.3] - 2022-05-30
 ### Fixes
