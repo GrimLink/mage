@@ -39,6 +39,7 @@ curl -O https://raw.githubusercontent.com/GrimLink/mage/main/mage && chmod +x ma
 | CMD              | Description                                         |
 | ---------------- | --------------------------------------------------- |
 | help             | Show all options                                    |
+| self-update      | Update mage                                         |
 | info             | Show minimal store info (e.g. version and uri)      |
 | stores           | Show all stores _\*1_                               |
 | open             | Open the default store, in the browser              |

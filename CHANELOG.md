@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.9.0] - 2022-06-09
+### Added
+- `mage self-update` command
+
 ## [1.8.3] - 2022-05-30
 ### Fixes
 - `mage add hyva` now works with [Warden](https://github.com/davidalger/warden)
@@ -13,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.8.2] - 2022-04-13
 ### Fixes
-- Mage purge with agruments does not work
+- Mage purge with arguments does not work
 
 ## [1.8.1] - 2022-02-10
 ### Fixes
