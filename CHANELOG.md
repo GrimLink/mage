@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - `mage self-update` command
 - Support for scoped php version in Laravel Valet 3
+- Alias for composer install and require as `mage i`
+- Alias for composer remove as `mage rm`
 
 ## [1.8.3] - 2022-05-30
 ### Fixes
