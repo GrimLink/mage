@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.9.1] - 2022-06-09
+### Fixed
+- Magerun with laravel valet, by removing the valet prefix
+
 ## [1.9.0] - 2022-06-09
 ### Added
 - `mage self-update` command
