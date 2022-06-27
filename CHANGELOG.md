@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Support for cache-clean from [mageTV](https://github.com/mage2tv/magento-cache-clean),
+  thx @Vinai for this awesome tool!
+
 ## [1.9.2] - 2022-06-27
 ### Fixed
 - Error in none valet environment

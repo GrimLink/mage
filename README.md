@@ -47,6 +47,7 @@ curl -O https://raw.githubusercontent.com/GrimLink/mage/main/mage && chmod +x ma
 | open _STOREVIEW_ | Open specific storeview, in the browser _\*1_       |
 | auth             | Copy the auth.json from root                        |
 | config           | Set configs for dev env                             |
+| devclean         | Run cache-clean.js from mageTV                      |
 | purge            | Purge all static assets                             |
 |                  | Use `--redis` or `-r` to also flush the redis cache |
 | new admin        | Create new admin user _\*2_                         |

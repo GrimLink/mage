@@ -74,6 +74,7 @@ function helpMessage() {
   echo -e "- ${BLUE}open${RESET}         (Open store in browser)"
   echo -e "- ${BLUE}auth${RESET}         (Copy the auth.json from root)"
   echo -e "- ${BLUE}config${RESET}       (Set configs for dev env)"
+  echo -e "- ${BLUE}devclean${RESET}     (Run cache-clean.js from mageTV)"
   echo -e "- ${BLUE}purge${RESET}        (Purge all static assets)"
   echo -e "- ${BLUE}new admin${RESET}    (Create new admin user)"
   echo -e "- ${BLUE}new customer${RESET} (Create new customer)"
@@ -217,6 +218,21 @@ case "${@}" in
   $MAGENTO_CLI config:set admin/security/session_lifetime 86400
   echo "Setting admin password lifetime ∞"
   $MAGENTO_CLI config:set admin/security/password_lifetime ""
+  ;;
+
+"devclean")
+  CACHE_CLI="echo 'cache-clean not installed (https://github.com/mage2tv/magento-cache-clean)'"
+  if command -v vendor/bin/cache-clean.js &> /dev/null; then
+    CACHE_CLI="vendor/bin/cache-clean.js --watch"
+  elif command -v cache-clean.js &> /dev/null; then
+    CACHE_CLI="cache-clean.js --watch"
+  fi
+
+  if [[ $WARDEN == 1 ]]; then
+    warden env exec -T php-fpm $CACHE_CLI
+  else
+    $CACHE_CLI
+  fi
   ;;
 
 "purge"*)
