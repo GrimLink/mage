@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.10.0] - 2022-06-27
 ### Added
 - Support for cache-clean from [mageTV](https://github.com/mage2tv/magento-cache-clean),
   thx @Vinai for this awesome tool!
