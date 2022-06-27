@@ -42,14 +42,16 @@ elif command -v n98-magerun2 &>/dev/null; then
   MAGERUN_CLI="n98-magerun2"
 fi
 
-if [[ $(valet -V | cut -f1 -d '.') == "Laravel Valet 3" ]]; then
-  MAGENTO_CLI="valet php bin/magento"
-  COMPOSER_CLI="valet php $(which composer)"
+if command -v valet &> /dev/null; then
+  if [[ $(valet -V | cut -f1 -d '.') == "Laravel Valet 3" ]]; then
+    MAGENTO_CLI="valet php bin/magento"
+    COMPOSER_CLI="valet php $(which composer)"
 
-  if command -v magerun2 &>/dev/null; then
-    MAGERUN_CLI="valet php $(which magerun2)"
-  elif command -v n98-magerun2 &>/dev/null; then
-    MAGERUN_CLI="valet php $(which n98-magerun2)"
+    if command -v magerun2 &>/dev/null; then
+      MAGERUN_CLI="valet php $(which magerun2)"
+    elif command -v n98-magerun2 &>/dev/null; then
+      MAGERUN_CLI="valet php $(which n98-magerun2)"
+    fi
   fi
 fi
 
