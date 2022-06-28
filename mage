@@ -16,7 +16,7 @@ RED='\033[0;31m'
 GREEN='\033[1;32m'
 BLUE='\033[1;34m'
 
-VERSION="1.10.0"
+VERSION="1.10.1"
 GITNAME="$(git config --global --get user.name | head -n1 | cut -d " " -f1)"
 GITEMAIL="$(git config --global --get user.email)"
 ADMINNAME="admin_$(echo "$GITNAME" | tr '[:upper:]' '[:lower:]')"
@@ -221,7 +221,7 @@ case "${@}" in
   ;;
 
 "devclean")
-  CACHE_CLI="echo 'cache-clean not installed (https://github.com/mage2tv/magento-cache-clean)'"
+  CACHE_CLI="echo cache-clean not installed (https://github.com/mage2tv/magento-cache-clean)"
   if command -v vendor/bin/cache-clean.js &> /dev/null; then
     CACHE_CLI="vendor/bin/cache-clean.js --watch"
   elif command -v cache-clean.js &> /dev/null; then
@@ -229,7 +229,8 @@ case "${@}" in
   fi
 
   if [[ $WARDEN == 1 ]]; then
-    warden env exec -T php-fpm $CACHE_CLI
+    echo "This is Warden env, skipping cache-clean" &&
+    echo "Please run it your self, using mageTV cache-clean.js inside the warden env"
   else
     $CACHE_CLI
   fi
