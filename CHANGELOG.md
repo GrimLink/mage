@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.10.2] - 2022-07-11
+### Fixed
+- conflicting commands for composer and magento, both starting with `i`
+
 ## [1.10.1] - 2022-06-28
 ### Fixed
 - Warden env version for devclean, this not working, so we echo a hint instead
