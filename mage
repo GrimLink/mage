@@ -394,7 +394,7 @@ case "${@}" in
   $COMPOSER_CLI require $OPTION
   ;;
 
-"install "* | "i "*)
+"install"* | "i"*)
   if [[ -n ${@:2} ]]; then
     $COMPOSER_CLI require ${@:2}
   else 
@@ -402,7 +402,7 @@ case "${@}" in
   fi
   ;;
 
-"remove "* | "rm "*)
+"remove"* | "rm"*)
   if [[ -n ${@:2} ]]; then
     $COMPOSER_CLI remove ${@:2}
   else 
