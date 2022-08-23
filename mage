@@ -394,19 +394,23 @@ case "${@}" in
   $COMPOSER_CLI require $OPTION
   ;;
 
-"install"* | "i"*)
+"install "* | "i "*)
   if [[ -n ${@:2} ]]; then
     $COMPOSER_CLI require ${@:2}
   else 
-    $COMPOSER_CLI install
+    echo "No packages where specified!"
   fi
   ;;
 
-"remove"* | "rm"*)
+"install" | "i")
+  $COMPOSER_CLI install
+  ;;
+
+"remove "* | "rm "*)
   if [[ -n ${@:2} ]]; then
     $COMPOSER_CLI remove ${@:2}
   else 
-    echo "No packages where given, next time you can also type 'mage rm {{OPTION}}'"
+    echo "No packages where specified!"
   fi
   ;;
 
