@@ -367,7 +367,7 @@ case "${@}" in
   echo "And disable the captcha since Hyva does not support the Magento 2 old and default captcha"
   echo "$ mage config:set customer/captcha/enable 0"
   echo ""
-  echo "For more see the docs -> https://docs.hyva.io/hyva-themes/getting-started/"
+  echo "For more see the docs -> https://docs.hyva.io/hyva-themes/getting-started/ "
   ;;
 
 "add"*)
