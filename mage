@@ -180,7 +180,7 @@ case "${@}" in
   # Fetch the url for the storeview
   if [[ -n "$MAGERUN_CLI" ]]; then
     if [[ "$STORE" == "admin" ]]; then
-      STORE_URL=$($MAGERUN_CLI sys:store:config:base-url:list --format csv | grep default | cut -d ',' -f3)
+      STORE_URL=$($MAGERUN_CLI sys:store:config:base-url:list --format csv | grep 1 | cut -d ',' -f3)
       URL=${STORE_URL}${ADMIN_PATH}
     else
       STORE_URL=$($MAGERUN_CLI sys:store:config:base-url:list --format csv | grep $STORE | cut -d ',' -f3)
