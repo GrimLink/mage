@@ -222,8 +222,10 @@ case "${@}" in
   ;;
 
 "devmode")
-  $MAGENTO_CLI deploy:mode:set developer
+  mage config
   $MAGENTO_CLI config:set dev/static/sign 0
+  $MAGENTO_CLI security:recaptcha:disable-for-user-login
+  $MAGENTO_CLI security:recaptcha:disable-for-user-forgot-password
   $MAGENTO_CLI module:disable Magento_TwoFactorAuth
   $MAGENTO_CLI cron:remove
   $MAGENTO_CLI cache:disable layout block_html full_page
