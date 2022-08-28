@@ -222,7 +222,7 @@ case "${@}" in
   ;;
 
 "devmode")
-  $MAGENTO_CLI d:m:se developer
+  $MAGENTO_CLI deploy:mode:set developer
   $MAGENTO_CLI config:set dev/static/sign 0
   $MAGENTO_CLI module:disable Magento_TwoFactorAuth
   $MAGENTO_CLI cron:remove
