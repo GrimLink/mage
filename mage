@@ -92,6 +92,16 @@ function helpMessage() {
   echo -e "${ITALIC}To see those cmd's just run ${BLUE}mage${RESET}"
 }
 
+# Vanila solution to get the Magento 2 base url
+function getMageBaseUri() {
+  BASEURI="$($MAGENTO_CLI config:show web/secure/base_url)"
+  if [[ -z "${BASEURI}" ]]; then
+    BASEURI="$($MAGENTO_CLI config:show web/unsecure/base_url)"
+  fi
+
+  echo $BASEURI
+}
+
 function newMagentoMod() {
   SKIP="false"
   CREATE_SRC="app/code"
@@ -145,7 +155,7 @@ case "${@}" in
 
 "info")
   $MAGENTO_CLI --version
-  echo -e "Base URI: $($MAGENTO_CLI config:show web/secure/base_url)"
+  echo -e "Base URI: $(getMageBaseUri)"
   echo -e "Admin URI: $(grep frontName app/etc/env.php | tail -1 | cut -d ">" -f2 | cut -d "'" -f2)"
   echo -e "Database: $(grep dbname app/etc/env.php | tail -1 | cut -d ">" -f2 | cut -d "'" -f2)"
   $MAGENTO_CLI maintenance:status
@@ -161,43 +171,31 @@ case "${@}" in
   ;;
 
 "open"*)
-  STORE=${2:-default}
-  HTTP="unsecure"
-  URL=""
+  STORE=${2:-1}
+  STORE_URL=""
+  ADMIN_PATH=""
 
   # Prefetch admin URL data for open steps
   if [[ "$STORE" == "admin" ]]; then
     ADMIN_PATH=$(grep frontName app/etc/env.php | tail -1 | cut -d '>' -f2 | cut -d '"' -f2 | cut -d "'" -f2)
   fi
 
-  # If Magerun does not exist, then make sure if the path is secure or not
-  if [[ ! -n "$MAGERUN_CLI" ]]; then
-    if [[ "$($MAGENTO_CLI config:show web/secure/use_in_frontend)" == "1" ]]; then
-      HTTP="secure"
-    fi
-  fi
-
-  # Fetch the url for the storeview
+  # Fetch the store url
   if [[ -n "$MAGERUN_CLI" ]]; then
     if [[ "$STORE" == "admin" ]]; then
       STORE_URL=$($MAGERUN_CLI sys:store:config:base-url:list --format csv | grep 1 | cut -d ',' -f3)
-      URL=${STORE_URL}${ADMIN_PATH}
     else
       STORE_URL=$($MAGERUN_CLI sys:store:config:base-url:list --format csv | grep $STORE | cut -d ',' -f3)
-      URL=${STORE_URL}
     fi
-  elif [[ "$STORE" == "admin" ]]; then
-    URL=$($MAGENTO_CLI config:show web/${HTTP}/base_url)${ADMIN_PATH}
   else
-    URL=$($MAGENTO_CLI config:show web/${HTTP}/base_url)
+    STORE_URL=$(getMageBaseUri)
   fi
 
-  if [[ -z "$URL" ]]; then
+  if [[ -z "$STORE_URL" ]]; then
     echo "Could not find url for store $STORE"
   else
-    echo "Opening.."
-    echo $URL
-    $OPEN_CLI $URL
+    echo -e "Opening: ${STORE_URL}${ADMIN_PATH}"
+    $OPEN_CLI ${STORE_URL}${ADMIN_PATH}
   fi
   ;;
 
@@ -223,7 +221,7 @@ case "${@}" in
   ;;
 
 "devclean")
-  CACHE_CLI="echo cache-clean not installed (https://github.com/mage2tv/magento-cache-clean)"
+  CACHE_CLI="echo cache-clean not installed ( https://github.com/mage2tv/magento-cache-clean )"
   if command -v vendor/bin/cache-clean.js &> /dev/null; then
     CACHE_CLI="vendor/bin/cache-clean.js --watch"
   elif command -v cache-clean.js &> /dev/null; then
