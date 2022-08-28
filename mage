@@ -213,6 +213,7 @@ case "${@}" in
   ;;
 
 "config")
+  echo "Disabling frontend caches"
   $MAGENTO_CLI cache:disable layout block_html full_page
   echo "Setting session lifetime 86400"
   $MAGENTO_CLI config:set admin/security/session_lifetime 86400
@@ -220,8 +221,16 @@ case "${@}" in
   $MAGENTO_CLI config:set admin/security/password_lifetime ""
   ;;
 
+"devmode")
+  $MAGENTO_CLI d:m:se developer
+  $MAGENTO_CLI config:set dev/static/sign 0
+  $MAGENTO_CLI module:disable Magento_TwoFactorAuth
+  $MAGENTO_CLI cron:remove
+  $MAGENTO_CLI cache:disable layout block_html full_page
+  ;;
+
 "devclean")
-  CACHE_CLI="echo cache-clean not installed (https://github.com/mage2tv/magento-cache-clean)"
+  CACHE_CLI="echo cache-clean not installed ( https://github.com/mage2tv/magento-cache-clean ) `composer global require mage2tv/magento-cache-clean`"
   if command -v vendor/bin/cache-clean.js &> /dev/null; then
     CACHE_CLI="vendor/bin/cache-clean.js --watch"
   elif command -v cache-clean.js &> /dev/null; then
@@ -367,7 +376,7 @@ case "${@}" in
   echo "And disable the captcha since Hyva does not support the Magento 2 old and default captcha"
   echo "$ mage config:set customer/captcha/enable 0"
   echo ""
-  echo "For more see the docs -> https://docs.hyva.io/hyva-themes/getting-started/"
+  echo "For more see the docs -> https://docs.hyva.io/hyva-themes/getting-started/ "
   ;;
 
 "add"*)
