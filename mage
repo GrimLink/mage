@@ -36,6 +36,8 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
   GET_CLI="curl -O"
 fi
 
+# Magerun
+NO_MAGERUN_MSG="Magerun2 is not installed"
 if command -v magerun2 &>/dev/null; then
   MAGERUN_CLI="magerun2"
 elif command -v n98-magerun2 &>/dev/null; then
@@ -154,7 +156,7 @@ case "${@}" in
   if [[ -n "$MAGERUN_CLI" ]]; then
     $MAGERUN_CLI sys:store:config:base-url:list --format txt
   else
-    echo "Magerun2 is not installed"
+    echo $NO_MAGERUN_MSG
   fi
   ;;
 
@@ -295,7 +297,7 @@ case "${@}" in
   if [[ -n "$MAGERUN_CLI" ]]; then
     $MAGERUN_CLI customer:create
   else
-    echo "Magerun2 is not installed"
+    echo $NO_MAGERUN_MSG
   fi
   ;;
 
@@ -418,7 +420,7 @@ case "${@}" in
   if [[ -n "$MAGERUN_CLI" ]]; then
     $MAGERUN_CLI ${@:2}
   else
-    echo "Magerun2 is not installed"
+    echo $NO_MAGERUN_MSG
   fi
   ;;
 
