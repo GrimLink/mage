@@ -36,25 +36,27 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
   GET_CLI="curl -O"
 fi
 
+# Magerun
+NO_MAGERUN_MSG="Magerun2 is not installed"
 if command -v magerun2 &>/dev/null; then
   MAGERUN_CLI="magerun2"
 elif command -v n98-magerun2 &>/dev/null; then
   MAGERUN_CLI="n98-magerun2"
 fi
 
-if command -v valet &> /dev/null; then
-  if [[ $(valet -V | cut -f1 -d '.') == "Laravel Valet 3" ]]; then
-    MAGENTO_CLI="valet php bin/magento"
-    COMPOSER_CLI="valet php $(which composer)"
+# Laravel Valet v3 scoped PHP support
+if [[ $(valet -V | cut -f1 -d '.') == "Laravel Valet 3" ]]; then
+  MAGENTO_CLI="valet php bin/magento"
+  COMPOSER_CLI="valet php $(which composer)"
 
-    if command -v magerun2 &>/dev/null; then
-      MAGERUN_CLI="valet php $(which magerun2)"
-    elif command -v n98-magerun2 &>/dev/null; then
-      MAGERUN_CLI="valet php $(which n98-magerun2)"
-    fi
+  if command -v magerun2 &>/dev/null; then
+    MAGERUN_CLI="valet php $(which magerun2)"
+  elif command -v n98-magerun2 &>/dev/null; then
+    MAGERUN_CLI="valet php $(which n98-magerun2)"
   fi
 fi
 
+# Warden Support
 if [ -f .env ] && grep --silent 'WARDEN_ENV_NAME' .env; then
   WARDEN=1
   MAGENTO_CLI="warden env exec php-fpm bin/magento"
@@ -88,6 +90,16 @@ function helpMessage() {
   echo -e "- ${BLUE}run${RESET}          (Run magerun2)"
   echo -e "\n${ITALIC}Anything else will run ${BLUE}bin/magento${RESET}"
   echo -e "${ITALIC}To see those cmd's just run ${BLUE}mage${RESET}"
+}
+
+# Vanila solution to get the Magento 2 base url
+function getMageBaseUri() {
+  BASEURI="$($MAGENTO_CLI config:show web/secure/base_url)"
+  if [[ -z "${BASEURI}" ]]; then
+    BASEURI="$($MAGENTO_CLI config:show web/unsecure/base_url)"
+  fi
+
+  echo $BASEURI
 }
 
 function newMagentoMod() {
@@ -143,7 +155,7 @@ case "${@}" in
 
 "info")
   $MAGENTO_CLI --version
-  echo -e "Base URI: $($MAGENTO_CLI config:show web/secure/base_url)"
+  echo -e "Base URI: $(getMageBaseUri)"
   echo -e "Admin URI: $(grep frontName app/etc/env.php | tail -1 | cut -d ">" -f2 | cut -d "'" -f2)"
   echo -e "Database: $(grep dbname app/etc/env.php | tail -1 | cut -d ">" -f2 | cut -d "'" -f2)"
   $MAGENTO_CLI maintenance:status
@@ -154,48 +166,36 @@ case "${@}" in
   if [[ -n "$MAGERUN_CLI" ]]; then
     $MAGERUN_CLI sys:store:config:base-url:list --format txt
   else
-    echo "Magerun2 is not installed"
+    echo $NO_MAGERUN_MSG
   fi
   ;;
 
 "open"*)
-  STORE=${2:-default}
-  HTTP="unsecure"
-  URL=""
+  STORE=${2:-1}
+  STORE_URL=""
+  ADMIN_PATH=""
 
   # Prefetch admin URL data for open steps
   if [[ "$STORE" == "admin" ]]; then
     ADMIN_PATH=$(grep frontName app/etc/env.php | tail -1 | cut -d '>' -f2 | cut -d '"' -f2 | cut -d "'" -f2)
   fi
 
-  # If Magerun does not exist, then make sure if the path is secure or not
-  if [[ ! -n "$MAGERUN_CLI" ]]; then
-    if [[ "$($MAGENTO_CLI config:show web/secure/use_in_frontend)" == "1" ]]; then
-      HTTP="secure"
-    fi
-  fi
-
-  # Fetch the url for the storeview
+  # Fetch the store url
   if [[ -n "$MAGERUN_CLI" ]]; then
     if [[ "$STORE" == "admin" ]]; then
-      STORE_URL=$($MAGERUN_CLI sys:store:config:base-url:list --format csv | grep default | cut -d ',' -f3)
-      URL=${STORE_URL}${ADMIN_PATH}
+      STORE_URL=$($MAGERUN_CLI sys:store:config:base-url:list --format csv | grep 1 | cut -d ',' -f3)
     else
       STORE_URL=$($MAGERUN_CLI sys:store:config:base-url:list --format csv | grep $STORE | cut -d ',' -f3)
-      URL=${STORE_URL}
     fi
-  elif [[ "$STORE" == "admin" ]]; then
-    URL=$($MAGENTO_CLI config:show web/${HTTP}/base_url)${ADMIN_PATH}
   else
-    URL=$($MAGENTO_CLI config:show web/${HTTP}/base_url)
+    STORE_URL=$(getMageBaseUri)
   fi
 
-  if [[ -z "$URL" ]]; then
+  if [[ -z "$STORE_URL" ]]; then
     echo "Could not find url for store $STORE"
   else
-    echo "Opening.."
-    echo $URL
-    $OPEN_CLI $URL
+    echo -e "Opening: ${STORE_URL}${ADMIN_PATH}"
+    $OPEN_CLI ${STORE_URL}${ADMIN_PATH}
   fi
   ;;
 
@@ -259,11 +259,11 @@ case "${@}" in
 
   for i in "${CLEANTASKS[@]}"; do
     if [[ $WARDEN == 1 ]]; then
-        # Run removal within environment, so that changes are in effect immediately.
-        # Changes will get synced back to host on MacOS.
-        warden env exec -T php-fpm rm -rf ${i} &
+      # Run removal within environment, so that changes are in effect immediately.
+      # Changes will get synced back to host on MacOS.
+      warden env exec -T php-fpm rm -rf ${i} &
     else
-        rm -rf ${i} &
+      rm -rf ${i} &
     fi
     echo -e " [${GREEN}✓${RESET}] ${i}"
   done
@@ -306,7 +306,7 @@ case "${@}" in
   if [[ -n "$MAGERUN_CLI" ]]; then
     $MAGERUN_CLI customer:create
   else
-    echo "Magerun2 is not installed"
+    echo $NO_MAGERUN_MSG
   fi
   ;;
 
@@ -319,9 +319,7 @@ case "${@}" in
   ;;
 
 "new"*)
-  echo ""
-  echo -e "${RED}No ${BOLD}new${RESET}${RED} option given!${RESET}"
-  helpMessage
+  echo -e "\n${RED}No ${BOLD}new${RESET}${RED} option given!${RESET}" && helpMessage
   ;;
 
 "add sample")
@@ -382,9 +380,7 @@ case "${@}" in
   ;;
 
 "add"*)
-  echo ""
-  echo -e "${RED}No ${BOLD}add${RESET}${RED} option given!${RESET}"
-  helpMessage
+  echo -e "\n${RED}No ${BOLD}add${RESET}${RED} option given!${RESET}" && helpMessage
   ;;
 
 "replace")
@@ -420,7 +416,7 @@ case "${@}" in
 "remove "* | "rm "*)
   if [[ -n ${@:2} ]]; then
     $COMPOSER_CLI remove ${@:2}
-  else 
+  else
     echo "No packages where specified!"
   fi
   ;;
@@ -429,7 +425,7 @@ case "${@}" in
   if [[ -n "$MAGERUN_CLI" ]]; then
     $MAGERUN_CLI ${@:2}
   else
-    echo "Magerun2 is not installed"
+    echo $NO_MAGERUN_MSG
   fi
   ;;
 
