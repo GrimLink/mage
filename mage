@@ -248,11 +248,11 @@ case "${@}" in
 
   for i in "${CLEANTASKS[@]}"; do
     if [[ $WARDEN == 1 ]]; then
-        # Run removal within environment, so that changes are in effect immediately.
-        # Changes will get synced back to host on MacOS.
-        warden env exec -T php-fpm rm -rf ${i} &
+      # Run removal within environment, so that changes are in effect immediately.
+      # Changes will get synced back to host on MacOS.
+      warden env exec -T php-fpm rm -rf ${i} &
     else
-        rm -rf ${i} &
+      rm -rf ${i} &
     fi
     echo -e " [${GREEN}✓${RESET}] ${i}"
   done
