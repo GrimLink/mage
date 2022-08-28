@@ -44,19 +44,19 @@ elif command -v n98-magerun2 &>/dev/null; then
   MAGERUN_CLI="n98-magerun2"
 fi
 
-if command -v valet &> /dev/null; then
-  if [[ $(valet -V | cut -f1 -d '.') == "Laravel Valet 3" ]]; then
-    MAGENTO_CLI="valet php bin/magento"
-    COMPOSER_CLI="valet php $(which composer)"
+# Laravel Valet v3 scoped PHP support
+if [[ $(valet -V | cut -f1 -d '.') == "Laravel Valet 3" ]]; then
+  MAGENTO_CLI="valet php bin/magento"
+  COMPOSER_CLI="valet php $(which composer)"
 
-    if command -v magerun2 &>/dev/null; then
-      MAGERUN_CLI="valet php $(which magerun2)"
-    elif command -v n98-magerun2 &>/dev/null; then
-      MAGERUN_CLI="valet php $(which n98-magerun2)"
-    fi
+  if command -v magerun2 &>/dev/null; then
+    MAGERUN_CLI="valet php $(which magerun2)"
+  elif command -v n98-magerun2 &>/dev/null; then
+    MAGERUN_CLI="valet php $(which n98-magerun2)"
   fi
 fi
 
+# Warden Support
 if [ -f .env ] && grep --silent 'WARDEN_ENV_NAME' .env; then
   WARDEN=1
   MAGENTO_CLI="warden env exec php-fpm bin/magento"
@@ -310,9 +310,7 @@ case "${@}" in
   ;;
 
 "new"*)
-  echo ""
-  echo -e "${RED}No ${BOLD}new${RESET}${RED} option given!${RESET}"
-  helpMessage
+  echo -e "\n${RED}No ${BOLD}new${RESET}${RED} option given!${RESET}" && helpMessage
   ;;
 
 "add sample")
@@ -373,9 +371,7 @@ case "${@}" in
   ;;
 
 "add"*)
-  echo ""
-  echo -e "${RED}No ${BOLD}add${RESET}${RED} option given!${RESET}"
-  helpMessage
+  echo -e "\n${RED}No ${BOLD}add${RESET}${RED} option given!${RESET}" && helpMessage
   ;;
 
 "replace")
@@ -411,7 +407,7 @@ case "${@}" in
 "remove "* | "rm "*)
   if [[ -n ${@:2} ]]; then
     $COMPOSER_CLI remove ${@:2}
-  else 
+  else
     echo "No packages where specified!"
   fi
   ;;
