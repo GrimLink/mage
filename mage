@@ -16,7 +16,7 @@ RED='\033[0;31m'
 GREEN='\033[1;32m'
 BLUE='\033[1;34m'
 
-VERSION="1.11.0"
+VERSION="1.11.1"
 GITNAME="$(git config --global --get user.name | head -n1 | cut -d " " -f1)"
 GITEMAIL="$(git config --global --get user.email)"
 ADMINNAME="admin_$(echo "$GITNAME" | tr '[:upper:]' '[:lower:]')"
@@ -45,14 +45,16 @@ elif command -v n98-magerun2 &>/dev/null; then
 fi
 
 # Laravel Valet v3 scoped PHP support
-if [[ $(valet -V | cut -f1 -d '.') == "Laravel Valet 3" ]]; then
-  MAGENTO_CLI="valet php bin/magento"
-  COMPOSER_CLI="valet php $(which composer)"
+if command -v valet &> /dev/null; then
+  if [[ $(valet -V | cut -f1 -d '.') == "Laravel Valet 3" ]]; then
+    MAGENTO_CLI="valet php bin/magento"
+    COMPOSER_CLI="valet php $(which composer)"
 
-  if command -v magerun2 &>/dev/null; then
-    MAGERUN_CLI="valet php $(which magerun2)"
-  elif command -v n98-magerun2 &>/dev/null; then
-    MAGERUN_CLI="valet php $(which n98-magerun2)"
+    if command -v magerun2 &>/dev/null; then
+      MAGERUN_CLI="valet php $(which magerun2)"
+    elif command -v n98-magerun2 &>/dev/null; then
+      MAGERUN_CLI="valet php $(which n98-magerun2)"
+    fi
   fi
 fi
 
