@@ -5,6 +5,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Changed
+- Renamed option `help` to `--help` or `-h`
+- Add 2 new options to `mage config` using flags,
+  `mage config` will act the same if it has not option set,
+  See the docs for whats new or use `mage [--help/-h]`
+
 
 ## [1.10.2] - 2022-07-11
 ### Fixed
