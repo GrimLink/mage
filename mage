@@ -147,7 +147,7 @@ function newMagentoMod() {
 }
 
 case "${@}" in
-"help")
+"--help" | "-h")
   helpMessage
   ;;
 

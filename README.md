@@ -64,6 +64,7 @@ curl -O https://raw.githubusercontent.com/GrimLink/mage/main/mage && chmod +x ma
 | install \| i     | Run composer install or require                                           |
 | remove \| rm     | Run composer remove                                                       |
 | run              | Run magerun2 _\*1_                                                        |
+| --help / -h      | Show all options                                                            |
 
 Any other command will run the same as `bin/magento`
 
