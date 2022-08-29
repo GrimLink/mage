@@ -36,34 +36,34 @@ curl -O https://raw.githubusercontent.com/GrimLink/mage/main/mage && chmod +x ma
 
 ## Commands
 
-| CMD              | Description                                                                 |
-| ---------------- | --------------------------------------------------------------------------- |
-| --help / -h      | Show all options                                                            |
-| self-update      | Update mage                                                                 |
-| info             | Show minimal store info (e.g. version and uri)                              |
-| stores           | Show all stores _\*1_                                                       |
-| open             | Open the default store, in the browser                                      |
-| open admin       | Open store admin, in the browser                                            |
-| open _STOREVIEW_ | Open specific storeview, in the browser _\*1_                               |
-| auth             | Copy the auth.json from root                                                |
-| config           | Set configs for dev env                                                     |
-|                  | [`--cache`/`-c`] Disable any frontend caches                                |
-|                  | [`--admin-session`/`-a`] Set admin session to a day and no password updates |
-|                  | [`--disable-security`/`-s`] Disable any captcha and 2fa options             |
-|                  | [`--dev-mode`/`-d`] Set all settings for local development                  |
-| devclean         | Run cache-clean.js from mageTV                                              |
-| purge            | Purge all static assets                                                     |
-|                  | [`--redis`/`-r`] Also flush the redis cache                                 |
-| new admin        | Create new admin user _\*2_                                                 |
-| new customer     | Create new customer _\*1_                                                   |
-| new theme        | Create new theme in app _\*2_                                               |
-| new module       | Create new module in app                                                    |
-| add sample       | Add sample data                                                             |
-| add hyva         | Add Hyva theme                                                              |
-| replace          | Removal of (optional) core modules)                                         |
-| install \| i     | Run composer install or require                                             |
-| remove \| rm     | Run composer remove                                                         |
-| run              | Run magerun2 _\*1_                                                          |
+| CMD               | Description                                                                 |
+| ----------------- | --------------------------------------------------------------------------- |
+| --help / -h       | Show all options                                                            |
+| self-update       | Update mage                                                                 |
+| info              | Show minimal store info (e.g. version and uri)                              |
+| stores            | Show all stores _\*1_                                                       |
+| open              | Open the default store, in the browser                                      |
+| open admin        | Open store admin, in the browser                                            |
+| open _STOREVIEW_  | Open specific storeview, in the browser _\*1_                               |
+| auth              | Copy the auth.json from root                                                |
+| config            | Set configs for dev env                                                     |
+|                   | [`--cache`/`-c`] Disable any frontend caches                                |
+|                   | [`--admin-session`/`-a`] Set admin session to a day and no password updates |
+|                   | [`--disable-security`/`-s`] Disable any captcha and 2fa options             |
+|                   | [`--dev-mode`/`-d`] Set all settings for local development                  |
+| watch \| devclean | Run cache-clean.js from mageTV                                              |
+| purge             | Purge all static assets                                                     |
+|                   | [`--redis`/`-r`] Also flush the redis cache                                 |
+| new admin         | Create new admin user _\*2_                                                 |
+| new customer      | Create new customer _\*1_                                                   |
+| new theme         | Create new theme in app _\*2_                                               |
+| new module        | Create new module in app                                                    |
+| add sample        | Add sample data                                                             |
+| add hyva          | Add Hyva theme                                                              |
+| replace           | Removal of (optional) core modules)                                         |
+| install \| i      | Run composer install or require                                             |
+| remove \| rm      | Run composer remove                                                         |
+| run               | Run magerun2 _\*1_                                                          |
 
 Any other command will run the same as `bin/magento`
 
