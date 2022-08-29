@@ -76,8 +76,13 @@ function helpMessage() {
   echo -e "- ${BLUE}open${RESET}         (Open store in browser)"
   echo -e "- ${BLUE}auth${RESET}         (Copy the auth.json from root)"
   echo -e "- ${BLUE}config${RESET}       (Set configs for dev env)"
+  echo -e "  - [--cache/-c] Disable any frontend caches"
+  echo -e "  - [--admin-session/-a] Set admin session to day and no password updates"
+  echo -e "  - [--disable-security/-s] Disable any captcha and 2fa options"
+  echo -e "  - [--dev-mode/-d] Set all settings for local development"
   echo -e "- ${BLUE}devclean${RESET}     (Run cache-clean.js from mageTV)"
   echo -e "- ${BLUE}purge${RESET}        (Purge all static assets)"
+  echo -e "  - [--redis/-r] Also flush the redis cache"
   echo -e "- ${BLUE}new admin${RESET}    (Create new admin user)"
   echo -e "- ${BLUE}new customer${RESET} (Create new customer)"
   echo -e "- ${BLUE}new theme${RESET}    (Create new theme in app)"
@@ -219,10 +224,19 @@ case "${@}" in
   CONFIG_RUN_DEV_MODE="false"
   FLAGS="${@:2}"
 
-  if [[ "$FLAGS" =~ ^"-"([^ ]*)"c".* ]]; then CONFIG_RUN_CACHE="true"; fi
-  if [[ "$FLAGS" =~ ^"-"([^ ]*)"a".* ]]; then CONFIG_RUN_ADMIN_SESSION="true"; fi
-  if [[ "$FLAGS" =~ ^"-"([^ ]*)"s".* ]]; then CONFIG_RUN_DISABLE_SECURITY="true"; fi
-  if [[ "$FLAGS" =~ ^"-"([^ ]*)"d".* ]]; then CONFIG_RUN_DEV_MODE="true"; fi
+  if [[ "$FLAGS" == *"--cache"* | "$FLAGS" =~ ^"-"([^ ]*)"c".* ]]; then
+    CONFIG_RUN_CACHE="true"
+  fi
+  if [[ "$FLAGS" == *"--admin-session"* | "$FLAGS" =~ ^"-"([^ ]*)"a".* ]]; then
+    CONFIG_RUN_ADMIN_SESSION="true"
+  fi
+  if [[ "$FLAGS" == *"--disable-security"* | "$FLAGS" =~ ^"-"([^ ]*)"s".* ]]; then
+    CONFIG_RUN_DISABLE_SECURITY="true"
+  fi
+  if [[ "$FLAGS" == *"--dev-mode"* | "$FLAGS" =~ ^"-"([^ ]*)"d".* ]]; then
+    CONFIG_RUN_DEV_MODE="true"
+  fi
+
   if [[ -z "$FLAGS" ]]; then
     CONFIG_RUN_CACHE="true";
     CONFIG_RUN_ADMIN_SESSION="true"
