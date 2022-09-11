@@ -19,7 +19,8 @@ BLUE='\033[1;34m'
 VERSION="1.11.1"
 GITNAME="$(git config --global --get user.name | head -n1 | cut -d " " -f1)"
 GITEMAIL="$(git config --global --get user.email)"
-ADMINNAME="admin_$(echo "$GITNAME" | tr '[:upper:]' '[:lower:]')"
+ADMINNAME="$(echo "$GITNAME" | tr '[:upper:]' '[:lower:]')"
+ADMINPASS="admin123$"
 SKIP="false"
 
 WARDEN=0
@@ -330,14 +331,14 @@ case "${@}" in
     read -p "Firstname (${GITNAME}) or: " USERFIRST
     read -p "Lastname (admin) or: " USERLAST
     read -p "User name (${ADMINNAME}) or: " USERNAME
-    read -sp "Password (admin123) or: " USERPASS
+    read -sp "Password (${ADMINPASS}) or: " USERPASS
   fi
 
   if [[ -z "$USEREMAIL" ]]; then USEREMAIL="$GITEMAIL"; fi
   if [[ -z "$USERFIRST" ]]; then USERFIRST="$GITNAME"; fi
   if [[ -z "$USERLAST" ]]; then USERLAST="admin"; fi
   if [[ -z "$USERNAME" ]]; then USERNAME="${ADMINNAME}"; fi
-  if [[ -z "$USERPASS" ]]; then USERPASS="admin123"; fi
+  if [[ -z "$USERPASS" ]]; then USERPASS="${ADMINPASS}"; fi
 
   $MAGENTO_CLI admin:user:create --admin-user="${USERNAME}" \
     --admin-password="${USERPASS}" --admin-email="${USEREMAIL}" \
