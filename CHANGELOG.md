@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- Watch for Warden
+
 ## [1.11.1] - 2022-08-29
 ### Fixed
 - Revert of removal of extra if, for valet in cleanup commit, this trows warning in none valet env's

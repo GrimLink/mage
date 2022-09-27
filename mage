@@ -283,8 +283,9 @@ case "${@}" in
   fi
 
   if [[ $WARDEN == 1 ]]; then
-    echo "This is Warden env, skipping cache-clean" &&
-    echo "Please run it your self, using mageTV cache-clean.js inside the warden env"
+    # NOTE: we need to sadly hard code the path,
+    # but lukcy we can since the warden container is always the same
+    warden env exec php-fpm /home/www-data/.composer/vendor/bin/cache-clean.js -w
   else
     $CACHE_CLI
   fi
