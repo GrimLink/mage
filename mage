@@ -410,15 +410,11 @@ case "${@}" in
     $COMPOSER_CLI require hyva-themes/magento2-default-theme --prefer-source
   fi
 
+  $MAGENTO_CLI config:set customer/captcha/enable 0
   $MAGENTO_CLI s:up
 
   echo "Done!"
   echo "Navigate to the Content > Design > Configuration admin section to activate the theme"
-  echo "Disbale the following modules:"
-  echo " - (Magento 2.4.0 - 2.4.2) Dotdigitalgroup_Email Dotdigitalgroup_Chat Dotdigitalgroup_Sms"
-  echo " - (Magento 2.4.3) Dotdigitalgroup_Email Dotdigitalgroup_Chat Dotdigitalgroup_Sms Dotdigitalgroup_ChatGraphQl Dotdigitalgroup_EmailGraphQl"
-  echo "And disable the captcha since Hyva does not support the Magento 2 old and default captcha"
-  echo "$ mage config:set customer/captcha/enable 0"
   echo ""
   echo "For more see the docs -> https://docs.hyva.io/hyva-themes/getting-started/ "
   ;;
