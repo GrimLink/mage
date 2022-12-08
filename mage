@@ -92,7 +92,6 @@ function helpMessage() {
   echo -e "- ${BLUE}new module${RESET} (Create new module in app)"
   echo -e "- ${BLUE}add sample${RESET} (Add sample data)"
   echo -e "- ${BLUE}add hyva${RESET} (Add hyva theme)"
-  echo -e "- ${BLUE}replace${RESET} (Removal of (optional) core modules)"
   echo -e "- ${BLUE}install | i${RESET} (Run composer install or require)"
   echo -e "- ${BLUE}remove | rm${RESET} (Run composer remove)"
   echo -e "- ${BLUE}run${RESET} (Run magerun2)"
@@ -410,39 +409,17 @@ case "${@}" in
     $COMPOSER_CLI require hyva-themes/magento2-default-theme --prefer-source
   fi
 
+  $MAGENTO_CLI config:set customer/captcha/enable 0
   $MAGENTO_CLI s:up
 
   echo "Done!"
   echo "Navigate to the Content > Design > Configuration admin section to activate the theme"
-  echo "Disbale the following modules:"
-  echo " - (Magento 2.4.0 - 2.4.2) Dotdigitalgroup_Email Dotdigitalgroup_Chat Dotdigitalgroup_Sms"
-  echo " - (Magento 2.4.3) Dotdigitalgroup_Email Dotdigitalgroup_Chat Dotdigitalgroup_Sms Dotdigitalgroup_ChatGraphQl Dotdigitalgroup_EmailGraphQl"
-  echo "And disable the captcha since Hyva does not support the Magento 2 old and default captcha"
-  echo "$ mage config:set customer/captcha/enable 0"
   echo ""
   echo "For more see the docs -> https://docs.hyva.io/hyva-themes/getting-started/ "
   ;;
 
 "add"*)
   echo -e "\n${RED}No ${BOLD}add${RESET}${RED} option given!${RESET}" && helpMessage
-  ;;
-
-"replace")
-  if [[ ! -f composer.json ]]; then echo "This does not look like the Magento 2 root folder, aborting.." && exit 1; fi
-  read -p "What is your Magento sub version (sample: 4.1): " MVERSION && echo ""
-  if [[ -z "$MVERSION" ]]; then echo "The Magento 2 version is empty, aborting.." && exit 1; fi
-  if [[ -z $2 ]]; then
-    echo "No options where given, next time you can also type 'mage replace {{OPTION}}'"
-    read -p "What (Yireo) replace packages do you want to use (empty: bundled,content-staging,core,inventory): " OPTIONS && echo ""
-  else
-    OPTIONS="$2"
-  fi
-  if [[ -z "$OPTIONS" ]]; then OPTIONS="bundled,content-staging,core,inventory"; fi
-  OPTIONS_ARRAY=($(echo $OPTIONS | tr "," "\n"))
-  for i in "${OPTIONS_ARRAY[@]}"; do
-    OPTION="$OPTION yireo/magento2-replace-${i}:^${MVERSION}"
-  done
-  $COMPOSER_CLI require $OPTION
   ;;
 
 "install "* | "i "*)

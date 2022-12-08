@@ -60,7 +60,6 @@ curl -O https://raw.githubusercontent.com/GrimLink/mage/main/mage && chmod +x ma
 | new module        | Create new module in app                                                    |
 | add sample        | Add sample data                                                             |
 | add hyva          | Add Hyva theme                                                              |
-| replace           | Removal of (optional) core modules)                                         |
 | install \| i      | Run composer install or require                                             |
 | remove \| rm      | Run composer remove                                                         |
 | run               | Run magerun2 _\*1_                                                          |

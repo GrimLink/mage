@@ -6,8 +6,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Use disbale customer captcha for add hyva by default
+
 ### Fixed
 - Watch for Warden
+
+### Removed
+- Disbale hints for add hyva, < Magento 2.4.4
+- Replaced command
 
 ## [1.11.1] - 2022-08-29
 ### Fixed
