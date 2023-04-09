@@ -45,7 +45,6 @@ curl -O https://raw.githubusercontent.com/GrimLink/mage/main/mage && chmod +x ma
 | open              | Open the default store, in the browser                                      |
 | open admin        | Open store admin, in the browser                                            |
 | open _STOREVIEW_  | Open specific storeview, in the browser _\*1_                               |
-| auth              | Copy the auth.json from root                                                |
 | config            | Set configs for dev env                                                     |
 |                   | [`--cache`/`-c`] Disable any frontend caches                                |
 |                   | [`--admin-session`/`-a`] Set admin session to a day and no password updates |
