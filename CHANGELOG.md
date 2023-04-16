@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- compat-module-fallback support to `mage add hyva` development version
 ### Changed
 - Use disbale customer captcha for add hyva by default
 
