@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - aliases for composer install, update and remove, so they can be used with valet php version
 
 ### Changed
-- Use disbale customer captcha for add hyva by default
+- Use disable customer captcha for add hyva by default
 - simplify purge actions, for redis-cli under an if statement
 
 ### Fixed
