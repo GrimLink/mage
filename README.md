@@ -75,7 +75,6 @@ Any other command will run the same as `bin/magento`
 This scrips is tested in theses following platforms/environments,
 and works without any extra work.
 
-- OSX + ValetPlus
 - OSX + Laravel Valet
   - Also supports scoped php (`valet isolate`) in Laravel Valet 3
 - Most Linux platforms
