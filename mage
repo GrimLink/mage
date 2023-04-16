@@ -285,28 +285,28 @@ case "${@}" in
     'var/page_cache/*'
     'var/view_preprocessed/*'
   );
+  PURGE_CMD="rm -rf"
+
+  if [[ $WARDEN == 1 ]]; then
+    # Run removal within environment, so that changes are in effect immediately.
+    # Changes will get synced back to host on MacOS.
+    PURGE_CMD="warden env exec -T php-fpm rm -rf"
+  fi;
 
   for i in "${CLEANTASKS[@]}"; do
-    if [[ $WARDEN == 1 ]]; then
-      # Run removal within environment, so that changes are in effect immediately.
-      # Changes will get synced back to host on MacOS.
-      warden env exec -T php-fpm rm -rf ${i} &
-    else
-      rm -rf ${i} &
-    fi
+    $PURGE_CMD ${i} &
     echo -e " [${GREEN}✓${RESET}] ${i}"
   done
-  
-  if [[ "$2" == "--redis" ]] || [[ "$2" == "-r" ]]; then
+
+  if command -v $REDIS_CLI >/dev/null 2>&1; then
     $REDIS_CLI flushall > /dev/null 2>&1
     echo -e " [${GREEN}✓${RESET}] Redis caches flushed"
   fi
 
-  # if [[ "$2" == "--varnish" ]] || [[ "$2" == "-varn" ]]; then
-  #   $VARNISH_CLI  > /dev/null 2>&1
-  #   echo -e " [${GREEN}✓${RESET}] Varnish caches flushed"
-  # fi
-  
+  if command -v $VARNISH_CLI >/dev/null 2>&1; then
+    $VARNISH_CLI 'ban req.url ~ .' > /dev/null 2>&1
+    echo -e " [${GREEN}✓${RESET}] Varnish caches flushed"
+  fi
   ;;
 
 "new admin"*)
