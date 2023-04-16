@@ -403,6 +403,10 @@ case "${@}" in
   echo -e "\n${RED}No ${BOLD}add${RESET}${RED} option given!${RESET}" && helpMessage
   ;;
 
+"composer"*)
+  $COMPOSER_CLI ${@:2}
+  ;;
+
 "install "* | "i "*)
   if [[ -n ${@:2} ]]; then
     $COMPOSER_CLI require ${@:2}
@@ -413,6 +417,14 @@ case "${@}" in
 
 "install" | "i")
   $COMPOSER_CLI install
+  ;;
+
+"update "*)
+  if [[ -n ${@:2} ]]; then
+    $COMPOSER_CLI update ${@:2}
+  else
+    echo "No packages where specified!"
+  fi
   ;;
 
 "remove "* | "rm "*)
