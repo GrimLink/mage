@@ -43,6 +43,8 @@ fi
 NO_MAGERUN_MSG="Magerun2 is not installed"
 if command -v magerun2 &>/dev/null; then
   MAGERUN_CLI="magerun2"
+elif command -v n98-magerun2 &>/dev/null; then
+  MAGERUN_CLI="n98-magerun2"
 fi
 
 # Laravel Valet scoped PHP support
