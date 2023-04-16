@@ -18,7 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 - Disbale hints for add hyva, < Magento 2.4.4
-- Replaced command
+- `mage replaced` command
 
 ## [1.11.1] - 2022-08-29
 ### Fixed

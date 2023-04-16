@@ -64,33 +64,39 @@ if [ -f .env ] && grep --silent 'WARDEN_ENV_NAME' .env; then
 fi
 
 function helpMessage() {
-  echo ""
-  echo -e "${BOLD}Mage ${GREEN}${VERSION}${RESET}"
-  echo -e "${ITALIC}See https://github.com/GrimLink/mage for the last version${RESET}\n"
-  echo -e "${BOLD}CMD Options:${RESET}"
-  echo -e "- ${BLUE}info${RESET} (Show base config for store)"
-  echo -e "- ${BLUE}self-update${RESET} (Update mage)"
-  echo -e "- ${BLUE}stores${RESET} (Show all stores)"
-  echo -e "- ${BLUE}open${RESET} (Open store in browser)"
-  echo -e "- ${BLUE}config${RESET} (Set configs for dev env)"
-  echo -e "  - [${BLUE}--cache${RESET}/${BLUE}-c${RESET}] Disable any frontend caches"
-  echo -e "  - [${BLUE}--admin-session${RESET}/${BLUE}-a${RESET}] Set admin session to a day and no password updates"
-  echo -e "  - [${BLUE}--disable-security${RESET}/${BLUE}-s${RESET}] Disable any captcha and 2fa options"
-  echo -e "  - [${BLUE}--dev-mode${RESET}/${BLUE}-d${RESET}] Set all settings for local development"
-  echo -e "- ${BLUE}watch | devclean${RESET} (Run cache-clean.js from mageTV)"
-  echo -e "- ${BLUE}purge${RESET} (Purge all static assets)"
-  echo -e "  - [${BLUE}--redis${RESET}/${BLUE}-r${RESET}] Also flush the redis cache"
-  echo -e "- ${BLUE}new admin${RESET} (Create new admin user)"
-  echo -e "- ${BLUE}new customer${RESET} (Create new customer)"
-  echo -e "- ${BLUE}new theme${RESET} (Create new theme in app)"
-  echo -e "- ${BLUE}new module${RESET} (Create new module in app)"
-  echo -e "- ${BLUE}add sample${RESET} (Add sample data)"
-  echo -e "- ${BLUE}add hyva${RESET} (Add hyva theme)"
-  echo -e "- ${BLUE}install | i${RESET} (Run composer install or require)"
-  echo -e "- ${BLUE}remove | rm${RESET} (Run composer remove)"
-  echo -e "- ${BLUE}run${RESET} (Run magerun2)"
-  echo -e "\n${ITALIC}Anything else will run ${BLUE}bin/magento${RESET}"
-  echo -e "${ITALIC}To see those cmd's just run ${BLUE}mage${RESET}"
+  cat <<EOF
+
+${BOLD}Mage ${GREEN}${VERSION}${RESET}
+${ITALIC}See https://github.com/GrimLink/mage for the latest version${RESET}
+
+${BOLD}CMD Options:${RESET}
+- ${BLUE}info${RESET}: Show base config for store
+- ${BLUE}self-update${RESET}: Update mage
+- ${BLUE}stores${RESET}: Show all stores
+- ${BLUE}open${RESET}: Open store in browser
+- ${BLUE}config${RESET}: Set configs for dev env
+  - ${BLUE}-c/--cache${RESET}: Disable any frontend caches
+  - ${BLUE}-a/--admin-session${RESET}: Set admin session to a day and no password updates
+  - ${BLUE}-s/--disable-security${RESET}: Disable any captcha and 2fa options
+  - ${BLUE}-d/--dev-mode${RESET}: Set all settings for local development
+- ${BLUE}watch | devclean${RESET}: Run cache-clean.js from mageTV
+- ${BLUE}purge${RESET}: Purge all static assets
+  - ${BLUE}-r/--redis${RESET}: Also flush the redis cache
+- ${BLUE}new admin${RESET}: Create new admin user
+- ${BLUE}new customer${RESET}: Create new customer
+- ${BLUE}new theme${RESET}: Create new theme in app
+- ${BLUE}new module${RESET}: Create new module in app
+- ${BLUE}add sample${RESET}: Add sample data
+- ${BLUE}add hyva${RESET}: Add hyva theme
+- ${BLUE}composer${RESET}: Run composer, useful for valet php
+- ${BLUE}install | i${RESET}: Run composer install or require
+- ${BLUE}update | up${RESET}: Run composer update
+- ${BLUE}remove | rm${RESET}: Run composer remove
+- ${BLUE}run${RESET}: Run magerun2
+
+${ITALIC}Anything else will run ${BLUE}bin/magento${RESET}.
+To see these commands again, run ${BLUE}mage${RESET}.
+EOF
 }
 
 # Vanila solution to get the Magento 2 base url
