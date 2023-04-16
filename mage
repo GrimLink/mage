@@ -3,12 +3,10 @@
 # Mage is collection of easy cmd's and alias for bin/magento
 # For those that hate typing long shell cmd's
 
-set -e
-
 # Exit early, if not Magento 2
-if [[ ! -d app/etc ]]; then
-  echo "This does not look like the Magento 2 root folder, aborting.." && exit 1;
-fi
+# if [[ ! -d app/etc ]]; then
+#   echo "This does not look like the Magento 2 root folder, aborting.." && exit 1;
+# fi
 
 # Global variables
 RESET='\033[0m'
@@ -18,7 +16,7 @@ RED='\033[0;31m'
 GREEN='\033[1;32m'
 BLUE='\033[1;34m'
 
-VERSION="1.11.1"
+VERSION="1.12.0"
 GITNAME="$(git config --global --get user.name | head -n1 | cut -d " " -f1)"
 GITEMAIL="$(git config --global --get user.email)"
 ADMINNAME="$(echo "$GITNAME" | tr '[:upper:]' '[:lower:]')"
@@ -26,10 +24,11 @@ ADMINPASS="admin123$"
 SKIP="false"
 
 WARDEN=0
+VALET=0
 MAGENTO_CLI="bin/magento"
 MAGERUN_CLI=""
 REDIS_CLI="redis-cli"
-VARNISH_CLI=""
+VARNISH_CLI="" # We never use varnish on a local machine, and prefer to never use it
 COMPOSER_CLI="composer"
 OPEN_CLI="xdg-open" # Linux
 GET_CLI="wget" # Linux
@@ -48,55 +47,51 @@ fi
 
 # Laravel Valet scoped PHP support
 if command -v valet &> /dev/null; then
+  VALET=1
   MAGENTO_CLI="valet php bin/magento"
   COMPOSER_CLI="valet php $(which composer)"
   MAGERUN_CLI="valet php $(which magerun2)"
 fi
 
 # Warden Support
-if [ -f .env ] && grep --silent 'WARDEN_ENV_NAME' .env; then
+if [ -f .env ] && grep -q "WARDEN_ENV_NAME" .env && [[ ! "$PATH" == /var/www/html* ]]; then
   WARDEN=1
   MAGENTO_CLI="warden env exec php-fpm bin/magento"
   MAGERUN_CLI="warden env exec php-fpm n98-magerun"
   REDIS_CLI="warden env exec redis redis-cli"
-  VARNISH_CLI="" # TODO
+  VARNISH_CLI="warden env exec -T varnish varnishadm"
   COMPOSER_CLI="warden env exec php-fpm composer"
 fi
 
 function helpMessage() {
-  cat <<EOF
-
-${BOLD}Mage ${GREEN}${VERSION}${RESET}
-${ITALIC}See https://github.com/GrimLink/mage for the latest version${RESET}
-
-${BOLD}CMD Options:${RESET}
-- ${BLUE}info${RESET}: Show base config for store
-- ${BLUE}self-update${RESET}: Update mage
-- ${BLUE}stores${RESET}: Show all stores
-- ${BLUE}open${RESET}: Open store in browser
-- ${BLUE}config${RESET}: Set configs for dev env
-  - ${BLUE}-c/--cache${RESET}: Disable any frontend caches
-  - ${BLUE}-a/--admin-session${RESET}: Set admin session to a day and no password updates
-  - ${BLUE}-s/--disable-security${RESET}: Disable any captcha and 2fa options
-  - ${BLUE}-d/--dev-mode${RESET}: Set all settings for local development
-- ${BLUE}watch | devclean${RESET}: Run cache-clean.js from mageTV
-- ${BLUE}purge${RESET}: Purge all static assets
-  - ${BLUE}-r/--redis${RESET}: Also flush the redis cache
-- ${BLUE}new admin${RESET}: Create new admin user
-- ${BLUE}new customer${RESET}: Create new customer
-- ${BLUE}new theme${RESET}: Create new theme in app
-- ${BLUE}new module${RESET}: Create new module in app
-- ${BLUE}add sample${RESET}: Add sample data
-- ${BLUE}add hyva${RESET}: Add hyva theme
-- ${BLUE}composer${RESET}: Run composer, useful for valet php
-- ${BLUE}install | i${RESET}: Run composer install or require
-- ${BLUE}update | up${RESET}: Run composer update
-- ${BLUE}remove | rm${RESET}: Run composer remove
-- ${BLUE}run${RESET}: Run magerun2
-
-${ITALIC}Anything else will run ${BLUE}bin/magento${RESET}.
-To see these commands again, run ${BLUE}mage${RESET}.
-EOF
+  echo ""
+  echo -e "${BOLD}Mage ${GREEN}${VERSION}${RESET}"
+  echo -e "${ITALIC}See https://github.com/GrimLink/mage for the last version${RESET}\n"
+  echo -e "${BOLD}CMD Options:${RESET}"
+  echo -e "- ${BLUE}info${RESET} (Show base config for store)"
+  echo -e "- ${BLUE}self-update${RESET} (Update mage)"
+  echo -e "- ${BLUE}stores${RESET} (Show all stores)"
+  echo -e "- ${BLUE}open${RESET} (Open store in browser)"
+  echo -e "- ${BLUE}config${RESET} (Set configs for dev env)"
+  echo -e "  - [${BLUE}--cache${RESET}/${BLUE}-c${RESET}] Disable any frontend caches"
+  echo -e "  - [${BLUE}--admin-session${RESET}/${BLUE}-a${RESET}] Set admin session to a day and no password updates"
+  echo -e "  - [${BLUE}--disable-security${RESET}/${BLUE}-s${RESET}] Disable any captcha and 2fa options"
+  echo -e "  - [${BLUE}--dev-mode${RESET}/${BLUE}-d${RESET}] Set all settings for local development"
+  echo -e "- ${BLUE}watch${RESET} (Run cache-clean.js from mageTV)"
+  echo -e "- ${BLUE}purge${RESET} (Purge all static assets)"
+  echo -e "- ${BLUE}new admin${RESET} (Create new admin user)"
+  echo -e "- ${BLUE}new customer${RESET} (Create new customer)"
+  echo -e "- ${BLUE}new theme${RESET} (Create new theme in app)"
+  echo -e "- ${BLUE}new module${RESET} (Create new module in app)"
+  echo -e "- ${BLUE}add sample${RESET} (Add sample data)"
+  echo -e "- ${BLUE}add hyva${RESET} (Add hyva theme)"
+  echo -e "- ${BLUE}composer${RESET} (Run composer, Usefull for valet php)"
+  echo -e "- ${BLUE}install | i${RESET} (Run composer install or require)"
+  echo -e "- ${BLUE}update | up${RESET} (Run composer update)"
+  echo -e "- ${BLUE}remove | rm${RESET} (Run composer remove)"
+  echo -e "- ${BLUE}run${RESET} (Run magerun2)"
+  echo -e "\n${ITALIC}Anything else will run ${BLUE}bin/magento${RESET}"
+  echo -e "${ITALIC}To see those cmd's just run ${BLUE}mage${RESET}"
 }
 
 # Vanila solution to get the Magento 2 base url
@@ -149,7 +144,7 @@ function newMagentoMod() {
 }
 
 case "${@}" in
-"--help" | "-h")
+"help")
   helpMessage
   ;;
 
@@ -259,8 +254,8 @@ case "${@}" in
   fi
   ;;
 
-"watch" | "devclean")
-  CACHE_CLI="echo cache-clean not installed ( https://github.com/mage2tv/magento-cache-clean ) `composer global require mage2tv/magento-cache-clean`"
+"watch")
+  CACHE_CLI="echo cache-clean not installed ( https://github.com/mage2tv/magento-cache-clean ) 'composer global require mage2tv/magento-cache-clean'"
   if command -v vendor/bin/cache-clean.js &> /dev/null; then
     CACHE_CLI="vendor/bin/cache-clean.js --watch"
   elif command -v cache-clean.js &> /dev/null; then
@@ -322,15 +317,12 @@ case "${@}" in
     read -sp "Password (${ADMINPASS}) or: " USERPASS
   fi
 
-  if [[ -z "$USEREMAIL" ]]; then USEREMAIL="$GITEMAIL"; fi
-  if [[ -z "$USERFIRST" ]]; then USERFIRST="$GITNAME"; fi
-  if [[ -z "$USERLAST" ]]; then USERLAST="admin"; fi
-  if [[ -z "$USERNAME" ]]; then USERNAME="${ADMINNAME}"; fi
-  if [[ -z "$USERPASS" ]]; then USERPASS="${ADMINPASS}"; fi
-
-  $MAGENTO_CLI admin:user:create --admin-user="${USERNAME}" \
-    --admin-password="${USERPASS}" --admin-email="${USEREMAIL}" \
-    --admin-firstname="${USERFIRST}" --admin-lastname="${USERLAST}"
+  $MAGENTO_CLI admin:user:create \
+    --admin-user="${USERNAME:-$ADMINNAME}" \
+    --admin-password="${USERPASS:-$ADMINPASS}" \
+    --admin-email="${USEREMAIL:-$GITEMAIL}" \
+    --admin-firstname="${USERFIRST:-$GITNAME}" \
+    --admin-lastname="${USERLAST:-"admin"}"
   ;;
 
 "new customer")
@@ -382,17 +374,24 @@ case "${@}" in
   if [[ ! $REPLY =~ ^[nN]|[nN][oO]$ ]]; then
     read -p "License key: " HYVA_KEY && echo ""
     read -p "Packagist url: " HYVA_URL && echo ""
+
     $COMPOSER_CLI config --auth http-basic.hyva-themes.repo.packagist.com token $HYVA_KEY
     $COMPOSER_CLI config repositories.private-packagist composer https://hyva-themes.repo.packagist.com/$HYVA_URL/
     $COMPOSER_CLI require hyva-themes/magento2-default-theme
   else
-    $COMPOSER_CLI config repositories.hyva-themes/magento2-theme-module git git@gitlab.hyva.io:hyva-themes/magento2-theme-module.git
-    $COMPOSER_CLI config repositories.hyva-themes/magento2-reset-theme git git@gitlab.hyva.io:hyva-themes/magento2-reset-theme.git
-    $COMPOSER_CLI config repositories.hyva-themes/magento2-email-module git git@gitlab.hyva.io:hyva-themes/magento2-email-module.git
-    $COMPOSER_CLI config repositories.hyva-themes/magento2-default-theme git git@gitlab.hyva.io:hyva-themes/magento2-default-theme.git
-    $COMPOSER_CLI config repositories.hyva-themes/magento2-graphql-tokens git git@github.com:hyva-themes/magento2-graphql-tokens.git
-    $COMPOSER_CLI config repositories.hyva-themes/magento2-compat-module-fallback git git@gitlab.hyva.io:hyva-themes/magento2-compat-module-fallback.git
+    HYVA_REPOS=(
+      'hyva-themes/magento2-theme-module'
+      'hyva-themes/magento2-reset-theme'
+      'hyva-themes/magento2-email-module'
+      'hyva-themes/magento2-default-theme'
+      'hyva-themes/magento2-compat-module-fallback'
+    );
 
+    for i in "${HYVA_REPOS[@]}"; do
+      $COMPOSER_CLI config repositories.${i} git git@gitlab.hyva.io:${i}.git
+    done
+
+    $COMPOSER_CLI config repositories.hyva-themes/magento2-graphql-tokens git git@github.com:hyva-themes/magento2-graphql-tokens.git
     $COMPOSER_CLI require hyva-themes/magento2-default-theme --prefer-source
   fi
 
@@ -425,7 +424,7 @@ case "${@}" in
   $COMPOSER_CLI install
   ;;
 
-"update "*)
+"update "* | "up "*)
   if [[ -n ${@:2} ]]; then
     $COMPOSER_CLI update ${@:2}
   else

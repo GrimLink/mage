@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 - Disbale hints for add hyva, < Magento 2.4.4
 - `mage replaced` command
+- `mage devclean` command, we use watch mainly so this only clutter
 - simplify purge actions, by removing the c:f action, that is not needed with the manualy action before it
 
 ## [1.11.1] - 2022-08-29
