@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.13.1] - 2023-08-27
+### Changed
+- Use en_US nl_NL as default for `build` command, if empty
+- Use 4 jobs as default for `build` command, if empty
+
+### Fixed
+- Fixed force in `build` command
+
 ## [1.13.0] - 2023-08-27
 ### Added
 - Theme switcher to `add hyva` command
