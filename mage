@@ -3,11 +3,6 @@
 # Mage is collection of easy cmd's and alias for bin/magento
 # For those that hate typing long shell cmd's
 
-# Exit early, if not Magento 2
-if [[ ! -d app/etc ]]; then
-  echo "This does not look like the Magento 2 root folder, aborting.." && exit 1;
-fi
-
 # Global variables
 RESET='\033[0m'
 BOLD='\033[1m'
@@ -63,6 +58,20 @@ if [ -f .env ] && grep -q "WARDEN_ENV_NAME" .env && [[ ! "$PATH" == /var/www/htm
   REDIS_CLI="warden env exec redis redis-cli"
   VARNISH_CLI="warden env exec -T varnish varnishadm"
   COMPOSER_CLI="warden env exec php-fpm composer"
+fi
+
+# Check if this is the Magento 2 root
+if [[ ! -d app/etc ]]; then
+  # Allow the following commands to run, even if the folder is not root Magento,
+  # if else exit mage
+  if
+    [[ $1 != "help" ]] &&
+    [[ $1 != "self-update" ]] &&
+    [[ "${1} ${2}" != "new trans" ]] &&
+    [[ "${1} ${2}" != "new translate" ]]
+  then
+    echo "This does not look like the Magento 2 root folder, aborting.." && exit 1;
+  fi
 fi
 
 function helpMessage() {
