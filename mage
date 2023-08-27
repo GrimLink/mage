@@ -70,12 +70,12 @@ if [[ ! -d app/etc ]]; then
     [[ "${1} ${2}" != "new i18n" ]] &&
     [[ "${1} ${2}" != "new translate" ]]
   then
-    echo "This does not look like the Magento 2 root folder, aborting.." && exit 1;
+    echo "This does not look like the Magento 2 root folder, aborting.." && exit 1
   fi
 fi
 
 function help_message() {
-  echo "Please run 'mage help' if your not sure what to run";
+  echo "Please run 'mage help' if your not sure what to run"
 }
 
 # Vanila solution to get the Magento 2 base url
@@ -102,10 +102,10 @@ function transform_to_csv() {
 }
 
 function new_mage_mod() {
-  TYPE=$1;
-  SKIP=${2:-"false"};
-  DIST=$3;
-  SRC=$4;
+  TYPE=$1
+  SKIP=${2:-"false"}
+  DIST=$3
+  SRC=$4
 
   if [[ $SKIP == "false" ]]; then
     read -p "Create in package-source (If no app ${DIST} will be used) ? [Y/n] "
@@ -121,10 +121,10 @@ function new_mage_mod() {
   read -p "Name: " NAME
   if [[ -z "$NAME" ]]; then echo "The 'Name' can not be empty" && exit 1; fi
 
-  VENDOR="$(echo $VENDOR | tr '[:upper:]' '[:lower:]' | awk '{for(i=1;i<=NF;i++){ $i=toupper(substr($i,1,1)) substr($i,2) }}1' | tr -d '[:blank:]')";
-  LOWER_VENDOR="$(tr '[:upper:][:blank:]' '[:lower:]-' <<< ${VENDOR})";
-  CAMEL_NAME="$(echo $NAME | tr '[:upper:]' '[:lower:]' | awk '{for(i=1;i<=NF;i++){ $i=toupper(substr($i,1,1)) substr($i,2) }}1' | tr -d '[:blank:]')";
-  LOWER_NAME="$(tr '[:upper:][:blank:]' '[:lower:]-' <<< ${NAME})";
+  VENDOR="$(echo $VENDOR | tr '[:upper:]' '[:lower:]' | awk '{for(i=1;i<=NF;i++){ $i=toupper(substr($i,1,1)) substr($i,2) }}1' | tr -d '[:blank:]')"
+  LOWER_VENDOR="$(tr '[:upper:][:blank:]' '[:lower:]-' <<< ${VENDOR})"
+  CAMEL_NAME="$(echo $NAME | tr '[:upper:]' '[:lower:]' | awk '{for(i=1;i<=NF;i++){ $i=toupper(substr($i,1,1)) substr($i,2) }}1' | tr -d '[:blank:]')"
+  LOWER_NAME="$(tr '[:upper:][:blank:]' '[:lower:]-' <<< ${NAME})"
 
   if [[ $SRC = git:* ]]; then
     mkdir -p $DIST/$VENDOR/$LOWER_NAME
@@ -138,10 +138,10 @@ function new_mage_mod() {
     find ./ -type f -exec perl -pi -e "s/<MODULE_PKG>/${LOWER_NAME}/g" {} +
   else
     if [[ -d "$DIST/$VENDOR/$LOWER_NAME" ]]; then
-      echo "Theme ($DIST/$VENDOR/$LOWER_NAME) already exists! Try a different name..." && exit 1;
+      echo "Theme ($DIST/$VENDOR/$LOWER_NAME) already exists! Try a different name..." && exit 1
     fi
 
-    PARENT=$(grep -oE "ComponentRegistrar::register\(ComponentRegistrar::THEME, '([^']+)'" "$SRC/registration.php" | awk -F"'" '{print $2}' | sed 's/^frontend\///');
+    PARENT=$(grep -oE "ComponentRegistrar::register\(ComponentRegistrar::THEME, '([^']+)'" "$SRC/registration.php" | awk -F"'" '{print $2}' | sed 's/^frontend\///')
 
     if [[ -d "$SRC/web/tailwind" ]]; then
       mkdir -p $DIST/$VENDOR/$LOWER_NAME/web/tailwind &&
@@ -383,9 +383,9 @@ case "${@}" in
 
 "new theme"*)
   TYPE="theme"
-  SKIP=${3:-"false"};
-  DIST="app/design/frontend";
   SRC="vendor/hyva-themes/magento2-default-theme";
+  SKIP=${3:-"false"}
+  DIST="app/design/frontend"
 
   if [[ $SKIP == "--yes" ]] || [[ $SKIP == "-y" ]]; then
     SKIP="true"
@@ -396,9 +396,9 @@ case "${@}" in
 
 "new module"*)
   TYPE="module"
-  SKIP=${3:-"false"};
-  DIST="app/code";
   SRC="git@github.com:GrimLink/hyva-module-template.git";
+  SKIP=${3:-"false"}
+  DIST="app/code"
 
   if [[ $SKIP == "--yes" ]] || [[ $SKIP == "-y" ]]; then
     SKIP="true"
@@ -409,11 +409,13 @@ case "${@}" in
 
 "new translate"* | "new i18n"*)
   M_PATH=${3:-.}
+  
+  get_translations() {
+    grep -rho --exclude-dir=node_modules '\b__\([^)]*\)' --include=\*.phtml $M_PATH
+  }
 
   [ ! -d "$M_PATH/i18n" ] && mkdir $M_PATH/i18n;
-  grep -rho --exclude-dir=node_modules '\b__\([^)]*\)' --include=\*.phtml $M_PATH \
-    | sort -u \
-    | transform_to_csv > $M_PATH/i18n/en_US.csv
+  get_translations | sort -u | transform_to_csv > $M_PATH/i18n/en_US.csv
   ;;
 
 "new"*)
