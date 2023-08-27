@@ -396,9 +396,9 @@ case "${@}" in
 
 "new module"*)
   TYPE="module"
-  SRC="git@github.com:GrimLink/hyva-module-template.git";
   SKIP=${3:-"false"}
   DIST="app/code"
+  SRC=${4:-"git@github.com:GrimLink/hyva-module-template.git"}
 
   if [[ $SKIP == "--yes" ]] || [[ $SKIP == "-y" ]]; then
     SKIP="true"
