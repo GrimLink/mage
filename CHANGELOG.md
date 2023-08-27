@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Allow `help` and `self-update` command in any folder location, not just the Magento 2 root folder
+- `new theme` now works again, using copy by default
 
 ## [1.13.1] - 2023-08-27
 ### Changed

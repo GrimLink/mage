@@ -383,9 +383,9 @@ case "${@}" in
 
 "new theme"*)
   TYPE="theme"
-  SRC="vendor/hyva-themes/magento2-default-theme";
   SKIP=${3:-"false"}
   DIST="app/design/frontend"
+  SRC=${4:-"vendor/hyva-themes/magento2-default-theme"}
 
   if [[ $SKIP == "--yes" ]] || [[ $SKIP == "-y" ]]; then
     SKIP="true"
