@@ -103,17 +103,8 @@ function transform_to_csv() {
 
 function new_mage_mod() {
   TYPE=$1
-  SKIP=${2:-"false"}
-  DIST=$3
-  SRC=$4
-
-  if [[ $SKIP == "false" ]]; then
-    read -p "Create in package-source (If no app ${DIST} will be used) ? [Y/n] "
-    echo ""
-    if [[ ! $REPLY =~ ^[nN]|[nN][oO]$ ]]; then DIST="package-source"; fi
-  else
-    DIST="package-source"
-  fi
+  DIST=$2
+  SRC=$3
 
   read -p "Vendor: " VENDOR
   if [[ -z "$VENDOR" ]]; then echo "The 'Vendor' can not be empty" && exit 1; fi
@@ -126,13 +117,13 @@ function new_mage_mod() {
   CAMEL_NAME="$(echo $NAME | tr '[:upper:]' '[:lower:]' | awk '{for(i=1;i<=NF;i++){ $i=toupper(substr($i,1,1)) substr($i,2) }}1' | tr -d '[:blank:]')"
   LOWER_NAME="$(tr '[:upper:][:blank:]' '[:lower:]-' <<< ${NAME})"
 
-  if [[ $SRC = git:* ]]; then
+  if [[ $SRC = git@* ]]; then
     mkdir -p $DIST/$VENDOR/$LOWER_NAME
     cd $DIST/$VENDOR/$LOWER_NAME
-    git clone $GIT_TEMPLATE .
+    git clone $SRC .
     rm -rf .git
 
-    find ./ -type f -exec perl -pi -e "s/<VENOR>/${VENDOR}/g" {} +
+    find ./ -type f -exec perl -pi -e "s/<VENDOR>/${VENDOR}/g" {} +
     find ./ -type f -exec perl -pi -e "s/<VENDOR_PKG>/${LOWER_VENDOR}/g" {} +
     find ./ -type f -exec perl -pi -e "s/<MODULE>/${CAMEL_NAME}/g" {} +
     find ./ -type f -exec perl -pi -e "s/<MODULE_PKG>/${LOWER_NAME}/g" {} +
@@ -141,6 +132,7 @@ function new_mage_mod() {
       echo "Theme ($DIST/$VENDOR/$LOWER_NAME) already exists! Try a different name..." && exit 1
     fi
 
+    mkdir -p $DIST/$VENDOR/$LOWER_NAME
     PARENT=$(grep -oE "ComponentRegistrar::register\(ComponentRegistrar::THEME, '([^']+)'" "$SRC/registration.php" | awk -F"'" '{print $2}' | sed 's/^frontend\///')
 
     if [[ -d "$SRC/web/tailwind" ]]; then
@@ -382,29 +374,15 @@ case "${@}" in
   ;;
 
 "new theme"*)
-  TYPE="theme"
-  SKIP=${3:-"false"}
-  DIST="app/design/frontend"
-  SRC=${4:-"vendor/hyva-themes/magento2-default-theme"}
-
-  if [[ $SKIP == "--yes" ]] || [[ $SKIP == "-y" ]]; then
-    SKIP="true"
-  fi
-
-  new_mage_mod $TYPE $SKIP $DIST $SRC
+  SRC=${3:-"vendor/hyva-themes/magento2-default-theme"}
+  DIST=${4:-"package-source"}
+  new_mage_mod "theme"$DIST $SRC
   ;;
 
 "new module"*)
-  TYPE="module"
-  SKIP=${3:-"false"}
-  DIST="app/code"
-  SRC=${4:-"git@github.com:GrimLink/hyva-module-template.git"}
-
-  if [[ $SKIP == "--yes" ]] || [[ $SKIP == "-y" ]]; then
-    SKIP="true"
-  fi
-
-  new_mage_mod $TYPE $SKIP $DIST $SRC
+  SRC=${3:-"git@github.com:GrimLink/hyva-module-template.git"}
+  DIST=${4:-"package-source"}
+  new_mage_mod "module" $DIST $SRC
   ;;
 
 "new translate"* | "new i18n"*)
