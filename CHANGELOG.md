@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Theme switcher to `add hyva` command
+
 ## [1.12.0] - 2023-04-18
 ### Added
 - compat-module-fallback support to `mage add hyva` development version
