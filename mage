@@ -102,16 +102,17 @@ function transform_to_csv() {
 }
 
 function new_mage_mod() {
-  SKIP="false"
-  CREATE_SRC="app/code"
+  TYPE=$1;
+  SKIP=${2:-"false"};
+  DIST=$3;
+  SRC=$4;
 
-  if [[ "$2" == "--yes" ]] || [[ "$2" == "-y" ]]; then SKIP="true"; fi
   if [[ $SKIP == "false" ]]; then
-    read -p "Create in package-source (If no app code will be used) ? [Y/n] "
+    read -p "Create in package-source (If no app ${DIST} will be used) ? [Y/n] "
     echo ""
-    if [[ ! $REPLY =~ ^[nN]|[nN][oO]$ ]]; then CREATE_SRC="package-source"; fi
+    if [[ ! $REPLY =~ ^[nN]|[nN][oO]$ ]]; then DIST="package-source"; fi
   else
-    CREATE_SRC="package-source"
+    DIST="package-source"
   fi
 
   read -p "Vendor: " VENDOR
@@ -121,22 +122,43 @@ function new_mage_mod() {
   if [[ -z "$NAME" ]]; then echo "The 'Name' can not be empty" && exit 1; fi
 
   VENDOR="$(echo $VENDOR | tr '[:upper:]' '[:lower:]' | awk '{for(i=1;i<=NF;i++){ $i=toupper(substr($i,1,1)) substr($i,2) }}1' | tr -d '[:blank:]')";
+  LOWER_VENDOR="$(tr '[:upper:][:blank:]' '[:lower:]-' <<< ${VENDOR})";
   CAMEL_NAME="$(echo $NAME | tr '[:upper:]' '[:lower:]' | awk '{for(i=1;i<=NF;i++){ $i=toupper(substr($i,1,1)) substr($i,2) }}1' | tr -d '[:blank:]')";
   LOWER_NAME="$(tr '[:upper:][:blank:]' '[:lower:]-' <<< ${NAME})";
 
-  if [[ $1 == "theme" ]]; then
-    echo "No theme templates available yet"
-  else
-    mkdir -p $CREATE_SRC/$VENDOR/$LOWER_NAME &&
-    cd $CREATE_SRC/$VENDOR/$LOWER_NAME &&
-    git clone git@github.com:GrimLink/hyva-module-template.git . &&
-    rm -rf .git &&
+  if [[ $SRC = git:* ]]; then
+    mkdir -p $DIST/$VENDOR/$LOWER_NAME
+    cd $DIST/$VENDOR/$LOWER_NAME
+    git clone $GIT_TEMPLATE .
+    rm -rf .git
 
-    echo ""
-    echo -e "${BLUE}${BOLD}Replace the following values with your own;${RESET}"
-    echo -e "${ITALIC}<VENDOR>${RESET} (example: ${ITALIC}${VENDOR}${RESET})"
-    echo -e "${ITALIC}<MODULE>${RESET} (example: ${ITALIC}${CAMEL_NAME}${RESET})"
-    echo -e "${ITALIC}<MODULE_PKG>${RESET} (example: ${ITALIC}${LOWER_NAME}${RESET})"
+    find ./ -type f -exec perl -pi -e "s/<VENOR>/${VENDOR}/g" {} +
+    find ./ -type f -exec perl -pi -e "s/<VENDOR_PKG>/${LOWER_VENDOR}/g" {} +
+    find ./ -type f -exec perl -pi -e "s/<MODULE>/${CAMEL_NAME}/g" {} +
+    find ./ -type f -exec perl -pi -e "s/<MODULE_PKG>/${LOWER_NAME}/g" {} +
+  else
+    if [[ -d "$DIST/$VENDOR/$LOWER_NAME" ]]; then
+      echo "Theme ($DIST/$VENDOR/$LOWER_NAME) already exists! Try a different name..." && exit 1;
+    fi
+
+    PARENT=$(grep -oE "ComponentRegistrar::register\(ComponentRegistrar::THEME, '([^']+)'" "$SRC/registration.php" | awk -F"'" '{print $2}' | sed 's/^frontend\///');
+
+    if [[ -d "$SRC/web/tailwind" ]]; then
+      mkdir -p $DIST/$VENDOR/$LOWER_NAME/web/tailwind &&
+      rsync -ah $SRC/web/tailwind/ $DIST/$VENDOR/$LOWER_NAME/web/tailwind/ --exclude node_modules
+    fi
+
+    touch $DIST/$VENDOR/$LOWER_NAME/registration.php &&
+    echo -e "<?php declare(strict_types=1);\n\nuse Magento\Framework\Component\ComponentRegistrar;\n\nComponentRegistrar::register(ComponentRegistrar::THEME, 'frontend/${VENDOR}/${LOWER_NAME}', __DIR__);" >> $DIST/$VENDOR/$LOWER_NAME/registration.php
+
+    if [[ $TYPE == "theme" ]]; then
+      touch $DIST/$VENDOR/$LOWER_NAME/theme.xml &&
+      echo -e "<theme\n\txmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n\txsi:noNamespaceSchemaLocation=\"urn:magento:framework:Config/etc/theme.xsd\"\n>\n\t<title>${VENDOR} ${CAMEL_NAME}</title>\n\t<parent>${PARENT}</parent>\n</theme>" >> $DIST/$VENDOR/$LOWER_NAME/theme.xml
+    else
+      mkdir $DIST/$VENDOR/$LOWER_NAME/etc &&
+      touch $DIST/$VENDOR/$LOWER_NAME/etc/module.xml &&
+      echo -e "<?xml version=\"1.0\"?>\n<config\n\txmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n\txsi:noNamespaceSchemaLocation=\"urn:magento:framework:Module/etc/module.xsd\"\n>\n\t<module name=\"${VENDOR}_${CAMEL_NAME}\" setup_version=\"1.0.0\">\n\t\t<sequence>\n\t\t\t<module name=\"Magento_Theme\"/>\n\t\t</sequence>\n\t</module>\n</config>" >> $DIST/$VENDOR/$LOWER_NAME/etc/module.xml
+    fi
   fi
 }
 
@@ -360,11 +382,29 @@ case "${@}" in
   ;;
 
 "new theme"*)
-  new_mage_mod "theme" "$3"
+  TYPE="theme"
+  SKIP=${3:-"false"};
+  DIST="app/design/frontend";
+  SRC="vendor/hyva-themes/magento2-default-theme";
+
+  if [[ $SKIP == "--yes" ]] || [[ $SKIP == "-y" ]]; then
+    SKIP="true"
+  fi
+
+  new_mage_mod $TYPE $SKIP $DIST $SRC
   ;;
 
 "new module"*)
-  new_mage_mod "module" "$3"
+  TYPE="module"
+  SKIP=${3:-"false"};
+  DIST="app/code";
+  SRC="git@github.com:GrimLink/hyva-module-template.git";
+
+  if [[ $SKIP == "--yes" ]] || [[ $SKIP == "-y" ]]; then
+    SKIP="true"
+  fi
+
+  new_mage_mod $TYPE $SKIP $DIST $SRC
   ;;
 
 "new translate"* | "new i18n"*)
