@@ -67,7 +67,7 @@ if [[ ! -d app/etc ]]; then
   if
     [[ $1 != "help" ]] &&
     [[ $1 != "self-update" ]] &&
-    [[ "${1} ${2}" != "new trans" ]] &&
+    [[ "${1} ${2}" != "new i18n" ]] &&
     [[ "${1} ${2}" != "new translate" ]]
   then
     echo "This does not look like the Magento 2 root folder, aborting.." && exit 1;
@@ -86,6 +86,19 @@ function get_mage_base_uri() {
   fi
 
   echo $BASEURI
+}
+
+# Function to transform the extracted translation strings to CSV format
+function transform_to_csv() {
+  sed -E \
+    -e 's/__\("(([^"]|\\")*)"/__(\1/g' \
+    -e "s/([^\\])'/\1/g" \
+    -e 's/__\(([^)]*)/\1/g' \
+    -e 's/([[:alnum:]_]+), \$[^ ]+/\1/g' \
+    -e 's/\\"/""/g' \
+    -e "s/\\\'/\'/g" \
+    -e 's/(.+)/"\1"/' \
+    -e 's/(.+)/&,&/'
 }
 
 function new_mage_mod() {
@@ -146,8 +159,9 @@ case "${@}" in
   echo -e "- ${BLUE}purge${RESET} (Purge all static assets)"
   echo -e "- ${BLUE}new admin${RESET} (Create new admin user)"
   echo -e "- ${BLUE}new customer${RESET} (Create new customer)"
-  echo -e "- ${BLUE}new theme${RESET} (Create new theme in app)"
-  echo -e "- ${BLUE}new module${RESET} (Create new module in app)"
+  echo -e "- ${BLUE}new theme${RESET} (Create new theme)"
+  echo -e "- ${BLUE}new module${RESET} (Create new module)"
+  echo -e "- ${BLUE}new translation | new i18n${RESET} (Create new translation)"
   echo -e "- ${BLUE}add sample${RESET} (Add sample data)"
   echo -e "- ${BLUE}add hyva${RESET} (Add hyva theme)"
   echo -e "- ${BLUE}composer${RESET} (Run composer, Usefull for valet php)"
@@ -351,6 +365,15 @@ case "${@}" in
 
 "new module"*)
   new_mage_mod "module" "$3"
+  ;;
+
+"new translate"* | "new i18n"*)
+  M_PATH=${3:-.}
+
+  [ ! -d "$M_PATH/i18n" ] && mkdir $M_PATH/i18n;
+  grep -rho --exclude-dir=node_modules '\b__\([^)]*\)' --include=\*.phtml $M_PATH \
+    | sort -u \
+    | transform_to_csv > $M_PATH/i18n/en_US.csv
   ;;
 
 "new"*)
