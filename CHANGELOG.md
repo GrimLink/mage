@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Theme switcher to `add hyva` command
+- new command `build` to simplify the `setup:static-content:deploy` command
 
 ## [1.12.0] - 2023-04-18
 ### Added

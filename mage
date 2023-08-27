@@ -91,6 +91,7 @@ function helpMessage() {
   echo -e "- ${BLUE}install | i${RESET} (Run composer install or require)"
   echo -e "- ${BLUE}update | up${RESET} (Run composer update)"
   echo -e "- ${BLUE}remove | rm${RESET} (Run composer remove)"
+  echo -e "- ${BLUE}build${RESET} (Run setup:static-content:deploy with common defaults)"
   echo -e "- ${BLUE}run${RESET} (Run magerun2)"
   echo -e "\n${ITALIC}Anything else will run ${BLUE}bin/magento${RESET}"
   echo -e "${ITALIC}To see those cmd's just run ${BLUE}mage${RESET}"
@@ -444,6 +445,29 @@ case "${@}" in
   else
     echo "No packages where specified!"
   fi
+  ;;
+
+"build"*)
+  # Initialize variables with default values
+  LANGS="nl_NL"
+  JOBS="-j 2"
+  FORCE=""
+  DEFAULT_ARGS="$LANGS $JOBS"
+  ARGS=${@:2}
+
+  # If JOBS is not found in ARGS add it
+  if [[ "$ARGS" != *"-j"* ]]; then
+    ARGS="$ARGS $JOBS"
+  fi
+
+  # If -f is found in ARGS add it to both adminhtml and frontend
+  if [[ "$ARGS" != *"-f"* ]]; then
+    FORCE="-f"
+  fi
+
+  # Deploy static content
+  $MAGENTO_CLI setup:static-content:deploy -a adminhtml en_US ${FORCE}
+  $MAGENTO_CLI setup:static-content:deploy -a frontend ${ARGS:-$DEFAULT_ARGS}
   ;;
 
 "run"*)
