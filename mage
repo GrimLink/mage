@@ -74,36 +74,8 @@ if [[ ! -d app/etc ]]; then
   fi
 fi
 
-function helpMessage() {
-  echo ""
-  echo -e "${BOLD}Mage ${GREEN}${VERSION}${RESET}"
-  echo -e "${ITALIC}See https://github.com/GrimLink/mage for the last version${RESET}\n"
-  echo -e "${BOLD}CMD Options:${RESET}"
-  echo -e "- ${BLUE}info${RESET} (Show base config for store)"
-  echo -e "- ${BLUE}self-update${RESET} (Update mage)"
-  echo -e "- ${BLUE}stores${RESET} (Show all stores)"
-  echo -e "- ${BLUE}open${RESET} (Open store in browser)"
-  echo -e "- ${BLUE}config${RESET} (Set configs for dev env)"
-  echo -e "  - [${BLUE}--cache${RESET}/${BLUE}-c${RESET}] Disable any frontend caches"
-  echo -e "  - [${BLUE}--admin-session${RESET}/${BLUE}-a${RESET}] Set admin session to a day and no password updates"
-  echo -e "  - [${BLUE}--disable-security${RESET}/${BLUE}-s${RESET}] Disable any captcha and 2fa options"
-  echo -e "  - [${BLUE}--dev-mode${RESET}/${BLUE}-d${RESET}] Set all settings for local development"
-  echo -e "- ${BLUE}watch${RESET} (Run cache-clean.js from mageTV)"
-  echo -e "- ${BLUE}purge${RESET} (Purge all static assets)"
-  echo -e "- ${BLUE}new admin${RESET} (Create new admin user)"
-  echo -e "- ${BLUE}new customer${RESET} (Create new customer)"
-  echo -e "- ${BLUE}new theme${RESET} (Create new theme in app)"
-  echo -e "- ${BLUE}new module${RESET} (Create new module in app)"
-  echo -e "- ${BLUE}add sample${RESET} (Add sample data)"
-  echo -e "- ${BLUE}add hyva${RESET} (Add hyva theme)"
-  echo -e "- ${BLUE}composer${RESET} (Run composer, Usefull for valet php)"
-  echo -e "- ${BLUE}install | i${RESET} (Run composer install or require)"
-  echo -e "- ${BLUE}update | up${RESET} (Run composer update)"
-  echo -e "- ${BLUE}remove | rm${RESET} (Run composer remove)"
-  echo -e "- ${BLUE}build${RESET} (Run setup:static-content:deploy with common defaults)"
-  echo -e "- ${BLUE}run${RESET} (Run magerun2)"
-  echo -e "\n${ITALIC}Anything else will run ${BLUE}bin/magento${RESET}"
-  echo -e "${ITALIC}To see those cmd's just run ${BLUE}mage${RESET}"
+function help_message() {
+  echo "Please run 'mage help' if your not sure what to run";
 }
 
 # Vanila solution to get the Magento 2 base url
@@ -157,7 +129,35 @@ function newMagentoMod() {
 
 case "${@}" in
 "help")
-  helpMessage
+  echo ""
+  echo -e "${BOLD}Mage ${GREEN}${VERSION}${RESET}"
+  echo -e "${ITALIC}See https://github.com/GrimLink/mage for the last version${RESET}\n"
+  echo -e "${BOLD}CMD Options:${RESET}"
+  echo -e "- ${BLUE}info${RESET} (Show base config for store)"
+  echo -e "- ${BLUE}self-update${RESET} (Update mage)"
+  echo -e "- ${BLUE}stores${RESET} (Show all stores)"
+  echo -e "- ${BLUE}open${RESET} (Open store in browser)"
+  echo -e "- ${BLUE}config${RESET} (Set configs for dev env)"
+  echo -e "  - [${BLUE}--cache${RESET}/${BLUE}-c${RESET}] Disable any frontend caches"
+  echo -e "  - [${BLUE}--admin-session${RESET}/${BLUE}-a${RESET}] Set admin session to a day and no password updates"
+  echo -e "  - [${BLUE}--disable-security${RESET}/${BLUE}-s${RESET}] Disable any captcha and 2fa options"
+  echo -e "  - [${BLUE}--dev-mode${RESET}/${BLUE}-d${RESET}] Set all settings for local development"
+  echo -e "- ${BLUE}watch${RESET} (Run cache-clean.js from mageTV)"
+  echo -e "- ${BLUE}purge${RESET} (Purge all static assets)"
+  echo -e "- ${BLUE}new admin${RESET} (Create new admin user)"
+  echo -e "- ${BLUE}new customer${RESET} (Create new customer)"
+  echo -e "- ${BLUE}new theme${RESET} (Create new theme in app)"
+  echo -e "- ${BLUE}new module${RESET} (Create new module in app)"
+  echo -e "- ${BLUE}add sample${RESET} (Add sample data)"
+  echo -e "- ${BLUE}add hyva${RESET} (Add hyva theme)"
+  echo -e "- ${BLUE}composer${RESET} (Run composer, Usefull for valet php)"
+  echo -e "- ${BLUE}install | i${RESET} (Run composer install or require)"
+  echo -e "- ${BLUE}update | up${RESET} (Run composer update)"
+  echo -e "- ${BLUE}remove | rm${RESET} (Run composer remove)"
+  echo -e "- ${BLUE}build${RESET} (Run setup:static-content:deploy with common defaults)"
+  echo -e "- ${BLUE}run${RESET} (Run magerun2)"
+  echo -e "\n${ITALIC}Anything else will run ${BLUE}bin/magento${RESET}"
+  echo -e "${ITALIC}To see those cmd's just run ${BLUE}mage${RESET}"
   ;;
 
 "self-update")
@@ -354,7 +354,7 @@ case "${@}" in
   ;;
 
 "new"*)
-  echo -e "\n${RED}No ${BOLD}new${RESET}${RED} option given!${RESET}" && helpMessage
+  echo -e "\n${RED}No ${BOLD}new${RESET}${RED} option given!${RESET}" && help_message
   ;;
 
 "add sample")
@@ -421,7 +421,7 @@ case "${@}" in
   ;;
 
 "add"*)
-  echo -e "\n${RED}No ${BOLD}add${RESET}${RED} option given!${RESET}" && helpMessage
+  echo -e "\n${RED}No ${BOLD}add${RESET}${RED} option given!${RESET}" && help_message
   ;;
 
 "composer"*)
