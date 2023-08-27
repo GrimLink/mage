@@ -79,7 +79,7 @@ function help_message() {
 }
 
 # Vanila solution to get the Magento 2 base url
-function getMageBaseUri() {
+function get_mage_base_uri() {
   BASEURI="$($MAGENTO_CLI config:show web/secure/base_url)"
   if [[ -z "${BASEURI}" ]]; then
     BASEURI="$($MAGENTO_CLI config:show web/unsecure/base_url)"
@@ -88,7 +88,7 @@ function getMageBaseUri() {
   echo $BASEURI
 }
 
-function newMagentoMod() {
+function new_mage_mod() {
   SKIP="false"
   CREATE_SRC="app/code"
 
@@ -169,7 +169,7 @@ case "${@}" in
 
 "info")
   $MAGENTO_CLI --version
-  echo -e "Base URI: $(getMageBaseUri)"
+  echo -e "Base URI: $(get_mage_base_uri)"
   echo -e "Admin URI: $(grep frontName app/etc/env.php | tail -1 | cut -d ">" -f2 | cut -d "'" -f2)"
   echo -e "Database: $(grep dbname app/etc/env.php | tail -1 | cut -d ">" -f2 | cut -d "'" -f2)"
   $MAGENTO_CLI maintenance:status
@@ -202,7 +202,7 @@ case "${@}" in
       STORE_URL=$($MAGERUN_CLI sys:store:config:base-url:list --format csv | grep $STORE | cut -d ',' -f3)
     fi
   else
-    STORE_URL=$(getMageBaseUri)
+    STORE_URL=$(get_mage_base_uri)
   fi
 
   if [[ -z "$STORE_URL" ]]; then
@@ -346,11 +346,11 @@ case "${@}" in
   ;;
 
 "new theme"*)
-  newMagentoMod "theme" "$3"
+  new_mage_mod "theme" "$3"
   ;;
 
 "new module"*)
-  newMagentoMod "module" "$3"
+  new_mage_mod "module" "$3"
   ;;
 
 "new"*)
