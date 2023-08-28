@@ -11,7 +11,7 @@ RED='\033[0;31m'
 GREEN='\033[1;32m'
 BLUE='\033[1;34m'
 
-VERSION="1.14.0"
+VERSION="1.15.0"
 GITNAME="$(git config --global --get user.name | head -n1 | cut -d " " -f1)"
 GITEMAIL="$(git config --global --get user.email)"
 ADMINNAME="$(echo "$GITNAME" | tr '[:upper:]' '[:lower:]')"
@@ -64,12 +64,7 @@ fi
 if [[ ! -d app/etc ]]; then
   # Allow the following commands to run, even if the folder is not root Magento,
   # if else exit mage
-  if
-    [[ $1 != "help" ]] &&
-    [[ $1 != "self-update" ]] &&
-    [[ "${1} ${2}" != "new i18n" ]] &&
-    [[ "${1} ${2}" != "new translate" ]]
-  then
+  if [[ $1 != "help" ]] && [[ $1 != "self-update" ]]; then
     echo "This does not look like the Magento 2 root folder, aborting.." && exit 1
   fi
 fi
@@ -86,19 +81,6 @@ function get_mage_base_uri() {
   fi
 
   echo $BASEURI
-}
-
-# Function to transform the extracted translation strings to CSV format
-function transform_to_csv() {
-  sed -E \
-    -e 's/__\("(([^"]|\\")*)"/__(\1/g' \
-    -e "s/([^\\])'/\1/g" \
-    -e 's/__\(([^)]*)/\1/g' \
-    -e 's/([[:alnum:]_]+), \$[^ ]+/\1/g' \
-    -e 's/\\"/""/g' \
-    -e "s/\\\'/\'/g" \
-    -e 's/(.+)/"\1"/' \
-    -e 's/(.+)/&,&/'
 }
 
 function new_mage_mod() {
@@ -174,7 +156,7 @@ case "${@}" in
   echo -e "- ${BLUE}new customer${RESET} (Create new customer)"
   echo -e "- ${BLUE}new theme${RESET} (Create new theme)"
   echo -e "- ${BLUE}new module${RESET} (Create new module)"
-  echo -e "- ${BLUE}new translation | new i18n${RESET} (Create new translation)"
+  echo -e "- ${BLUE}new i18n${RESET} (Create new translations)"
   echo -e "- ${BLUE}add sample${RESET} (Add sample data)"
   echo -e "- ${BLUE}add hyva${RESET} (Add hyva theme)"
   echo -e "- ${BLUE}composer${RESET} (Run composer, Usefull for valet php)"
@@ -385,14 +367,24 @@ case "${@}" in
   ;;
 
 "new translate"* | "new i18n"*)
-  M_PATH=${3:-.}
-  
-  get_translations() {
-    grep -rho --exclude-dir=node_modules '\b__\([^)]*\)' --include=\*.phtml $M_PATH
-  }
+  SRC=${3:-.}
 
-  [ ! -d "$M_PATH/i18n" ] && mkdir $M_PATH/i18n;
-  get_translations | sort -u | transform_to_csv > $M_PATH/i18n/en_US.csv
+  if [[ ! -f "$SRC/registration.php" ]]; then
+    echo "This does not look like a Magento 2 module or theme"
+    read -p "Are you sure if you want to continue? [y/N] "
+    echo ""
+    if [[ $REPLY =~ ^[yY]|[yY][eE][sS]$ ]]; then
+      echo "Running '$MAGENTO_CLI i18n:collect-phrases' in '$SRC'"
+    else
+      exit 1
+    fi;
+  fi
+  
+  mkdir -p $SRC/i18n
+  $MAGENTO_CLI i18n:collect-phrases $SRC -o $SRC/i18n/temp.csv
+  sed -i '' -e 's/^\([^"].*\),\([^"].*\)$/"\1","\2"/' $SRC/i18n/temp.csv
+  sort -o $SRC/i18n/en_US.csv $SRC/i18n/temp.csv
+  rm $SRC/i18n/temp.csv
   ;;
 
 "new"*)

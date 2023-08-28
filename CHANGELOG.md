@@ -6,6 +6,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.15.0] - 2023-08-28
+### Added
+- `new i18n` command will now sort all translations alphabetically
+
+### Changed
+- Revamped the `new i18n` command to use `bin/magento i18n:collect-phrases` while preserving our customized auto output functionality,
+  this change enhances the efficiency of the process and integrates our specialized logic for an optimized experience
+
+### Removed
+- Command `new translate` and only keep the alias `new i18n` as the new default,
+  the `new translate` does not fit and should be `new translation` but I prefer less typing so `new i18n` it is.
+
 ## [1.14.0] - 2023-08-28
 ### Added
 - new command `translate` to add new translations based on your current folder
