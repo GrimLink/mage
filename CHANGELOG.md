@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.15.1] - 2023-08-02
+### Fixed
+- `mage config` overlappping/overriding `mage config:show`
+
 ## [1.15.0] - 2023-08-28
 ### Added
 - `new i18n` command will now sort all translations alphabetically
