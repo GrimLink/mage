@@ -87,7 +87,6 @@ function new_mage_mod() {
   TYPE=$1
   SRC=$2
   DIST=$3
-  PARENT=$(grep -oE "ComponentRegistrar::register\(ComponentRegistrar::THEME, '([^']+)'" "$SRC/registration.php" | awk -F"'" '{print $2}' | sed 's/^frontend\///')
 
   read -p "Vendor: " VENDOR
   if [[ -z "$VENDOR" ]]; then echo "The 'Vendor' can not be empty" && exit 1; fi
@@ -116,6 +115,8 @@ function new_mage_mod() {
     find ./ -type f -exec perl -pi -e "s/<MODULE>/${CAMEL_NAME}/g" {} +
     find ./ -type f -exec perl -pi -e "s/<MODULE_PKG>/${LOWER_NAME}/g" {} +
   else
+    PARENT=$(grep -oE "ComponentRegistrar::register\(ComponentRegistrar::THEME, '([^']+)'" "$SRC/registration.php" | awk -F"'" '{print $2}' | sed 's/^frontend\///')
+
     if [[ -d "$SRC/web/tailwind" ]]; then
       mkdir -p $DIST/$VENDOR/$LOWER_NAME/web/tailwind &&
       rsync -ah $SRC/web/tailwind/ $DIST/$VENDOR/$LOWER_NAME/web/tailwind/ --exclude node_modules
