@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.15.2] - 2023-10-08
+### Fixed
+- `mage new module` command
+
 ## [1.15.1] - 2023-08-02
 ### Fixed
 - `mage config` overlappping/overriding `mage config:show`
