@@ -434,9 +434,9 @@ case "${@}" in
   echo "Make sure you have and license key or access to the gitlab env"
   echo "else cancel with Ctrl+C"
   echo ""
-  read -p "Is this a production setup (use license)? [Y/n] "
+  read -p "Is this a production setup (use license)? [N/y] "
   echo ""
-  if [[ ! $REPLY =~ ^[nN]|[nN][oO]$ ]]; then
+  if [[ $REPLY =~ ^[yY]|[yY][eE][sS]$ ]]; then
     read -p "License key: " HYVA_KEY && echo ""
     read -p "Packagist url: " HYVA_URL && echo ""
 
