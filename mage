@@ -420,6 +420,13 @@ case "${@}" in
   touch README.md
   # This will also run bin/magento s:up
   php -f $HOME/.magento-sampledata/$MVERSION/dev/tools/build-sample-data.php -- --ce-source="$PWD"
+
+  # Set theme to Hyva if present
+  if composer show hyva-themes/magento2-default-theme >/dev/null 2>&1; then
+    if composer show yireo/magento2-theme-commands >/dev/null 2>&1; then
+      $MAGENTO_CLI theme:change Hyva/default
+    fi
+  fi
   ;;
 
 "add hyva")
