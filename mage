@@ -450,6 +450,8 @@ case "${@}" in
       'hyva-themes/magento2-email-module'
       'hyva-themes/magento2-default-theme'
       'hyva-themes/magento2-compat-module-fallback'
+      'hyva-themes/magento2-theme-fallback'
+      'hyva-themes/magento2-luma-checkout'
     );
 
     for i in "${HYVA_REPOS[@]}"; do
@@ -457,6 +459,7 @@ case "${@}" in
     done
 
     $COMPOSER_CLI config repositories.hyva-themes/magento2-graphql-tokens git git@github.com:hyva-themes/magento2-graphql-tokens.git
+    $COMPOSER_CLI require hyva-themes/magento2-luma-checkout --prefer-source
     $COMPOSER_CLI require hyva-themes/magento2-default-theme --prefer-source
   fi
 
