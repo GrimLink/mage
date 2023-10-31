@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- `add checkout` command to easily add the Hyvä Checkout
+
+### Changed
+- `add hyva` will use dev mode as default now
+- `add hyva` in dev mode will now also install the Luma fallback checkout
+
 ## [1.15.2] - 2023-10-08
 ### Fixed
 - `mage new module` command

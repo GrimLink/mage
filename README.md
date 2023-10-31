@@ -58,7 +58,8 @@ curl -O https://raw.githubusercontent.com/GrimLink/mage/main/mage && chmod +x ma
 | new module       | Create new module _\*2_                                                     |
 | new i18n         | Create new translations                                                     |
 | add sample       | Add sample data                                                             |
-| add hyva         | Add Hyva theme                                                              |
+| add hyva         | Add Hyvä Theme _\*3_                                                        |
+| add checkout     | Add Hyvä Checkout _\*3_                                                     |
 | composer         | Run composer (Usefull for valet php)                                        |
 | install \| i     | Run composer install or require                                             |
 | update \| up     | Run composer update                                                         |
@@ -71,6 +72,8 @@ Any other command will run the same as `bin/magento`
 > _\*1_ requires [n98-magerun2](https://github.com/netz98/n98-magerun2)
 >
 > _\*2_ add the flag `--yes` or `-y`, for using on yes all questions
+>
+> _\*3_ requires [Hyvä license](https://www.hyva.io/hyva-themes-license.html) or gitlab access
 
 ## Supported platforms/environments
 
