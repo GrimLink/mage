@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.16.0] - 2023-10-31
 ### Added
 - `add checkout` command to easily add the Hyvä Checkout
 

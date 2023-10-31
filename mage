@@ -11,7 +11,7 @@ RED='\033[0;31m'
 GREEN='\033[1;32m'
 BLUE='\033[1;34m'
 
-VERSION="1.15.2"
+VERSION="1.16.0"
 GITNAME="$(git config --global --get user.name | head -n1 | cut -d " " -f1)"
 GITEMAIL="$(git config --global --get user.email)"
 ADMINNAME="$(echo "$GITNAME" | tr '[:upper:]' '[:lower:]')"
@@ -492,7 +492,7 @@ case "${@}" in
     $COMPOSER_CLI config repositories.private-packagist composer https://hyva-themes.repo.packagist.com/$HYVA_URL/
     $COMPOSER_CLI require hyva-themes/magento2-hyva-checkout
   else
-    $COMPOSER_CLI config repositories.hyva-themes/hyva-checkout git git@gitlab.hyva.io:hyva-themes/checkout.git
+    $COMPOSER_CLI config repositories.hyva-themes/hyva-checkout git git@gitlab.hyva.io:hyva-checkout/checkout.git
     $COMPOSER_CLI require hyva-themes/magento2-hyva-checkout --prefer-source
   fi
   ;;
