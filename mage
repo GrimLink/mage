@@ -476,6 +476,26 @@ case "${@}" in
   echo "For more see the docs -> https://docs.hyva.io/hyva-themes/getting-started/ "
   ;;
 
+"add checkout")
+  echo "Installing Hyva checkout..."
+  echo "Make sure you have and license key or access to the gitlab env"
+  echo "else cancel with Ctrl+C"
+  echo ""
+  read -p "Is this a production setup (use license)? [N/y] "
+  echo ""
+  if [[ $REPLY =~ ^[yY]|[yY][eE][sS]$ ]]; then
+    read -p "License key: " HYVA_KEY && echo ""
+    read -p "Packagist url: " HYVA_URL && echo ""
+
+    $COMPOSER_CLI config --auth http-basic.hyva-themes.repo.packagist.com token $HYVA_KEY
+    $COMPOSER_CLI config repositories.private-packagist composer https://hyva-themes.repo.packagist.com/$HYVA_URL/
+    $COMPOSER_CLI require hyva-themes/magento2-hyva-checkout
+  else
+    $COMPOSER_CLI config repositories.hyva-themes/hyva-checkout git git@gitlab.hyva.io:hyva-themes/checkout.git
+    $COMPOSER_CLI require hyva-themes/magento2-hyva-checkout --prefer-source
+  fi
+  ;;
+
 "add"*)
   echo -e "\n${RED}No ${BOLD}add${RESET}${RED} option given!${RESET}" && help_message
   ;;
