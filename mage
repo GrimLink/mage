@@ -11,7 +11,7 @@ RED='\033[0;31m'
 GREEN='\033[1;32m'
 BLUE='\033[1;34m'
 
-VERSION="1.16.0"
+VERSION="1.17.0"
 GITNAME="$(git config --global --get user.name | head -n1 | cut -d " " -f1)"
 GITEMAIL="$(git config --global --get user.email)"
 ADMINNAME="$(echo "$GITNAME" | tr '[:upper:]' '[:lower:]')"
@@ -205,11 +205,11 @@ function mage_version() {
 
 case "${@}" in
 "version" | "-v" | "--version")
-  mage_version();
+  mage_version
   ;;
   
 "help")
-  mage_version();
+  mage_version
   echo -e "${BOLD}CMD Options:${RESET}"
   echo -e "- ${BLUE}info${RESET} (Show base config for store)"
   echo -e "- ${BLUE}self-update${RESET} (Update mage)"
