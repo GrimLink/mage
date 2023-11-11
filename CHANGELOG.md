@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.17.0] - 2023-11-11
 ### Added
 - `mage version` or `-v/--version` to just see the version
 - new command as shortcut for running both `mage indexer:reindex` and `mage cache:flush`, named `mage reindex`
