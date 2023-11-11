@@ -7,7 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
-- made sure the new module now uses the right prefix for the folder name
+- `new module`/`new-theme` now uses the right prefix for the folder name
+- use `app/design/frontend` for `new theme` instead of package-source
 
 ## [1.16.0] - 2023-10-31
 ### Added

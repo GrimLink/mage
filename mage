@@ -377,7 +377,7 @@ case "${@}" in
 
 "new theme"*)
   SRC=${3:-"vendor/hyva-themes/magento2-default-theme"}
-  DIST=${4:-"package-source"}
+  DIST=${4:-"app/design/frontend"}
   new_mage_mod "theme" $SRC $DIST
   ;;
 
