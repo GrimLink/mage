@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- `mage version` or `-v/--version` to just see the version
+- new command as shortcut for running both `mage indexer:reindex` and `mage cache:flush`, named `mage reindex`
+
 ### Changed
 - `new module`/`new-theme` now uses the right prefix for the folder name
 - use `app/design/frontend` for `new theme` instead of package-source

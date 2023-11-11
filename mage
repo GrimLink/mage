@@ -197,11 +197,19 @@ function mage_config() {
   fi
 }
 
-case "${@}" in
-"help")
+function mage_version() {
   echo ""
   echo -e "${BOLD}Mage ${GREEN}${VERSION}${RESET}"
   echo -e "${ITALIC}See https://github.com/GrimLink/mage for the last version${RESET}\n"
+}
+
+case "${@}" in
+"version" | "-v" | "--version")
+  mage_version();
+  ;;
+  
+"help")
+  mage_version();
   echo -e "${BOLD}CMD Options:${RESET}"
   echo -e "- ${BLUE}info${RESET} (Show base config for store)"
   echo -e "- ${BLUE}self-update${RESET} (Update mage)"
@@ -311,6 +319,10 @@ case "${@}" in
   else
     $CACHE_CLI
   fi
+  ;;
+
+"reindex")
+  $MAGENTO_CLI indexer:reindex && $MAGENTO_CLI cache:flush
   ;;
 
 "purge"*)
