@@ -44,10 +44,12 @@ fi
 
 # Laravel Valet scoped PHP support
 if command -v valet &> /dev/null; then
-  VALET=1
-  MAGENTO_CLI="valet php bin/magento"
-  COMPOSER_CLI="valet php $(which composer)"
-  MAGERUN_CLI="valet php $(which magerun2)"
+  if command -v valet php &> /dev/null; then
+    VALET=1
+    MAGENTO_CLI="valet php bin/magento"
+    COMPOSER_CLI="valet php $(which composer)"
+    MAGERUN_CLI="valet php $(which magerun2)"
+  fi
 fi
 
 # Warden Support
