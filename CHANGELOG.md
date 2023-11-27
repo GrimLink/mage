@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.17.1] - 2023-11-27
+### Fixed
+- Scoped Valet php, this now has no effect if your using the newest version
+- `mage add sample` not setting hyva theme as default if present
+
 ## [1.17.0] - 2023-11-11
 ### Added
 - `mage version` or `-v/--version` to just see the version

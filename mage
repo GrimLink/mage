@@ -11,7 +11,7 @@ RED='\033[0;31m'
 GREEN='\033[1;32m'
 BLUE='\033[1;34m'
 
-VERSION="1.17.0"
+VERSION="1.17.1"
 GITNAME="$(git config --global --get user.name | head -n1 | cut -d " " -f1)"
 GITEMAIL="$(git config --global --get user.email)"
 ADMINNAME="$(echo "$GITNAME" | tr '[:upper:]' '[:lower:]')"
@@ -441,8 +441,8 @@ case "${@}" in
   mkdir -p pub/media/downloadable/files
   mkdir -p pub/media/wysiwyg
   touch README.md
-  # This will also run bin/magento s:up
   php -f $HOME/.magento-sampledata/$MVERSION/dev/tools/build-sample-data.php -- --ce-source="$PWD"
+  $MAGENTO_CLI setup:upgrade
 
   # Set theme to Hyva if present
   if composer show hyva-themes/magento2-default-theme >/dev/null 2>&1; then
