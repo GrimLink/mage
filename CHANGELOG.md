@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.18.0] - 2023-12-13
+### Added
+- new command to set theme or config
+
+### Removed
+- Scoped Valet php
+
 ## [1.17.1] - 2023-11-27
 ### Fixed
 - Scoped Valet php, this now has no effect if your using the newest version

@@ -11,7 +11,7 @@ RED='\033[0;31m'
 GREEN='\033[1;32m'
 BLUE='\033[1;34m'
 
-VERSION="1.17.1"
+VERSION="1.18.0"
 GITNAME="$(git config --global --get user.name | head -n1 | cut -d " " -f1)"
 GITEMAIL="$(git config --global --get user.email)"
 ADMINNAME="$(echo "$GITNAME" | tr '[:upper:]' '[:lower:]')"
@@ -40,16 +40,6 @@ if command -v magerun2 &>/dev/null; then
   MAGERUN_CLI="magerun2"
 elif command -v n98-magerun2 &>/dev/null; then
   MAGERUN_CLI="n98-magerun2"
-fi
-
-# Laravel Valet scoped PHP support
-if command -v valet &> /dev/null; then
-  if command -v valet php &> /dev/null; then
-    VALET=1
-    MAGENTO_CLI="valet php bin/magento"
-    COMPOSER_CLI="valet php $(which composer)"
-    MAGERUN_CLI="valet php $(which magerun2)"
-  fi
 fi
 
 # Warden Support
@@ -217,11 +207,6 @@ case "${@}" in
   echo -e "- ${BLUE}self-update${RESET} (Update mage)"
   echo -e "- ${BLUE}stores${RESET} (Show all stores)"
   echo -e "- ${BLUE}open${RESET} (Open store in browser)"
-  echo -e "- ${BLUE}config${RESET} (Set configs for dev env)"
-  echo -e "  - [${BLUE}--cache${RESET}/${BLUE}-c${RESET}] Disable any frontend caches"
-  echo -e "  - [${BLUE}--admin-session${RESET}/${BLUE}-a${RESET}] Set admin session to a day and no password updates"
-  echo -e "  - [${BLUE}--disable-security${RESET}/${BLUE}-s${RESET}] Disable any captcha and 2fa options"
-  echo -e "  - [${BLUE}--dev-mode${RESET}/${BLUE}-d${RESET}] Set all settings for local development"
   echo -e "- ${BLUE}watch${RESET} (Run cache-clean.js from mageTV)"
   echo -e "- ${BLUE}purge${RESET} (Purge all static assets)"
   echo -e "- ${BLUE}new admin${RESET} (Create new admin user)"
@@ -232,6 +217,9 @@ case "${@}" in
   echo -e "- ${BLUE}add sample${RESET} (Add sample data)"
   echo -e "- ${BLUE}add hyva${RESET} (Add Hyva Theme)"
   echo -e "- ${BLUE}add checkout${RESET} (Add Hyva Checkout)"
+  echo -e "- ${BLUE}config | set config${RESET} (Set Magento Configs)"
+  echo -e "- ${BLUE}set hyva${RESET} (Set hyva default theme)"
+  echo -e "- ${BLUE}set theme${RESET} (Set theme)"
   echo -e "- ${BLUE}composer${RESET} (Run composer, Usefull for valet php)"
   echo -e "- ${BLUE}install | i${RESET} (Run composer install or require)"
   echo -e "- ${BLUE}update | up${RESET} (Run composer update)"
@@ -296,14 +284,6 @@ case "${@}" in
     echo -e "Opening: ${STORE_URL}${ADMIN_PATH}"
     $OPEN_CLI ${STORE_URL}${ADMIN_PATH}
   fi
-  ;;
-
-"config")
-  mage_config
-  ;;
-
-"config "*)
-  mage_config ${@:2}
   ;;
 
 "watch")
@@ -521,6 +501,33 @@ case "${@}" in
 
 "add"*)
   echo -e "\n${RED}No ${BOLD}add${RESET}${RED} option given!${RESET}" && help_message
+  ;;
+
+"set theme"*)
+  $MAGENTO_CLI theme:change $3
+  $MAGENTO_CLI cache:flush;
+  ;;
+
+"set hyva")
+  $MAGENTO_CLI theme:change Hyva/default
+  $MAGENTO_CLI cache:flush
+  ;;
+
+"set baldr")
+  $MAGENTO_CLI theme:change Siteation/baldr
+  $MAGENTO_CLI cache:flush
+  ;;
+
+"config" | "set config")
+  mage_config
+  ;;
+
+"config "* | "set config "*)
+  mage_config ${@:2}
+  ;;
+
+"set"*)
+  echo -e "\n${RED}No ${BOLD}set${RESET}${RED} option given!${RESET}" && help_message
   ;;
 
 "composer"*)

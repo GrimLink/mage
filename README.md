@@ -36,36 +36,34 @@ curl -O https://raw.githubusercontent.com/GrimLink/mage/main/mage && chmod +x ma
 
 ## Commands
 
-| CMD              | Description                                                                 |
-| ---------------- | --------------------------------------------------------------------------- |
-| help             | Show all options                                                            |
-| self-update      | Update mage                                                                 |
-| info             | Show minimal store info (e.g. version and uri)                              |
-| stores           | Show all stores _\*1_                                                       |
-| open             | Open the default store, in the browser                                      |
-| open admin       | Open store admin, in the browser                                            |
-| open _STOREVIEW_ | Open specific storeview, in the browser _\*1_                               |
-| config           | Set configs for dev env                                                     |
-|                  | [`--cache`/`-c`] Disable any frontend caches                                |
-|                  | [`--admin-session`/`-a`] Set admin session to a day and no password updates |
-|                  | [`--disable-security`/`-s`] Disable any captcha and 2fa options             |
-|                  | [`--dev-mode`/`-d`] Set all settings for local development                  |
-| watch            | Run cache-clean.js from mageTV                                              |
-| purge            | Purge all static assets and caches                                          |
-| new admin        | Create new admin user _\*2_                                                 |
-| new customer     | Create new customer _\*1_                                                   |
-| new theme        | Create new theme _\*2_                                                      |
-| new module       | Create new module _\*2_                                                     |
-| new i18n         | Create new translations                                                     |
-| add sample       | Add sample data                                                             |
-| add hyva         | Add Hyvä Theme _\*3_                                                        |
-| add checkout     | Add Hyvä Checkout _\*3_                                                     |
-| composer         | Run composer (Usefull for valet php)                                        |
-| install \| i     | Run composer install or require                                             |
-| update \| up     | Run composer update                                                         |
-| remove \| rm     | Run composer remove                                                         |
-| build            | Run `setup:static-content:deploy` with common defaults                      |
-| run              | Run magerun2 _\*1_                                                          |
+| CMD                  | Description                                            |
+| -------------------- | ------------------------------------------------------ |
+| help                 | Show all options                                       |
+| self-update          | Update mage                                            |
+| info                 | Show minimal store info (e.g. version and uri)         |
+| stores               | Show all stores _\*1_                                  |
+| open                 | Open the default store, in the browser                 |
+| open admin           | Open store admin, in the browser                       |
+| open _STOREVIEW_     | Open specific storeview, in the browser _\*1_          |
+| watch                | Run cache-clean.js from mageTV                         |
+| purge                | Purge all static assets and caches                     |
+| new admin            | Create new admin user _\*2_                            |
+| new customer         | Create new customer _\*1_                              |
+| new theme            | Create new theme _\*2_                                 |
+| new module           | Create new module _\*2_                                |
+| new i18n             | Create new translations                                |
+| add sample           | Add sample data                                        |
+| add hyva             | Add Hyvä Theme _\*3_                                   |
+| add checkout         | Add Hyvä Checkout _\*3_                                |
+| config \| set config | Set Magento Configs                                    |
+| set hyva             | Set hyva default theme _\*4_                           |
+| set theme            | Set theme _\*4_                                        |
+| composer             | Run composer (Usefull for valet php)                   |
+| install \| i         | Run composer install or require                        |
+| update \| up         | Run composer update                                    |
+| remove \| rm         | Run composer remove                                    |
+| build                | Run `setup:static-content:deploy` with common defaults |
+| run                  | Run magerun2 _\*1_                                     |
 
 Any other command will run the same as `bin/magento`
 
@@ -74,6 +72,8 @@ Any other command will run the same as `bin/magento`
 > _\*2_ add the flag `--yes` or `-y`, for using on yes all questions
 >
 > _\*3_ requires [Hyvä license](https://www.hyva.io/hyva-themes-license.html) or gitlab access
+>
+> _\*4_ requires [Yireo_ThemeCommands](https://github.com/yireo/Yireo_ThemeCommands)
 
 ## Supported platforms/environments
 
