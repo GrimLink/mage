@@ -27,7 +27,7 @@ function mage_config() {
     echo "Disabling frontend caches"
     $MAGENTO_CLI cache:disable layout block_html full_page
   fi
-  
+
   if [[ "$CONFIG_RUN_ADMIN_SESSION" == "true" ]]; then
     echo "Setting session lifetime 86400"
     $MAGENTO_CLI config:set admin/security/session_lifetime 86400

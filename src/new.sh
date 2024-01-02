@@ -1,4 +1,48 @@
-function new_mage_mod() {
+function mage_new_admin() {
+  SKIP="false"
+
+  if [[ "$1" == "--yes" ]] || [[ "$1" == "-y" ]]; then
+    SKIP="true"
+  fi
+
+  if [[ $SKIP == "false" ]]; then
+    read -p "Email (${GITEMAIL}) or: " USEREMAIL
+    read -p "Firstname (${GITNAME}) or: " USERFIRST
+    read -p "Lastname (admin) or: " USERLAST
+    read -p "User name (${ADMINNAME}) or: " USERNAME
+    read -sp "Password (${ADMINPASS}) or: " USERPASS
+  fi
+
+  $MAGENTO_CLI admin:user:create \
+    --admin-user="${USERNAME:-$ADMINNAME}" \
+    --admin-password="${USERPASS:-$ADMINPASS}" \
+    --admin-email="${USEREMAIL:-$GITEMAIL}" \
+    --admin-firstname="${USERFIRST:-$GITNAME}" \
+    --admin-lastname="${USERLAST:-"admin"}"
+}
+
+function mage_new_translate() {
+  SRC=${3:-.}
+
+  if [[ ! -f "$SRC/registration.php" ]]; then
+    echo "This does not look like a Magento 2 module or theme"
+    read -p "Are you sure if you want to continue? [y/N] "
+    echo ""
+    if [[ $REPLY =~ ^[yY]|[yY][eE][sS]$ ]]; then
+      echo "Running '$MAGENTO_CLI i18n:collect-phrases' in '$SRC'"
+    else
+      exit 1
+    fi;
+  fi
+
+  mkdir -p $SRC/i18n
+  $MAGENTO_CLI i18n:collect-phrases $SRC -o $SRC/i18n/temp.csv
+  sed -i '' -e 's/^\([^"].*\),\([^"].*\)$/"\1","\2"/' $SRC/i18n/temp.csv
+  sort -o $SRC/i18n/en_US.csv $SRC/i18n/temp.csv
+  rm $SRC/i18n/temp.csv
+}
+
+function mage_new_mod() {
   TYPE=$1
   SRC=$2
   DIST=$3

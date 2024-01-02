@@ -1,14 +1,26 @@
 #!/bin/bash
 
+files=(
+  "_global"
+  "version"
+  "help"
+  "self"-update
+  "add"
+  "new"
+  "set"
+  "open"
+  "_actions"
+);
+
+function merge_files() {
+  for file in "$@"; do
+    cat "src/$file.sh"
+    echo
+  done
+}
+
+
 # Concatenate the separate files in the desired order
-cat \
-global.sh \
-help.sh \
-version.sh \
-self-update.sh \
-add.sh \
-new.sh \
-set.sh \
-open.sh \
-options.sh \
-... > mage
+merge_files "${files[@]}" > mage
+
+chmod +x mage
