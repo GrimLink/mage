@@ -1,0 +1,60 @@
+function new_mage_mod() {
+  TYPE=$1
+  SRC=$2
+  DIST=$3
+
+  read -p "Vendor: " VENDOR
+  if [[ -z "$VENDOR" ]]; then echo "The 'Vendor' can not be empty" && exit 1; fi
+
+  read -p "Name: " NAME
+  if [[ -z "$NAME" ]]; then echo "The 'Name' can not be empty" && exit 1; fi
+
+  VENDOR="$(echo $VENDOR | tr '[:upper:]' '[:lower:]' | awk '{for(i=1;i<=NF;i++){ $i=toupper(substr($i,1,1)) substr($i,2) }}1' | tr -d '[:blank:]')"
+  LOWER_VENDOR="$(tr '[:upper:][:blank:]' '[:lower:]-' <<< ${VENDOR})"
+  CAMEL_NAME="$(echo $NAME | tr '[:upper:]' '[:lower:]' | awk '{for(i=1;i<=NF;i++){ $i=toupper(substr($i,1,1)) substr($i,2) }}1' | tr -d '[:blank:]')"
+  LOWER_NAME="$(tr '[:upper:][:blank:]' '[:lower:]-' <<< ${NAME})"
+  FOLDER_PREFIX="magento2"
+
+  if [[ $TYPE == "theme" ]]; then
+    FOLDER_PREFIX="theme"
+  fi
+
+  NEW_MOD_PATH=$DIST/$VENDOR/$FOLDER_PREFIX-$LOWER_NAME;
+
+  if [[ -d "$NEW_MOD_PATH" ]]; then
+    echo "Theme ($NEW_MOD_PATH) already exists! Try a different name..." && exit 1
+  fi
+
+  mkdir -p $NEW_MOD_PATH;
+
+  if [[ $SRC = git@* ]]; then
+    cd $NEW_MOD_PATH
+    git clone $SRC .
+    rm -rf .git
+
+    find ./ -type f -exec perl -pi -e "s/<VENDOR>/${VENDOR}/g" {} +
+    find ./ -type f -exec perl -pi -e "s/<VENDOR_PKG>/${LOWER_VENDOR}/g" {} +
+    find ./ -type f -exec perl -pi -e "s/<MODULE>/${CAMEL_NAME}/g" {} +
+    find ./ -type f -exec perl -pi -e "s/<MODULE_PKG>/${LOWER_NAME}/g" {} +
+  else
+    PARENT=$(grep -oE "ComponentRegistrar::register\(ComponentRegistrar::THEME, '([^']+)'" "$SRC/registration.php" | awk -F"'" '{print $2}' | sed 's/^frontend\///')
+
+    if [[ -d "$SRC/web/tailwind" ]]; then
+      mkdir -p $NEW_MOD_PATH/web/tailwind &&
+      rsync -ah $SRC/web/tailwind/ $NEW_MOD_PATH/web/tailwind/ --exclude node_modules
+    fi
+
+    touch $NEW_MOD_PATH/registration.php &&
+    echo -e "<?php declare(strict_types=1);\n\nuse Magento\Framework\Component\ComponentRegistrar;\n\nComponentRegistrar::register(ComponentRegistrar::THEME, 'frontend/${VENDOR}/${LOWER_NAME}', __DIR__);" >> $NEW_MOD_PATH/registration.php
+
+    if [[ $TYPE == "theme" ]]; then
+      NEW_MOD_XML_TEMPLATE="<theme\n\txmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n\txsi:noNamespaceSchemaLocation=\"urn:magento:framework:Config/etc/theme.xsd\"\n>\n\t<title>${VENDOR} ${CAMEL_NAME}</title>\n\t<parent>${PARENT}</parent>\n</theme>";
+      touch $NEW_MOD_PATH/theme.xml &&
+      echo -e $NEW_MOD_XML_TEMPLATE >> $NEW_MOD_PATH/theme.xml
+    else
+      NEW_MOD_XML_TEMPLATE="<?xml version=\"1.0\"?>\n<config\n\txmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n\txsi:noNamespaceSchemaLocation=\"urn:magento:framework:Module/etc/module.xsd\"\n>\n\t<module name=\"${VENDOR}_${CAMEL_NAME}\" setup_version=\"1.0.0\">\n\t\t<sequence>\n\t\t\t<module name=\"Magento_Theme\"/>\n\t\t</sequence>\n\t</module>\n</config>";
+      mkdir $NEW_MOD_PATH/etc && touch $NEW_MOD_PATH/etc/module.xml &&
+      echo -e $NEW_MOD_XML_TEMPLATE >> $NEW_MOD_PATH/etc/module.xml
+    fi
+  fi
+}
