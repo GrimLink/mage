@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## [1.18.1] - 2024-01-11
+### Added
+- new commdand `add ray`
+
 ### Fixed
 - Removed fallback set (e.g. empty set) command conflicting with `bin/magento`
 

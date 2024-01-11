@@ -54,6 +54,7 @@ curl -O https://raw.githubusercontent.com/GrimLink/mage/main/mage && chmod +x ma
 | new i18n             | Create new translations                                |
 | add sample           | Add sample data                                        |
 | add hyva             | Add Hyvä Theme _\*3_                                   |
+| add ray              | Add ray, requires the ray app                          |
 | add checkout         | Add Hyvä Checkout _\*3_                                |
 | config \| set config | Set Magento Configs                                    |
 | set hyva             | Set hyva default theme _\*4_                           |

@@ -11,7 +11,7 @@ RED='\033[0;31m'
 GREEN='\033[1;32m'
 BLUE='\033[1;34m'
 
-VERSION="1.18.0"
+VERSION="1.18.1"
 GITNAME="$(git config --global --get user.name | head -n1 | cut -d " " -f1)"
 GITEMAIL="$(git config --global --get user.email)"
 ADMINNAME="$(echo "$GITNAME" | tr '[:upper:]' '[:lower:]')"
@@ -216,6 +216,7 @@ case "${@}" in
   echo -e "- ${BLUE}new i18n${RESET} (Create new translations)"
   echo -e "- ${BLUE}add sample${RESET} (Add sample data)"
   echo -e "- ${BLUE}add hyva${RESET} (Add Hyva Theme)"
+  echo -e "- ${BLUE}add ray${RESET} (Add ray, requires the ray app)"
   echo -e "- ${BLUE}add checkout${RESET} (Add Hyva Checkout)"
   echo -e "- ${BLUE}config | set config${RESET} (Set Magento Configs)"
   echo -e "- ${BLUE}set hyva${RESET} (Set hyva default theme)"
@@ -497,6 +498,11 @@ case "${@}" in
     $COMPOSER_CLI config repositories.hyva-themes/hyva-checkout git git@gitlab.hyva.io:hyva-checkout/checkout.git
     $COMPOSER_CLI require hyva-themes/magento2-hyva-checkout --prefer-source
   fi
+  ;;
+
+"add ray")
+  # Maybe add docker support, later?
+  $COMPOSER_CLI require spatie/ray
   ;;
 
 "add"*)
