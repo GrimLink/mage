@@ -526,10 +526,6 @@ case "${@}" in
   mage_config ${@:2}
   ;;
 
-"set"*)
-  echo -e "\n${RED}No ${BOLD}set${RESET}${RED} option given!${RESET}" && help_message
-  ;;
-
 "composer"*)
   $COMPOSER_CLI ${@:2}
   ;;
