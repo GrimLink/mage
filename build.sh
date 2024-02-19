@@ -2,13 +2,11 @@
 
 files=(
   "_global"
-  "version"
-  "help"
-  "self"-update
-  "add"
+  "info"
   "new"
-  "set"
   "open"
+  "hyva"
+  "sample"
   "_actions"
 );
 

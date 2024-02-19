@@ -1,8 +1,8 @@
 function mage_new_admin() {
-  SKIP="false"
+  local SKIP="false"
 
   if [[ "$1" == "--yes" ]] || [[ "$1" == "-y" ]]; then
-    SKIP="true"
+    local SKIP="true"
   fi
 
   if [[ $SKIP == "false" ]]; then
@@ -22,7 +22,7 @@ function mage_new_admin() {
 }
 
 function mage_new_translate() {
-  SRC=${3:-.}
+  local SRC=${3:-.}
 
   if [[ ! -f "$SRC/registration.php" ]]; then
     echo "This does not look like a Magento 2 module or theme"
@@ -42,16 +42,34 @@ function mage_new_translate() {
   rm $SRC/i18n/temp.csv
 }
 
-function mage_new_mod() {
-  TYPE=$1
-  SRC=$2
-  DIST=$3
+function mage_new_path() {
+  local ARGS=${@}
+  local PATH=""
+  local VENDOR=""
+  local NAME=""
+
+
 
   read -p "Vendor: " VENDOR
   if [[ -z "$VENDOR" ]]; then echo "The 'Vendor' can not be empty" && exit 1; fi
 
   read -p "Name: " NAME
   if [[ -z "$NAME" ]]; then echo "The 'Name' can not be empty" && exit 1; fi
+}
+
+function mage_new_theme() {
+  # Args
+  PATH="app/code"
+
+  # Files
+  FILE_THEMEXML="<theme\n\txmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n\txsi:noNamespaceSchemaLocation=\"urn:magento:framework:Config/etc/theme.xsd\"\n>\n\t<title>${VENDOR} ${CAMEL_NAME}</title>\n\t<parent>${PARENT}</parent>\n</theme>"
+  FILE_REGISTRATION=""
+}
+
+function mage_new_mod() {
+  TYPE=$1
+  SRC=$2
+  DIST=$3
 
   VENDOR="$(echo $VENDOR | tr '[:upper:]' '[:lower:]' | awk '{for(i=1;i<=NF;i++){ $i=toupper(substr($i,1,1)) substr($i,2) }}1' | tr -d '[:blank:]')"
   LOWER_VENDOR="$(tr '[:upper:][:blank:]' '[:lower:]-' <<< ${VENDOR})"
@@ -92,7 +110,7 @@ function mage_new_mod() {
     echo -e "<?php declare(strict_types=1);\n\nuse Magento\Framework\Component\ComponentRegistrar;\n\nComponentRegistrar::register(ComponentRegistrar::THEME, 'frontend/${VENDOR}/${LOWER_NAME}', __DIR__);" >> $NEW_MOD_PATH/registration.php
 
     if [[ $TYPE == "theme" ]]; then
-      NEW_MOD_XML_TEMPLATE="<theme\n\txmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n\txsi:noNamespaceSchemaLocation=\"urn:magento:framework:Config/etc/theme.xsd\"\n>\n\t<title>${VENDOR} ${CAMEL_NAME}</title>\n\t<parent>${PARENT}</parent>\n</theme>";
+      NEW_MOD_XML_TEMPLATE="";
       touch $NEW_MOD_PATH/theme.xml &&
       echo -e $NEW_MOD_XML_TEMPLATE >> $NEW_MOD_PATH/theme.xml
     else

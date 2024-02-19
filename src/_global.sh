@@ -24,6 +24,9 @@ VARNISH_CLI="" # We never use varnish on a local machine, and prefer to never us
 COMPOSER_CLI="composer"
 OPEN_CLI="xdg-open" # Linux
 GET_CLI="wget" # Linux
+NODE_CLI="$(which npm)"
+NODE_VERSION=$(node --version | cut -d "." -f 1 | cut -d "v" -f 2)
+MIN_NODE_VERSION=16
 
 # OSX
 if [[ "$OSTYPE" == "darwin"* ]]; then

@@ -24,6 +24,9 @@ VARNISH_CLI="" # We never use varnish on a local machine, and prefer to never us
 COMPOSER_CLI="composer"
 OPEN_CLI="xdg-open" # Linux
 GET_CLI="wget" # Linux
+NODE_CLI="$(which npm)"
+NODE_VERSION=$(node --version | cut -d "." -f 1 | cut -d "v" -f 2)
+MIN_NODE_VERSION=16
 
 # OSX
 if [[ "$OSTYPE" == "darwin"* ]]; then
@@ -91,36 +94,167 @@ function mage_help() {
   echo -e "${ITALIC}To see these copmmand again, run ${BLUE}mage --help${RESET}"
 }
 
-function mage_self_update() {
-  cd $(dirname "${BASH_SOURCE}") &&
-  rm mage &&
-  $GET_CLI https://raw.githubusercontent.com/GrimLink/mage/main/mage &&
-  chmod +x mage
-}
+function mage_new_admin() {
+  local SKIP="false"
 
-function mage_add_sample() {
-  read -p "What is your Magento base version (sample: 2.4): " MVERSION && echo ""
-  if [[ -z "$MVERSION" ]]; then echo "The Magento 2 version is empty, aborting.." && exit 1; fi
-
-  if [[ ! -d "$HOME/.magento-sampledata/$MVERSION" ]]; then
-    git clone -b $MVERSION git@github.com:magento/magento2-sample-data.git $HOME/.magento-sampledata/$MVERSION
+  if [[ "$1" == "--yes" ]] || [[ "$1" == "-y" ]]; then
+    local SKIP="true"
   fi
 
-  echo -e "Installing $MVERSION sample data"
-  # Lets make sure these folder exist, to prevent them being made as a symlink
-  mkdir -p app/code/Magento
-  mkdir -p pub/media/catalog/product
-  mkdir -p pub/media/downloadable/files
-  mkdir -p pub/media/wysiwyg
-  touch README.md
-  php -f $HOME/.magento-sampledata/$MVERSION/dev/tools/build-sample-data.php -- --ce-source="$PWD"
-  $MAGENTO_CLI setup:upgrade
+  if [[ $SKIP == "false" ]]; then
+    read -p "Email (${GITEMAIL}) or: " USEREMAIL
+    read -p "Firstname (${GITNAME}) or: " USERFIRST
+    read -p "Lastname (admin) or: " USERLAST
+    read -p "User name (${ADMINNAME}) or: " USERNAME
+    read -sp "Password (${ADMINPASS}) or: " USERPASS
+  fi
 
-  # Set theme to Hyva if present
-  if composer show hyva-themes/magento2-default-theme >/dev/null 2>&1; then
-    if composer show yireo/magento2-theme-commands >/dev/null 2>&1; then
-      $MAGENTO_CLI theme:change Hyva/default
+  $MAGENTO_CLI admin:user:create \
+    --admin-user="${USERNAME:-$ADMINNAME}" \
+    --admin-password="${USERPASS:-$ADMINPASS}" \
+    --admin-email="${USEREMAIL:-$GITEMAIL}" \
+    --admin-firstname="${USERFIRST:-$GITNAME}" \
+    --admin-lastname="${USERLAST:-"admin"}"
+}
+
+function mage_new_translate() {
+  local SRC=${3:-.}
+
+  if [[ ! -f "$SRC/registration.php" ]]; then
+    echo "This does not look like a Magento 2 module or theme"
+    read -p "Are you sure if you want to continue? [y/N] "
+    echo ""
+    if [[ $REPLY =~ ^[yY]|[yY][eE][sS]$ ]]; then
+      echo "Running '$MAGENTO_CLI i18n:collect-phrases' in '$SRC'"
+    else
+      exit 1
+    fi;
+  fi
+
+  mkdir -p $SRC/i18n
+  $MAGENTO_CLI i18n:collect-phrases $SRC -o $SRC/i18n/temp.csv
+  sed -i '' -e 's/^\([^"].*\),\([^"].*\)$/"\1","\2"/' $SRC/i18n/temp.csv
+  sort -o $SRC/i18n/en_US.csv $SRC/i18n/temp.csv
+  rm $SRC/i18n/temp.csv
+}
+
+function mage_new_path() {
+  local ARGS=${@}
+  local PATH=""
+  local VENDOR=""
+  local NAME=""
+
+  
+
+  read -p "Vendor: " VENDOR
+  if [[ -z "$VENDOR" ]]; then echo "The 'Vendor' can not be empty" && exit 1; fi
+
+  read -p "Name: " NAME
+  if [[ -z "$NAME" ]]; then echo "The 'Name' can not be empty" && exit 1; fi
+}
+
+function mage_new_theme() {
+  # Args
+  PATH="app/code"
+
+  # Files
+  FILE_THEMEXML="<theme\n\txmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n\txsi:noNamespaceSchemaLocation=\"urn:magento:framework:Config/etc/theme.xsd\"\n>\n\t<title>${VENDOR} ${CAMEL_NAME}</title>\n\t<parent>${PARENT}</parent>\n</theme>"
+  FILE_REGISTRATION=""
+}
+
+function mage_new_mod() {
+  TYPE=$1
+  SRC=$2
+  DIST=$3
+
+
+
+  VENDOR="$(echo $VENDOR | tr '[:upper:]' '[:lower:]' | awk '{for(i=1;i<=NF;i++){ $i=toupper(substr($i,1,1)) substr($i,2) }}1' | tr -d '[:blank:]')"
+  LOWER_VENDOR="$(tr '[:upper:][:blank:]' '[:lower:]-' <<< ${VENDOR})"
+  CAMEL_NAME="$(echo $NAME | tr '[:upper:]' '[:lower:]' | awk '{for(i=1;i<=NF;i++){ $i=toupper(substr($i,1,1)) substr($i,2) }}1' | tr -d '[:blank:]')"
+  LOWER_NAME="$(tr '[:upper:][:blank:]' '[:lower:]-' <<< ${NAME})"
+  FOLDER_PREFIX="magento2"
+
+  if [[ $TYPE == "theme" ]]; then
+    FOLDER_PREFIX="theme"
+  fi
+
+  NEW_MOD_PATH=$DIST/$VENDOR/$FOLDER_PREFIX-$LOWER_NAME;
+
+  if [[ -d "$NEW_MOD_PATH" ]]; then
+    echo "Theme ($NEW_MOD_PATH) already exists! Try a different name..." && exit 1
+  fi
+
+  mkdir -p $NEW_MOD_PATH;
+
+  if [[ $SRC = git@* ]]; then
+    cd $NEW_MOD_PATH
+    git clone $SRC .
+    rm -rf .git
+
+    find ./ -type f -exec perl -pi -e "s/<VENDOR>/${VENDOR}/g" {} +
+    find ./ -type f -exec perl -pi -e "s/<VENDOR_PKG>/${LOWER_VENDOR}/g" {} +
+    find ./ -type f -exec perl -pi -e "s/<MODULE>/${CAMEL_NAME}/g" {} +
+    find ./ -type f -exec perl -pi -e "s/<MODULE_PKG>/${LOWER_NAME}/g" {} +
+  else
+    PARENT=$(grep -oE "ComponentRegistrar::register\(ComponentRegistrar::THEME, '([^']+)'" "$SRC/registration.php" | awk -F"'" '{print $2}' | sed 's/^frontend\///')
+
+    if [[ -d "$SRC/web/tailwind" ]]; then
+      mkdir -p $NEW_MOD_PATH/web/tailwind &&
+      rsync -ah $SRC/web/tailwind/ $NEW_MOD_PATH/web/tailwind/ --exclude node_modules
     fi
+
+    touch $NEW_MOD_PATH/registration.php &&
+    echo -e "<?php declare(strict_types=1);\n\nuse Magento\Framework\Component\ComponentRegistrar;\n\nComponentRegistrar::register(ComponentRegistrar::THEME, 'frontend/${VENDOR}/${LOWER_NAME}', __DIR__);" >> $NEW_MOD_PATH/registration.php
+
+    if [[ $TYPE == "theme" ]]; then
+      NEW_MOD_XML_TEMPLATE="";
+      touch $NEW_MOD_PATH/theme.xml &&
+      echo -e $NEW_MOD_XML_TEMPLATE >> $NEW_MOD_PATH/theme.xml
+    else
+      NEW_MOD_XML_TEMPLATE="<?xml version=\"1.0\"?>\n<config\n\txmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n\txsi:noNamespaceSchemaLocation=\"urn:magento:framework:Module/etc/module.xsd\"\n>\n\t<module name=\"${VENDOR}_${CAMEL_NAME}\" setup_version=\"1.0.0\">\n\t\t<sequence>\n\t\t\t<module name=\"Magento_Theme\"/>\n\t\t</sequence>\n\t</module>\n</config>";
+      mkdir $NEW_MOD_PATH/etc && touch $NEW_MOD_PATH/etc/module.xml &&
+      echo -e $NEW_MOD_XML_TEMPLATE >> $NEW_MOD_PATH/etc/module.xml
+    fi
+  fi
+}
+
+# Vanila solution to get the Magento 2 base url
+function get_mage_base_uri() {
+  local BASEURI="$($MAGENTO_CLI config:show web/secure/base_url)"
+  if [[ -z "${BASEURI}" ]]; then
+    local BASEURI="$($MAGENTO_CLI config:show web/unsecure/base_url)"
+  fi
+
+  echo $BASEURI
+}
+
+function mage_open() {
+  local STORE=${2:-1}
+  local STORE_URL=""
+  local ADMIN_PATH=""
+
+  # Prefetch admin URL data for open steps
+  if [[ "$STORE" == "admin" ]]; then
+    local ADMIN_PATH=$(grep frontName app/etc/env.php | tail -1 | cut -d '>' -f2 | cut -d '"' -f2 | cut -d "'" -f2)
+  fi
+
+  # Fetch the store url
+  if [[ -n "$MAGERUN_CLI" ]]; then
+    if [[ "$STORE" == "admin" ]]; then
+      local STORE_URL=$($MAGERUN_CLI sys:store:config:base-url:list --format csv | grep 1 -m 1 | head -1 | cut -d ',' -f3)
+    else
+      local STORE_URL=$($MAGERUN_CLI sys:store:config:base-url:list --format csv | grep $STORE | cut -d ',' -f3)
+    fi
+  else
+    local STORE_URL=$(get_mage_base_uri)
+  fi
+
+  if [[ -z "$STORE_URL" ]]; then
+    echo "Could not find url for store $STORE"
+  else
+    echo -e "Opening: ${STORE_URL}${ADMIN_PATH}"
+    $OPEN_CLI ${STORE_URL}${ADMIN_PATH}
   fi
 }
 
@@ -191,202 +325,32 @@ function mage_add_checkout() {
   fi
 }
 
-function mage_new_admin() {
-  SKIP="false"
+function mage_add_sample() {
+  read -p "What is your Magento base version (sample: 2.4): " MVERSION && echo ""
+  if [[ -z "$MVERSION" ]]; then echo "The Magento 2 version is empty, aborting.." && exit 1; fi
 
-  if [[ "$1" == "--yes" ]] || [[ "$1" == "-y" ]]; then
-    SKIP="true"
+  if [[ ! -d "$HOME/.magento-sampledata/$MVERSION" ]]; then
+    git clone -b $MVERSION git@github.com:magento/magento2-sample-data.git $HOME/.magento-sampledata/$MVERSION
   fi
 
-  if [[ $SKIP == "false" ]]; then
-    read -p "Email (${GITEMAIL}) or: " USEREMAIL
-    read -p "Firstname (${GITNAME}) or: " USERFIRST
-    read -p "Lastname (admin) or: " USERLAST
-    read -p "User name (${ADMINNAME}) or: " USERNAME
-    read -sp "Password (${ADMINPASS}) or: " USERPASS
-  fi
+  echo -e "Installing $MVERSION sample data"
+  # Lets make sure these folder exist, to prevent them being made as a symlink
+  mkdir -p app/code/Magento
+  mkdir -p pub/media/catalog/product
+  mkdir -p pub/media/downloadable/files
+  mkdir -p pub/media/wysiwyg
+  touch README.md
+  php -f $HOME/.magento-sampledata/$MVERSION/dev/tools/build-sample-data.php -- --ce-source="$PWD"
+  $MAGENTO_CLI setup:upgrade
 
-  $MAGENTO_CLI admin:user:create \
-    --admin-user="${USERNAME:-$ADMINNAME}" \
-    --admin-password="${USERPASS:-$ADMINPASS}" \
-    --admin-email="${USEREMAIL:-$GITEMAIL}" \
-    --admin-firstname="${USERFIRST:-$GITNAME}" \
-    --admin-lastname="${USERLAST:-"admin"}"
-}
-
-function mage_new_translate() {
-  SRC=${3:-.}
-
-  if [[ ! -f "$SRC/registration.php" ]]; then
-    echo "This does not look like a Magento 2 module or theme"
-    read -p "Are you sure if you want to continue? [y/N] "
-    echo ""
-    if [[ $REPLY =~ ^[yY]|[yY][eE][sS]$ ]]; then
-      echo "Running '$MAGENTO_CLI i18n:collect-phrases' in '$SRC'"
-    else
-      exit 1
-    fi;
-  fi
-
-  mkdir -p $SRC/i18n
-  $MAGENTO_CLI i18n:collect-phrases $SRC -o $SRC/i18n/temp.csv
-  sed -i '' -e 's/^\([^"].*\),\([^"].*\)$/"\1","\2"/' $SRC/i18n/temp.csv
-  sort -o $SRC/i18n/en_US.csv $SRC/i18n/temp.csv
-  rm $SRC/i18n/temp.csv
-}
-
-function mage_new_mod() {
-  TYPE=$1
-  SRC=$2
-  DIST=$3
-
-  read -p "Vendor: " VENDOR
-  if [[ -z "$VENDOR" ]]; then echo "The 'Vendor' can not be empty" && exit 1; fi
-
-  read -p "Name: " NAME
-  if [[ -z "$NAME" ]]; then echo "The 'Name' can not be empty" && exit 1; fi
-
-  VENDOR="$(echo $VENDOR | tr '[:upper:]' '[:lower:]' | awk '{for(i=1;i<=NF;i++){ $i=toupper(substr($i,1,1)) substr($i,2) }}1' | tr -d '[:blank:]')"
-  LOWER_VENDOR="$(tr '[:upper:][:blank:]' '[:lower:]-' <<< ${VENDOR})"
-  CAMEL_NAME="$(echo $NAME | tr '[:upper:]' '[:lower:]' | awk '{for(i=1;i<=NF;i++){ $i=toupper(substr($i,1,1)) substr($i,2) }}1' | tr -d '[:blank:]')"
-  LOWER_NAME="$(tr '[:upper:][:blank:]' '[:lower:]-' <<< ${NAME})"
-  FOLDER_PREFIX="magento2"
-
-  if [[ $TYPE == "theme" ]]; then
-    FOLDER_PREFIX="theme"
-  fi
-
-  NEW_MOD_PATH=$DIST/$VENDOR/$FOLDER_PREFIX-$LOWER_NAME;
-
-  if [[ -d "$NEW_MOD_PATH" ]]; then
-    echo "Theme ($NEW_MOD_PATH) already exists! Try a different name..." && exit 1
-  fi
-
-  mkdir -p $NEW_MOD_PATH;
-
-  if [[ $SRC = git@* ]]; then
-    cd $NEW_MOD_PATH
-    git clone $SRC .
-    rm -rf .git
-
-    find ./ -type f -exec perl -pi -e "s/<VENDOR>/${VENDOR}/g" {} +
-    find ./ -type f -exec perl -pi -e "s/<VENDOR_PKG>/${LOWER_VENDOR}/g" {} +
-    find ./ -type f -exec perl -pi -e "s/<MODULE>/${CAMEL_NAME}/g" {} +
-    find ./ -type f -exec perl -pi -e "s/<MODULE_PKG>/${LOWER_NAME}/g" {} +
-  else
-    PARENT=$(grep -oE "ComponentRegistrar::register\(ComponentRegistrar::THEME, '([^']+)'" "$SRC/registration.php" | awk -F"'" '{print $2}' | sed 's/^frontend\///')
-
-    if [[ -d "$SRC/web/tailwind" ]]; then
-      mkdir -p $NEW_MOD_PATH/web/tailwind &&
-      rsync -ah $SRC/web/tailwind/ $NEW_MOD_PATH/web/tailwind/ --exclude node_modules
-    fi
-
-    touch $NEW_MOD_PATH/registration.php &&
-    echo -e "<?php declare(strict_types=1);\n\nuse Magento\Framework\Component\ComponentRegistrar;\n\nComponentRegistrar::register(ComponentRegistrar::THEME, 'frontend/${VENDOR}/${LOWER_NAME}', __DIR__);" >> $NEW_MOD_PATH/registration.php
-
-    if [[ $TYPE == "theme" ]]; then
-      NEW_MOD_XML_TEMPLATE="<theme\n\txmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n\txsi:noNamespaceSchemaLocation=\"urn:magento:framework:Config/etc/theme.xsd\"\n>\n\t<title>${VENDOR} ${CAMEL_NAME}</title>\n\t<parent>${PARENT}</parent>\n</theme>";
-      touch $NEW_MOD_PATH/theme.xml &&
-      echo -e $NEW_MOD_XML_TEMPLATE >> $NEW_MOD_PATH/theme.xml
-    else
-      NEW_MOD_XML_TEMPLATE="<?xml version=\"1.0\"?>\n<config\n\txmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n\txsi:noNamespaceSchemaLocation=\"urn:magento:framework:Module/etc/module.xsd\"\n>\n\t<module name=\"${VENDOR}_${CAMEL_NAME}\" setup_version=\"1.0.0\">\n\t\t<sequence>\n\t\t\t<module name=\"Magento_Theme\"/>\n\t\t</sequence>\n\t</module>\n</config>";
-      mkdir $NEW_MOD_PATH/etc && touch $NEW_MOD_PATH/etc/module.xml &&
-      echo -e $NEW_MOD_XML_TEMPLATE >> $NEW_MOD_PATH/etc/module.xml
+  # Set theme to Hyva if present
+  if composer show hyva-themes/magento2-default-theme >/dev/null 2>&1; then
+    if composer show yireo/magento2-theme-commands >/dev/null 2>&1; then
+      $MAGENTO_CLI theme:change Hyva/default
     fi
   fi
 }
 
-function mage_config() {
-  CONFIG_RUN_CACHE="false"
-  CONFIG_RUN_ADMIN_SESSION="false"
-  CONFIG_RUN_DISABLE_SECURITY="false"
-  CONFIG_RUN_DEV_MODE="false"
-  FLAGS="${@}"
-
-  if [[ "$FLAGS" == *"--cache"* || "$FLAGS" =~ ^"-"([^ ]*)"c".* ]]; then
-    CONFIG_RUN_CACHE="true"
-  fi
-  if [[ "$FLAGS" == *"--admin-session"* || "$FLAGS" =~ ^"-"([^ ]*)"a".* ]]; then
-    CONFIG_RUN_ADMIN_SESSION="true"
-  fi
-  if [[ "$FLAGS" == *"--disable-security"* || "$FLAGS" =~ ^"-"([^ ]*)"s".* ]]; then
-    CONFIG_RUN_DISABLE_SECURITY="true"
-  fi
-  if [[ "$FLAGS" == *"--dev-mode"* || "$FLAGS" =~ ^"-"([^ ]*)"d".* ]]; then
-    CONFIG_RUN_DEV_MODE="true"
-  fi
-
-  if [[ -z "$FLAGS" ]]; then
-    CONFIG_RUN_CACHE="true";
-    CONFIG_RUN_ADMIN_SESSION="true"
-  fi
-
-  if [[ "$CONFIG_RUN_CACHE" == "true" ]]; then
-    echo "Disabling frontend caches"
-    $MAGENTO_CLI cache:disable layout block_html full_page
-  fi
-
-  if [[ "$CONFIG_RUN_ADMIN_SESSION" == "true" ]]; then
-    echo "Setting session lifetime 86400"
-    $MAGENTO_CLI config:set admin/security/session_lifetime 86400
-    echo "Setting admin password lifetime ∞"
-    $MAGENTO_CLI config:set admin/security/password_lifetime ""
-  fi
-  if [[ "$CONFIG_RUN_DISABLE_SECURITY" == "true" ]]; then
-    $MAGENTO_CLI security:recaptcha:disable-for-user-login
-    $MAGENTO_CLI security:recaptcha:disable-for-user-forgot-password
-  fi
-
-  if [[ "$CONFIG_RUN_DEV_MODE" == true ]]; then
-    $MAGENTO_CLI config:set dev/static/sign 0
-    $MAGENTO_CLI deploy:mode:set developer
-    echo "Removing Crons, make sure you're not running this on a live environment!"
-    read -p "Are your sure? [y/N] "
-    echo ""
-    if [[ $REPLY =~ ^[yY]|[yY][eE][sS]$ ]]; then
-      $MAGENTO_CLI cron:remove
-    fi;
-  fi
-}
-
-# Vanila solution to get the Magento 2 base url
-function get_mage_base_uri() {
-  BASEURI="$($MAGENTO_CLI config:show web/secure/base_url)"
-  if [[ -z "${BASEURI}" ]]; then
-    BASEURI="$($MAGENTO_CLI config:show web/unsecure/base_url)"
-  fi
-
-  echo $BASEURI
-}
-
-function mage_open() {
-  STORE=${2:-1}
-  STORE_URL=""
-  ADMIN_PATH=""
-
-  # Prefetch admin URL data for open steps
-  if [[ "$STORE" == "admin" ]]; then
-    ADMIN_PATH=$(grep frontName app/etc/env.php | tail -1 | cut -d '>' -f2 | cut -d '"' -f2 | cut -d "'" -f2)
-  fi
-
-  # Fetch the store url
-  if [[ -n "$MAGERUN_CLI" ]]; then
-    if [[ "$STORE" == "admin" ]]; then
-      STORE_URL=$($MAGERUN_CLI sys:store:config:base-url:list --format csv | grep 1 -m 1 | head -1 | cut -d ',' -f3)
-    else
-      STORE_URL=$($MAGERUN_CLI sys:store:config:base-url:list --format csv | grep $STORE | cut -d ',' -f3)
-    fi
-  else
-    STORE_URL=$(get_mage_base_uri)
-  fi
-
-  if [[ -z "$STORE_URL" ]]; then
-    echo "Could not find url for store $STORE"
-  else
-    echo -e "Opening: ${STORE_URL}${ADMIN_PATH}"
-    $OPEN_CLI ${STORE_URL}${ADMIN_PATH}
-  fi
-}
 
 case "${@}" in
 "-v" | "--version")
@@ -399,7 +363,10 @@ case "${@}" in
   ;;
 
 "self-update")
-  mage_self_update
+  cd $(dirname "${BASH_SOURCE}") &&
+  rm mage &&
+  $GET_CLI https://raw.githubusercontent.com/GrimLink/mage/main/mage &&
+  chmod +x mage
   ;;
 
 "info")
@@ -438,11 +405,6 @@ case "${@}" in
   mage_purge
   ;;
 
-"new"*)
-  echo -e "\n${RED}No ${BOLD}new${RESET}${RED} option given!${RESET}" &&
-  help_message
-  ;;
-
 "new admin"*)
   mage_new_admin ${@:3}
   ;;
@@ -471,11 +433,6 @@ case "${@}" in
   mage_new_translate ${@:3}
   ;;
 
-"add"*)
-  echo -e "\n${RED}No ${BOLD}add${RESET}${RED} option given!${RESET}" &&
-  help_message
-  ;;
-
 "add sample")
   mage_add_sample
   ;;
@@ -486,11 +443,6 @@ case "${@}" in
 
 "add checkout")
   mage_add_checkout
-  ;;
-
-"set"*)
-  echo -e "\n${RED}No ${BOLD}set${RESET}${RED} option given!${RESET}" &&
-  help_message
   ;;
 
 "set theme"*)
@@ -508,36 +460,25 @@ case "${@}" in
   $MAGENTO_CLI cache:flush
   ;;
 
-"set config"*)
-  mage_config ${@:3}
+"config dev")
+  $MAGENTO_CLI config:set dev/static/sign 0
+  $MAGENTO_CLI deploy:mode:set developer
+  ;;
+
+"config admin:captcha")
+  $MAGENTO_CLI security:recaptcha:disable-for-user-login
+  $MAGENTO_CLI security:recaptcha:disable-for-user-forgot-password
+  ;;
+
+"config admin:session")
+  echo "Setting session lifetime 86400"
+  $MAGENTO_CLI config:set admin/security/session_lifetime 86400
+  echo "Setting admin password lifetime ∞"
+  $MAGENTO_CLI config:set admin/security/password_lifetime ""
   ;;
 
 "build"*)
-  # Initialize variables with default values
-  LANGS="en_US nl_NL"
-  JOBS=4
-  FORCE=""
-  DEFAULT_ARGS="$LANGS $JOBS"
-  ARGS=${@:2}
-
-  # If language is not found in ARGS add the default
-  if [[ $ARG != *_* ]]; then
-    ARGS="$LANGS $ARGS"
-  fi
-
-  # If Jobs is not found in ARGS add the default
-  if [[ "$ARGS" != *"-j"* ]] || [[ "$ARGS" != *"--jobs"* ]]; then
-    ARGS="$ARGS -j $JOBS"
-  fi
-
-  # If force is found in ARGS add it to both adminhtml and frontend
-  if [[ "$ARGS" == *"-f"* ]] || [[ "$ARGS" == *"--force"* ]]; then
-    FORCE="-f"
-  fi
-
-  # Deploy static content
-  $MAGENTO_CLI setup:static-content:deploy -a adminhtml en_US ${FORCE} &&
-  $MAGENTO_CLI setup:static-content:deploy -a frontend ${ARGS:-$DEFAULT_ARGS}
+  mage_build ${@:2}
   ;;
 
 "run"*)

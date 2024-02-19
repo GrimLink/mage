@@ -1,5 +1,5 @@
 function mage_purge() {
-  CLEANTASKS=(
+  local CLEANTASKS=(
     'pub/static/*'
     'generated/*'
     'var/cache/*'
@@ -7,12 +7,12 @@ function mage_purge() {
     'var/page_cache/*'
     'var/view_preprocessed/*'
   );
-  PURGE_CMD="rm -rf"
+  local PURGE_CMD="rm -rf"
 
   if [[ $WARDEN == 1 ]]; then
     # Run removal within environment, so that changes are in effect immediately.
     # Changes will get synced back to host on MacOS.
-    PURGE_CMD="warden env exec -T php-fpm rm -rf"
+    local PURGE_CMD="warden env exec -T php-fpm rm -rf"
   fi;
 
   for i in "${CLEANTASKS[@]}"; do
