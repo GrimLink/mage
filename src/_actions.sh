@@ -123,6 +123,10 @@ case "${@}" in
   $MAGENTO_CLI config:set admin/security/password_lifetime ""
   ;;
 
+"config allowed:countries")
+  # TODO
+  ;;
+
 "build"*)
   mage_build ${@:2}
   ;;
