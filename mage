@@ -599,6 +599,15 @@ case "${@}" in
     echo $NO_MAGERUN_MSG
   fi
   ;;
+"browser-sync")
+  STORE_URL=$(get_mage_base_uri)
+
+  if [[ -z "$STORE_URL" ]]; then
+    echo "Could not find url for store $STORE"
+  else
+    browser-sync start --proxy  ${STORE_URL} --https --files 'app/**/*.phtml, app/**/*.xml, app/**/*.css, app/**/*.js'
+  fi
+  ;;
 
 *)
   $MAGENTO_CLI $@
