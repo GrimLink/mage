@@ -46,6 +46,7 @@ curl -O https://raw.githubusercontent.com/GrimLink/mage/main/mage && chmod +x ma
 | open admin           | Open store admin, in the browser                       |
 | open _STOREVIEW_     | Open specific storeview, in the browser _\*1_          |
 | watch                | Run cache-clean.js from mageTV                         |
+| browser-sync         | Run browser-sync on the default store                  |
 | purge                | Purge all static assets and caches                     |
 | new admin            | Create new admin user _\*2_                            |
 | new customer         | Create new customer _\*1_                              |

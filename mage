@@ -11,7 +11,7 @@ RED='\033[0;31m'
 GREEN='\033[1;32m'
 BLUE='\033[1;34m'
 
-VERSION="1.18.1"
+VERSION="1.19.0"
 GITNAME="$(git config --global --get user.name | head -n1 | cut -d " " -f1)"
 GITEMAIL="$(git config --global --get user.email)"
 ADMINNAME="$(echo "$GITNAME" | tr '[:upper:]' '[:lower:]')"
@@ -208,6 +208,7 @@ case "${@}" in
   echo -e "- ${BLUE}stores${RESET} (Show all stores)"
   echo -e "- ${BLUE}open${RESET} (Open store in browser)"
   echo -e "- ${BLUE}watch${RESET} (Run cache-clean.js from mageTV)"
+  echo -e "- ${BLUE}browser-sync${RESET} (Run browser-sync on the default store view)"
   echo -e "- ${BLUE}purge${RESET} (Purge all static assets)"
   echo -e "- ${BLUE}new admin${RESET} (Create new admin user)"
   echo -e "- ${BLUE}new customer${RESET} (Create new customer)"
@@ -301,6 +302,16 @@ case "${@}" in
     warden env exec php-fpm /home/www-data/.composer/vendor/bin/cache-clean.js -w
   else
     $CACHE_CLI
+  fi
+  ;;
+
+"browser-sync")
+  STORE_URL=$(get_mage_base_uri)
+
+  if [[ -z "$STORE_URL" ]]; then
+    echo "Could not find url for store $STORE"
+  else
+    npx browser-sync start --proxy  ${STORE_URL} --https --files 'app/**/*.phtml, app/**/*.xml, app/**/*.css, app/**/*.js'
   fi
   ;;
 
@@ -597,16 +608,6 @@ case "${@}" in
     $MAGERUN_CLI ${@:2}
   else
     echo $NO_MAGERUN_MSG
-  fi
-  ;;
-
-"browser-sync")
-  STORE_URL=$(get_mage_base_uri)
-
-  if [[ -z "$STORE_URL" ]]; then
-    echo "Could not find url for store $STORE"
-  else
-    npx browser-sync start --proxy  ${STORE_URL} --https --files 'app/**/*.phtml, app/**/*.xml, app/**/*.css, app/**/*.js'
   fi
   ;;
 
