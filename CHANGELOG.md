@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- new commdand `browser-sync` (thanks to @henkvalk)
+
 ## [1.18.1] - 2024-01-11
 ### Added
 - new commdand `add ray`
