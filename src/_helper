@@ -1,3 +1,4 @@
+# Helper to format language inputs
 function format_arguments() {
   formatted_args=""
   for arg in "$@"; do
@@ -9,6 +10,7 @@ function format_arguments() {
   echo "$formatted_args"
 }
 
+# Get the Magento 2 Base Url
 function get_mage_base_uri() {
   local BASEURI="$($MAGENTO_CLI config:show web/secure/base_url)"
   if [[ -z "${BASEURI}" ]]; then

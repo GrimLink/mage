@@ -20,7 +20,7 @@ WARDEN=0
 MAGENTO_CLI="bin/magento"
 MAGERUN_CLI=""
 REDIS_CLI="redis-cli"
-VARNISH_CLI="" # We never use varnish on a local machine, and prefer to never use it
+VARNISH_CLI="varnishadm" # We never use varnish on a local machine, and prefer to never use it
 COMPOSER_CLI="composer"
 OPEN_CLI="xdg-open" # Linux
 GET_CLI="wget" # Linux
@@ -58,6 +58,7 @@ if [ -f .env ] && grep -q "WARDEN_ENV_NAME" .env && [[ ! "$PATH" == /var/www/htm
   COMPOSER_CLI="warden env exec php-fpm composer"
 fi
 
+# Helper to format language inputs
 function format_arguments() {
   formatted_args=""
   for arg in "$@"; do
@@ -69,6 +70,7 @@ function format_arguments() {
   echo "$formatted_args"
 }
 
+# Get the Magento 2 Base Url
 function get_mage_base_uri() {
   local BASEURI="$($MAGENTO_CLI config:show web/secure/base_url)"
   if [[ -z "${BASEURI}" ]]; then
@@ -270,12 +272,15 @@ case "${@}" in
   ;;
 
 "browser-sync")
+  # TODO: add option to use your own storeview
   STORE_URL=$(get_mage_base_uri)
+  # TODO: add option to watch another folder?
+  FILES_TO_WATCH="app/**/*.phtml, app/**/*.xml, app/**/*.css, app/**/*.js"
 
   if [[ -z "$STORE_URL" ]]; then
     echo "Could not find url for store $STORE"
   else
-    npx browser-sync start --proxy  ${STORE_URL} --https --files 'app/**/*.phtml, app/**/*.xml, app/**/*.css, app/**/*.js'
+    npx browser-sync start --proxy ${STORE_URL} --https --files $FILES_TO_WATCH
   fi
   ;;
 
@@ -285,8 +290,9 @@ case "${@}" in
 
 "purge"*)
   CLEANTASKS=(
-    'pub/static/*'
     'generated/*'
+    'pub/static/adminhtml/*'
+    'pub/static/frontend/*'
     'var/cache/*'
     'var/composer_home/*'
     'var/page_cache/*'
