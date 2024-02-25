@@ -82,7 +82,10 @@ case "${@}" in
   ;;
 
 "browser-sync")
+  # TODO: add option to use your own storeview
   STORE_URL=$(get_mage_base_uri)
+  # TODO: add option to watch another folder?
+  FILES_TO_WATCH="app/**/*.phtml, app/**/*.xml, app/**/*.css, app/**/*.js"
 
   if [[ -z "$STORE_URL" ]]; then
     echo "Could not find url for store $STORE"
