@@ -6,13 +6,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Source code is now split, for the bigger functions,
+  the main file is the same as always, just now build from the src
+
+### Removed
+- composer command aliases
+- command `add ray`, better suited for a dotfile aliases
+- `mage -h` or `--help` flag versions, it's just `mage help`
+
 ## [1.19.0] - 2024-02-23
 ### Added
 - new command `browser-sync` (thanks to @henkvalk)
 
 ## [1.18.1] - 2024-01-11
 ### Added
-- new commdand `add ray`
+- new command `add ray`
 
 ### Fixed
 - Removed fallback set (e.g. empty set) command conflicting with `bin/magento`
