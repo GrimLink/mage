@@ -51,6 +51,10 @@ Mage works without additional configuration on:
 
 We welcome contributions to Mage! Fork the repository, make your changes, and submit a pull request.
 
+## License
+
+Mage is licensed under the MIT License. See the LICENSE file for details.
+
 [n98-magerun2]: https://github.com/netz98/n98-magerun2
 [Hyvä license]: https://www.hyva.io/hyva-themes-license.html
 [Yireo_ThemeCommands]: https://github.com/yireo/Yireo_ThemeCommands
