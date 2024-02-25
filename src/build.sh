@@ -5,7 +5,7 @@ sorted_files=("_global")
 files=("${script_dir}"/_*)
 
 for file in "${files[@]}"; do
-  [[ "${file}" == "${script_dir}"/_mage ]] || sorted_files+=("${file#${script_dir}/}")
+  [[ "${file}" == "${script_dir}"/_mage ]] || [[ "${file}" == "${script_dir}"/_global ]] || sorted_files+=("${file#${script_dir}/}")
 done
 
 # Add _mage to the end
