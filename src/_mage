@@ -97,8 +97,9 @@ case "${@}" in
 
 "purge"*)
   CLEANTASKS=(
-    'pub/static/*'
     'generated/*'
+    'pub/static/adminhtml/*'
+    'pub/static/frontend/*'
     'var/cache/*'
     'var/composer_home/*'
     'var/page_cache/*'
