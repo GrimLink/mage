@@ -214,11 +214,6 @@ case "${@}" in
   mage_add_checkout
   ;;
 
-"add ray")
-  # Maybe add docker support, later?
-  $COMPOSER_CLI require spatie/ray
-  ;;
-
 "set theme"*)
   $MAGENTO_CLI theme:change $3
   $MAGENTO_CLI cache:flush;
