@@ -6,6 +6,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.19.0] - 2024-02-23
+### Added
+- new command `browser-sync` (thanks to @henkvalk)
+
+## [1.18.1] - 2024-01-11
+### Added
+- new commdand `add ray`
+
+### Fixed
+- Removed fallback set (e.g. empty set) command conflicting with `bin/magento`
+
 ## [1.18.0] - 2023-12-13
 ### Added
 - new command to set theme or config

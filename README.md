@@ -46,6 +46,7 @@ curl -O https://raw.githubusercontent.com/GrimLink/mage/main/mage && chmod +x ma
 | open admin           | Open store admin, in the browser                       |
 | open _STOREVIEW_     | Open specific storeview, in the browser _\*1_          |
 | watch                | Run cache-clean.js from mageTV                         |
+| browser-sync         | Run browser-sync on the default store view             |
 | purge                | Purge all static assets and caches                     |
 | new admin            | Create new admin user _\*2_                            |
 | new customer         | Create new customer _\*1_                              |
@@ -54,6 +55,7 @@ curl -O https://raw.githubusercontent.com/GrimLink/mage/main/mage && chmod +x ma
 | new i18n             | Create new translations                                |
 | add sample           | Add sample data                                        |
 | add hyva             | Add Hyvä Theme _\*3_                                   |
+| add ray              | Add ray, requires the ray app                          |
 | add checkout         | Add Hyvä Checkout _\*3_                                |
 | config \| set config | Set Magento Configs                                    |
 | set hyva             | Set hyva default theme _\*4_                           |
