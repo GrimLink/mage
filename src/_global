@@ -1,8 +1,3 @@
-#!/bin/bash
-
-# Mage is collection of easy cmd's and alias for bin/magento
-# For those that hate typing long shell cmd's
-
 # Global variables
 RESET='\033[0m'
 BOLD='\033[1m'

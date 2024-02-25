@@ -1,0 +1,18 @@
+function format_arguments() {
+  formatted_args=""
+  for arg in "$@"; do
+    formatted_arg=$(tr '[a-z]' '[A-Z]' <<< "$arg")
+    formatted_arg="${formatted_arg// /}"
+    formatted_args="${formatted_args},${formatted_arg}"
+  done
+  formatted_args="${formatted_args:1}"
+  echo "$formatted_args"
+}
+
+function get_mage_base_uri() {
+  local BASEURI="$($MAGENTO_CLI config:show web/secure/base_url)"
+  if [[ -z "${BASEURI}" ]]; then
+    local BASEURI="$($MAGENTO_CLI config:show web/unsecure/base_url)"
+  fi
+  echo $BASEURI
+}
