@@ -159,7 +159,7 @@ case "${@}" in
   new_mage_module
   ;;
 
-"new translate"* | "new i18n"*)
+"new i18n"* | "new translate"*)
   SRC=${3:-.}
 
   if [[ ! -f "$SRC/registration.php" ]]; then
