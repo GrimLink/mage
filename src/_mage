@@ -90,7 +90,7 @@ case "${@}" in
   if [[ -z "$STORE_URL" ]]; then
     echo "Could not find url for store $STORE"
   else
-    npx browser-sync start --proxy  ${STORE_URL} --https --files 'app/**/*.phtml, app/**/*.xml, app/**/*.css, app/**/*.js'
+    npx browser-sync start --proxy ${STORE_URL} --https --files $FILES_TO_WATCH
   fi
   ;;
 
