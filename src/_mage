@@ -238,38 +238,6 @@ case "${@}" in
 
   ;;
 
-"composer"*)
-  $COMPOSER_CLI ${@:2}
-  ;;
-
-"install "* | "i "*)
-  if [[ -n ${@:2} ]]; then
-    $COMPOSER_CLI require ${@:2}
-  else
-    echo "No packages where specified!"
-  fi
-  ;;
-
-"install" | "i")
-  $COMPOSER_CLI install
-  ;;
-
-"update "* | "up "*)
-  if [[ -n ${@:2} ]]; then
-    $COMPOSER_CLI update ${@:2}
-  else
-    echo "No packages where specified!"
-  fi
-  ;;
-
-"remove "* | "rm "*)
-  if [[ -n ${@:2} ]]; then
-    $COMPOSER_CLI remove ${@:2}
-  else
-    echo "No packages where specified!"
-  fi
-  ;;
-
 "build"*)
   # Initialize variables with default values
   LANGS="en_US nl_NL"
