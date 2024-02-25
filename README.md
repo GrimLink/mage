@@ -35,8 +35,8 @@ For a complete list, run `mage help`. Here are some highlights:
 
 * `mage run` requires the [n98-magerun2] module
 * Commands with "hyva" require a [Hyvä license] or GitLab access
-* `set theme` and `set hyva` require the [Yireo_ThemeCommands] module
-* `set baldr` require the [Siteation] Baldr Theme
+* `set theme` and `set hyva` requires the [Yireo_ThemeCommands] module
+* `set baldr` requires the [Siteation] Baldr Theme
 
 ### Supported Platforms
 
