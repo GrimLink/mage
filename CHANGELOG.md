@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- admin arguments to `mage build` using the `a:` prefix, this allows more admin languages if needed
+
 ### Changed
 - Source code is now split, for the bigger functions,
   the main file is the same as always, just now build from the src

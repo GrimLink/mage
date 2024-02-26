@@ -58,6 +58,53 @@ if [ -f .env ] && grep -q "WARDEN_ENV_NAME" .env && [[ ! "$PATH" == /var/www/htm
   COMPOSER_CLI="warden env exec php-fpm composer"
 fi
 
+function mage_build() {
+  local JOBS=4
+
+  # Frontend variables with default values
+  local LANGS="en_US nl_NL"
+  local DEFAULT_ARGS="$LANGS $JOBS"
+  local ARGS=""
+
+  # Admin variables with default values
+  local ADMIN_DEFAULT_ARGS="en_US $JOBS"
+  local ADMIN_ARGS="en_US"
+
+  for OPTION in "${@}"; do
+    if [[ "$OPTION" =~ ^a: ]]; then
+      # Extract argument after 'a:' (remove prefix)
+      local STRIPPED_OPTION=${OPTION#a:}
+      local ADMIN_ARGS="$ADMIN_ARGS $STRIPPED_OPTION"
+    else
+      local ARGS="$ARGS $OPTION"
+    fi
+  done
+
+  # If language is not found in ARGS add the default
+  if [[ $ARGS != *_* ]]; then
+    local ARGS="$LANGS $ARGS"
+  fi
+
+  # If Jobs is not found in ARGS add the default
+  if [[ "$ARGS" != *"-j"* ]] || [[ "$ARGS" != *"--jobs"* ]]; then
+    local ARGS="$ARGS -j $JOBS"
+  fi
+
+  # If Jobs is not found in ADMIN_ARGS add the default
+  if [[ "$ADMIN_ARGS" != *"-j"* ]] || [[ "$ADMIN_ARGS" != *"--jobs"* ]]; then
+    local ADMIN_ARGS="$ADMIN_ARGS -j $JOBS"
+  fi
+
+  # If force is found in ARGS add it to both Frontend and Admin args
+  if [[ "$ARGS" == *"-f"* ]] || [[ "$ARGS" == *"--force"* ]]; then
+    local ADMIN_ARGS="$ADMIN_ARGS -f"
+  fi
+
+  # Deploy static content
+  $MAGENTO_CLI setup:static-content:deploy -a adminhtml ${ADMIN_ARGS:-$ADMIN_DEFAULT_ARGS} &&
+  $MAGENTO_CLI setup:static-content:deploy -a frontend ${ARGS:-$DEFAULT_ARGS}
+}
+
 # Helper to format language inputs
 function format_arguments() {
   formatted_args=""
@@ -187,6 +234,17 @@ function mage_help() {
   echo -e "${ITALIC}To see these copmmand again, run ${BLUE}mage help${RESET}"
 }
 
+# function new_mage_init() {
+
+# }
+
+# function new_mage_theme() {
+
+# }
+
+# function new_mage_module() {
+
+# }
 
 function mage_add_sample() {
   read -p "What is your Magento base version (sample: 2.4): " MVERSION && echo ""
@@ -318,8 +376,7 @@ case "${@}" in
   CLEANTASKS=(
     'generated/metadata/*'
     'generated/code/*'
-    'pub/static/adminhtml/*'
-    'pub/static/frontend/*'
+    'pub/static/*'
     'var/cache/*'
     'var/composer_home/*'
     'var/page_cache/*'
@@ -433,46 +490,31 @@ case "${@}" in
   ADMIN_PASSWORD_LIFETIME=0
 
   if [[ $3 == "production" ]] || [[ $3 == "prod" ]]; then
-    DEPLOY_MODE="production"
+    DEPLOY_MODE="production --skip-compilation"
     IS_MODE_PROD=1
     ADMIN_SESSION_LIFETIME=43200 # 12h in seconds
     ADMIN_PASSWORD_LIFETIME=90 # days
+    echo "Also make sure to run 'mage build' or 'bin/magento setup:static-content:deploy', when running production mode"
+  else
+    rm -rf generated/metadata/*
+    rm -rf generated/code/*
   fi
 
-  $MAGENTO_CLI config:set dev/static/sign $IS_MODE_PROD > /dev/null 2>&1
-  $MAGENTO_CLI config:set admin/captcha/enable $IS_MODE_PROD > /dev/null 2>&1
-  $MAGENTO_CLI config:set admin/security/session_lifetime $ADMIN_SESSION_LIFETIME > /dev/null 2>&1
-  $MAGENTO_CLI config:set admin/security/password_lifetime $ADMIN_PASSWORD_LIFETIME > /dev/null 2>&1
-  $MAGENTO_CLI config:set admin/security/password_is_forced $IS_MODE_PROD > /dev/null 2>&1
+  $MAGENTO_CLI config:set -q dev/static/sign $IS_MODE_PROD
+  $MAGENTO_CLI config:set -q admin/captcha/enable $IS_MODE_PROD
+  $MAGENTO_CLI config:set -q admin/security/session_lifetime $ADMIN_SESSION_LIFETIME
+  $MAGENTO_CLI config:set -q admin/security/password_lifetime $ADMIN_PASSWORD_LIFETIME
+  $MAGENTO_CLI config:set -q admin/security/password_is_forced $IS_MODE_PROD
   $MAGENTO_CLI deploy:mode:set $DEPLOY_MODE
   ;;
 
+"set maintenance"*)
+  ALLOWED_IPS=${@:2}
+
+  ;;
+
 "build"*)
-  # Initialize variables with default values
-  LANGS="en_US nl_NL"
-  JOBS=4
-  FORCE=""
-  DEFAULT_ARGS="$LANGS $JOBS"
-  ARGS=${@:2}
-
-  # If language is not found in ARGS add the default
-  if [[ $ARG != *_* ]]; then
-    ARGS="$LANGS $ARGS"
-  fi
-
-  # If Jobs is not found in ARGS add the default
-  if [[ "$ARGS" != *"-j"* ]] || [[ "$ARGS" != *"--jobs"* ]]; then
-    ARGS="$ARGS -j $JOBS"
-  fi
-
-  # If force is found in ARGS add it to both adminhtml and frontend
-  if [[ "$ARGS" == *"-f"* ]] || [[ "$ARGS" == *"--force"* ]]; then
-    FORCE="-f"
-  fi
-
-  # Deploy static content
-  $MAGENTO_CLI setup:static-content:deploy -a adminhtml en_US ${FORCE} &&
-  $MAGENTO_CLI setup:static-content:deploy -a frontend ${ARGS:-$DEFAULT_ARGS}
+  mage_build ${@:2}
   ;;
 
 "run"*)
