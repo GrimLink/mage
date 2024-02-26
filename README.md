@@ -1,4 +1,4 @@
-# Mage: Your Magento 2 Command-Line Companion
+# Mage
 
 **Mage** is a simple tool built on top of `bin/magento` to enhance your Magento 2 development experience. It provides shortcuts and custom functions to save you time and effort.
 
