@@ -100,9 +100,9 @@ case "${@}" in
 
 "purge"*)
   CLEANTASKS=(
-    'generated/*'
-    'pub/static/adminhtml/*'
-    'pub/static/frontend/*'
+    'generated/metadata/*'
+    'generated/code/*'
+    'pub/static/*'
     'var/cache/*'
     'var/composer_home/*'
     'var/page_cache/*'
@@ -185,29 +185,7 @@ case "${@}" in
   ;;
 
 "add sample")
-  read -p "What is your Magento base version (sample: 2.4): " MVERSION && echo ""
-  if [[ -z "$MVERSION" ]]; then echo "The Magento 2 version is empty, aborting.." && exit 1; fi
-
-  if [[ ! -d "$HOME/.magento-sampledata/$MVERSION" ]]; then
-    git clone -b $MVERSION git@github.com:magento/magento2-sample-data.git $HOME/.magento-sampledata/$MVERSION
-  fi
-
-  echo -e "Installing $MVERSION sample data"
-  # Lets make sure these folder exist, to prevent them being made as a symlink
-  mkdir -p app/code/Magento
-  mkdir -p pub/media/catalog/product
-  mkdir -p pub/media/downloadable/files
-  mkdir -p pub/media/wysiwyg
-  touch README.md
-  php -f $HOME/.magento-sampledata/$MVERSION/dev/tools/build-sample-data.php -- --ce-source="$PWD"
-  $MAGENTO_CLI setup:upgrade
-
-  # Set theme to Hyva if present
-  if composer show hyva-themes/magento2-default-theme >/dev/null 2>&1; then
-    if composer show yireo/magento2-theme-commands >/dev/null 2>&1; then
-      $MAGENTO_CLI theme:change Hyva/default
-    fi
-  fi
+  mage_add_sample
   ;;
 
 "add hyva")
@@ -224,16 +202,40 @@ case "${@}" in
   ;;
 
 "set hyva")
-  $MAGENTO_CLI theme:change Hyva/default
-  $MAGENTO_CLI cache:flush
+  mage set theme Hyva/default
   ;;
 
 "set baldr")
-  $MAGENTO_CLI theme:change Siteation/baldr
-  $MAGENTO_CLI cache:flush
+  mage set theme Siteation/baldr
   ;;
 
-"config")
+"set mode"*)
+  DEPLOY_MODE="developer"
+  IS_MODE_PROD=0
+  ADMIN_SESSION_LIFETIME=86400 # 24h in seconds
+  ADMIN_PASSWORD_LIFETIME=0
+
+  if [[ $3 == "production" ]] || [[ $3 == "prod" ]]; then
+    DEPLOY_MODE="production --skip-compilation"
+    IS_MODE_PROD=1
+    ADMIN_SESSION_LIFETIME=43200 # 12h in seconds
+    ADMIN_PASSWORD_LIFETIME=90 # days
+    echo "Also make sure to run 'mage build' or 'bin/magento setup:static-content:deploy', when running production mode"
+  else
+    rm -rf generated/metadata/*
+    rm -rf generated/code/*
+  fi
+
+  $MAGENTO_CLI config:set -q dev/static/sign $IS_MODE_PROD
+  $MAGENTO_CLI config:set -q admin/captcha/enable $IS_MODE_PROD
+  $MAGENTO_CLI config:set -q admin/security/session_lifetime $ADMIN_SESSION_LIFETIME
+  $MAGENTO_CLI config:set -q admin/security/password_lifetime $ADMIN_PASSWORD_LIFETIME
+  $MAGENTO_CLI config:set -q admin/security/password_is_forced $IS_MODE_PROD
+  $MAGENTO_CLI deploy:mode:set $DEPLOY_MODE
+  ;;
+
+"set maintenance"*)
+  ALLOWED_IPS=${@:2}
 
   ;;
 

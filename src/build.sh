@@ -3,16 +3,16 @@
 script_dir="$(cd "$( dirname "${BASH_SOURCE[0]}")" > /dev/null 2>&1 && pwd)"
 
 # Initialize sorted_files with _global
-sorted_files=("_global")
+sorted_files=("_global.sh")
 
 # Find remaining files and add to sorted_files
-files=("${script_dir}"/_*)
+files=("${script_dir}"/_*.sh)
 for file in "${files[@]}"; do
-  [[ "${file}" == "${script_dir}"/_mage ]] || [[ "${file}" == "${script_dir}"/_global ]] || sorted_files+=("${file#${script_dir}/}")
+  [[ "${file}" == "${script_dir}"/_mage.sh ]] || [[ "${file}" == "${script_dir}"/_global.sh ]] || sorted_files+=("${file#${script_dir}/}")
 done
 
 # Add _mage to the end
-sorted_files+=("_mage")
+sorted_files+=("_mage.sh")
 
 function merge_files() {
   echo -e "#!/bin/bash\n"
