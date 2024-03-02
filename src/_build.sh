@@ -1,46 +1,46 @@
 function mage_build() {
-  local JOBS=4
+  local jobs=4
 
   # Frontend variables with default values
-  local LANGS="en_US nl_NL"
-  local DEFAULT_ARGS="$LANGS $JOBS"
-  local ARGS=""
+  local langs="en_US nl_NL"
+  local default_args="$langs $jobs"
+  local args=""
 
   # Admin variables with default values
-  local ADMIN_DEFAULT_ARGS="en_US $JOBS"
-  local ADMIN_ARGS="en_US"
+  local admin_default_args="en_US $jobs"
+  local admin_args="en_US"
 
-  for OPTION in "${@}"; do
-    if [[ "$OPTION" =~ ^a: ]]; then
+  for option in "${@}"; do
+    if [[ "$option" =~ ^a: ]]; then
       # Extract argument after 'a:' (remove prefix)
-      local STRIPPED_OPTION=${OPTION#a:}
-      local ADMIN_ARGS="$ADMIN_ARGS $STRIPPED_OPTION"
+      local stripped_option=${option#a:}
+      local admin_args="$admin_args $stripped_option"
     else
-      local ARGS="$ARGS $OPTION"
+      local args="$args $option"
     fi
   done
 
   # If language is not found in ARGS add the default
-  if [[ $ARGS != *_* ]]; then
-    local ARGS="$LANGS $ARGS"
+  if [[ $args != *_* ]]; then
+    local args="$langs $args"
   fi
 
   # If Jobs is not found in ARGS add the default
-  if [[ "$ARGS" != *"-j"* ]] || [[ "$ARGS" != *"--jobs"* ]]; then
-    local ARGS="$ARGS -j $JOBS"
+  if [[ "$args" != *"-j"* ]] || [[ "$args" != *"--jobs"* ]]; then
+    local args="$args -j $jobs"
   fi
 
   # If Jobs is not found in ADMIN_ARGS add the default
-  if [[ "$ADMIN_ARGS" != *"-j"* ]] || [[ "$ADMIN_ARGS" != *"--jobs"* ]]; then
-    local ADMIN_ARGS="$ADMIN_ARGS -j $JOBS"
+  if [[ "$admin_args" != *"-j"* ]] || [[ "$admin_args" != *"--jobs"* ]]; then
+    local admin_args="$admin_args -j $jobs"
   fi
 
   # If force is found in ARGS add it to both Frontend and Admin args
-  if [[ "$ARGS" == *"-f"* ]] || [[ "$ARGS" == *"--force"* ]]; then
-    local ADMIN_ARGS="$ADMIN_ARGS -f"
+  if [[ "$args" == *"-f"* ]] || [[ "$args" == *"--force"* ]]; then
+    local admin_args="$admin_args -f"
   fi
 
   # Deploy static content
-  $MAGENTO_CLI setup:static-content:deploy -a adminhtml ${ADMIN_ARGS:-$ADMIN_DEFAULT_ARGS} &&
-  $MAGENTO_CLI setup:static-content:deploy -a frontend ${ARGS:-$DEFAULT_ARGS}
+  $MAGENTO_CLI setup:static-content:deploy -a adminhtml ${admin_args:-$admin_default_args} &&
+  $MAGENTO_CLI setup:static-content:deploy -a frontend ${args:-$default_args}
 }

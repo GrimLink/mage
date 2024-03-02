@@ -12,9 +12,9 @@ function format_arguments() {
 
 # Get the Magento 2 Base Url
 function get_mage_base_uri() {
-  local BASEURI="$($MAGENTO_CLI config:show web/secure/base_url)"
-  if [[ -z "${BASEURI}" ]]; then
-    local BASEURI="$($MAGENTO_CLI config:show web/unsecure/base_url)"
+  local baseuri="$($MAGENTO_CLI config:show web/secure/base_url)"
+  if [[ -z "${baseuri}" ]]; then
+    local baseuri="$($MAGENTO_CLI config:show web/unsecure/base_url)"
   fi
-  echo $BASEURI
+  echo $baseuri
 }

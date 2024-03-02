@@ -6,14 +6,14 @@ function mage_add_hyva() {
   read -p "Is this a production setup (use license)? [N/y] "
   echo ""
   if [[ $REPLY =~ ^[yY]|[yY][eE][sS]$ ]]; then
-    read -p "License key: " HYVA_KEY && echo ""
-    read -p "Packagist url: " HYVA_URL && echo ""
+    read -p "License key: " hyva_key && echo ""
+    read -p "Packagist url: " hyva_url && echo ""
 
-    $COMPOSER_CLI config --auth http-basic.hyva-themes.repo.packagist.com token $HYVA_KEY
-    $COMPOSER_CLI config repositories.private-packagist composer https://hyva-themes.repo.packagist.com/$HYVA_URL/
+    $COMPOSER_CLI config --auth http-basic.hyva-themes.repo.packagist.com token $hyva_key
+    $COMPOSER_CLI config repositories.private-packagist composer https://hyva-themes.repo.packagist.com/$hyva_url/
     $COMPOSER_CLI require hyva-themes/magento2-default-theme
   else
-    HYVA_REPOS=(
+    local hyva_repos=(
       'hyva-themes/magento2-theme-module'
       'hyva-themes/magento2-reset-theme'
       'hyva-themes/magento2-email-module'
@@ -23,7 +23,7 @@ function mage_add_hyva() {
       'hyva-themes/magento2-luma-checkout'
     );
 
-    for i in "${HYVA_REPOS[@]}"; do
+    for i in "${hyva_repos[@]}"; do
       $COMPOSER_CLI config repositories.${i} git git@gitlab.hyva.io:${i}.git
     done
 
@@ -53,10 +53,10 @@ function mage_add_checkout() {
   read -p "Is this a production setup (use license)? [N/y] "
   echo ""
   if [[ $REPLY =~ ^[yY]|[yY][eE][sS]$ ]]; then
-    read -p "License key: " HYVA_KEY && echo ""
+    read -p "License key: " hyva_key && echo ""
     read -p "Packagist url: " HYVA_URL && echo ""
 
-    $COMPOSER_CLI config --auth http-basic.hyva-themes.repo.packagist.com token $HYVA_KEY
+    $COMPOSER_CLI config --auth http-basic.hyva-themes.repo.packagist.com token $hyva_key
     $COMPOSER_CLI config repositories.private-packagist composer https://hyva-themes.repo.packagist.com/$HYVA_URL/
     $COMPOSER_CLI require hyva-themes/magento2-hyva-checkout
   else
