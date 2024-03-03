@@ -5,7 +5,7 @@
 ## Benefits of Using Mage
 
 * **Easier commands:** Mage introduces shorter aliases for common `bin/magento` commands, saving you keystrokes.
-* **Custom functions:** Mage offers helper commands like `watch` and `purge` for specific tasks.
+* **Custom functions:** Mage offers helper commands like `reindex` and `purge` for specific tasks.
 * **Open stores quickly:** Open your default store or specific store views with `mage open`.
 * **Efficient development:** The `watch` command automates cache cleaning on file changes, improving your workflow.
 
