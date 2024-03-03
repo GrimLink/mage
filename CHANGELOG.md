@@ -24,7 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 - composer command aliases
-- command `add ray`, better suited for a dotfile aliases
+- command `add ray`, better suited for a dotfile alias
 - `mage -h` or `--help` flag versions, it's just `mage help`
 
 ## [1.19.0] - 2024-02-23
