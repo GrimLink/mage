@@ -38,8 +38,8 @@ function mage_new_theme() {
   read -p "Parrent Theme ($default_parrent_theme): " parrent_theme
   if [[ -z "$parrent_theme" ]]; then parrent_theme=$default_parrent_theme; fi
 
-  local theme_vendor="$($theme_vendor | tr '[:blank:]' '')"
-  local theme_name="$($theme_name | tr '[:blank:]' '')"
+  local theme_vendor="$(echo "$theme_vendor" | tr -d '[:blank:]')"
+  local theme_name="$(echo "$theme_name" | tr -d '[:blank:]')"
   local folder_name="${theme_vendor}/$(mage_kebab_case "$theme_name")"
 
   local dest_path="$dest_path/$folder_name"
@@ -70,8 +70,8 @@ function mage_new_module() {
     if [[ -z "$module_vendor" ]]; then echo "The 'vendor' can not be empty" && exit 1; fi
   fi
 
-  local module_vendor="$($module_vendor | tr '[:blank:]' '')"
-  local module_name="$($module_name | tr '[:blank:]' '')"
+  local module_vendor="$(echo "$module_vendor" | tr -d '[:blank:]')"
+  local module_name="$(echo "$module_name" | tr -d '[:blank:]')"
   local folder_name="${module_vendor}/$(mage_kebab_case "$module_name")"
 
   local dest_path="$dest_path/$folder_name"
