@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - admin arguments to `mage build` using the `a:` prefix, this allows more admin languages if needed
 - log commands for easier log checking
+- support for store views to `browser-sync` command, same as with `open` command
 
 ### Changed
 
