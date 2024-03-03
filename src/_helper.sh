@@ -1,5 +1,5 @@
 # Helper to format language inputs
-function format_arguments() {
+function mage_lang_format_arguments() {
   formatted_args=""
   for arg in "$@"; do
     formatted_arg=$(tr '[a-z]' '[A-Z]' <<< "$arg")
@@ -8,6 +8,26 @@ function format_arguments() {
   done
   formatted_args="${formatted_args:1}"
   echo "$formatted_args"
+}
+
+# Creates a file/folder and echo the contents in one command
+function mage_make_file() {
+  touch $1
+
+  if [[ $2 == "rsync" ]]; then
+    if [[ -d $3 ]]; then
+      rsync -ah ${3}/ ${1} --exclude node_modules
+    else
+      echo -e "The folder '${3}' does not exists"
+    fi
+  else
+    echo -e $2 >> $1
+  fi
+}
+
+# Convert string to kebab-case
+function mage_kebab_case() {
+  echo "${@}" | sed 's/\([A-Z]\)/-\1/g' | tr '[:upper:]' '[:lower:]' | sed -e 's/^-*//' -e 's/-*$//' | tr -s '[:blank:]' '-'
 }
 
 # Get the Magento 2 Base Url
