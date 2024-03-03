@@ -9,15 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.0.0] - 2024-03-03
 
 ### Added
+
 - admin arguments to `mage build` using the `a:` prefix, this allows more admin languages if needed
 - log commands for easier log checking
 
 ### Changed
+
 - Source code is now split, for the bigger functions,
   the main file is the same as always, just now build from the src
 - `new theme` and `new module` have been rebuild, now easier to use and extend
 
 ### Removed
+
 - composer command aliases
 - command `add ray`, better suited for a dotfile aliases
 - `mage -h` or `--help` flag versions, it's just `mage help`
@@ -25,29 +28,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.19.0] - 2024-02-23
 
 ### Added
+
 - new command `browser-sync` (thanks to @henkvalk)
 
 ## [1.18.1] - 2024-01-11
+
 ### Added
+
 - new command `add ray`
 
 ### Fixed
+
 - Removed fallback set (e.g. empty set) command conflicting with `bin/magento`
 
 ## [1.18.0] - 2023-12-13
 
 ### Added
+
 - new command to set theme or config
 
 ### Removed
+
 - Scoped Valet php
 
 ## [1.17.1] - 2023-11-27
+
 ### Fixed
+
 - Scoped Valet php, this now has no effect if your using the newest version
 - `mage add sample` not setting hyva theme as default if present
 
 ## [1.17.0] - 2023-11-11
+
 ### Added
 - `mage version` or `-v/--version` to just see the version
 - new command as shortcut for running both `mage indexer:reindex` and `mage cache:flush`, named `mage reindex`
@@ -57,15 +69,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - use `app/design/frontend` for `new theme` instead of package-source
 
 ## [1.16.0] - 2023-10-31
+
 ### Added
+
 - `add checkout` command to easily add the Hyvä Checkout
 
 ### Changed
+
 - `add hyva` will use dev mode as default now
 - `add hyva` in dev mode will now also install the Luma fallback checkout
 
 ## [1.11.0] - 2022-08-29 / [1.15.2] - 2023-10-08
+
 ### Added
+
 - new alias for `mage devclean` now you can run the same with `mage watch`
 - compat-module-fallback support to `mage add hyva` development version
 - aliases for composer install, update and remove, so they can be used with valet php version
@@ -75,6 +92,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `new i18n` command will now sort all translations alphabetically
 
 ### Changed
+
 - Renamed option `help` to `--help` or `-h`
 - Add 2 new options to `mage config` using flags,
   `mage config` will act the same if it has not option set,
@@ -90,6 +108,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   this change enhances the efficiency of the process and integrates our specialized logic for an optimized experience
 
 ### Fixed
+
 - `mage open admin` case where the default store has a different name than default
 - Revert of removal of extra if, for valet in cleanup commit, this trows warning in none valet env's
 - Watch for Warden
@@ -99,6 +118,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `mage new module` command
 
 ### Removed
+
 - Disbale hints for add hyva, < Magento 2.4.4
 - `mage replaced` command
 - `mage devclean` command, we use watch mainly so this only clutter
@@ -107,7 +127,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the `new translate` does not fit and should be `new translation` but I prefer less typing so `new i18n` it is.
 
 ## [1.7.0] - 2021-09-11 / [1.10.2] - 2022-07-11
+
 ### Added
+
 - [Warden](https://github.com/davidalger/warden) support (thanks to @tdgroot)
 - Hyva setup options
 - show stores options
@@ -121,12 +143,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   thx @Vinai for this awesome tool!
 
 ### Changed
+
 - Make `mage run` work with [Warden](https://github.com/davidalger/warden)
 - Renamed option sample to add sample
 - Made all commands with prefix `new` without hyphen,
   see the readme for how to the new command syntax
 
 ### Fixed
+
 - `mage open` now also works with [Warden](https://github.com/davidalger/warden)
 - Mage open with single quotes in admin url
 - Mage run, admin and theme with params
@@ -140,7 +164,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - conflicting commands for composer and magento, both starting with `i`
 
 ## [1.2.0] - 2019-11-17 / [1.6.0] - 2021-02-10
+
 ### Added
+
 - Purge based on https://github.com/BenButterfield/m2purge
 - Static Versioning
 - New cmd `new-theme`
@@ -151,15 +177,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - New cmd `new-customer`
 
 ### Changed
+
 - Code quality
 - Renamed `admin` cmd to `new-admin`
 - Skip steps for `new-admin` and `new-theme` via `--yes` flag
 - Casing of variables in `new-theme`
 
 ### Removed
+
 - Cms install as this is never used, [Use create-project instead](https://github.com/GrimLink/create-project)
 
 ## 1.0.1 - 2019-06-15 / [1.1.0] - 2019-11-06
+
 ### Added
 - Open multi store function
 - Readme
@@ -167,12 +196,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Admin cmd with flag `--yes` for yes to all questions
 
 ### Changed
+
 - Info cmd with Magento version
 
 ### Removed
+
 - Reindex cmd for native solution
 
 ## 1.0.0 - 2019-06-10
+
 Initial Release 🎉
 
 [unreleased]: https://github.com/olivierlacan/keep-a-changelog/compare/2.0.0...HEAD
