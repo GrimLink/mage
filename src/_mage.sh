@@ -232,7 +232,10 @@ case "${@}" in
   default_countries="NL,BE,LU,DE"
   countries="$(mage_lang_format_arguments ${@:3})"
   country=$(echo "${3:-$default_country}" | cut -d ',' -f 1 | tr '[:lower:]' '[:upper:]')
-  if [[ -z "$countries" ]]; then countries="$default_countries"; fi
+
+  if [[ -z "$countries" ]]; then
+    countries="$default_countries"
+  fi
 
   $MAGENTO_CLI general/country/default - $country
   $MAGENTO_CLI general/country/allow - $countries
