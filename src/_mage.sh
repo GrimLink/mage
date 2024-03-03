@@ -36,24 +36,12 @@ case "${@}" in
   ;;
 
 "open"*)
-  store=${2:-1}
-  store_url=""
+  store_url=$(get_mage_store_uri ${2:-1})
   admin_path=""
 
   # Prefetch admin URL data for open steps
   if [[ "$store" == "admin" ]]; then
     admin_path=$(grep frontName app/etc/env.php | tail -1 | cut -d '>' -f2 | cut -d '"' -f2 | cut -d "'" -f2)
-  fi
-
-  # Fetch the store url
-  if [[ -n "$MAGERUN_CLI" ]]; then
-    if [[ "$store" == "admin" ]]; then
-      store_url=$($MAGERUN_CLI sys:store:config:base-url:list --format csv | grep 1 -m 1 | head -1 | cut -d ',' -f3)
-    else
-      store_url=$($MAGERUN_CLI sys:store:config:base-url:list --format csv | grep $store | cut -d ',' -f3)
-    fi
-  else
-    store_url=$(get_mage_base_uri)
   fi
 
   if [[ -z "$store_url" ]]; then
@@ -81,13 +69,12 @@ case "${@}" in
   fi
   ;;
 
-"browser-sync")
-  # TODO: add option to use your own storeview
-  store_url=$(get_mage_base_uri)
+"browser-sync"*)
+  store_url=$(get_mage_store_uri ${2:-1})
   files_to_watch="app/**/*.phtml, app/**/*.xml, app/**/*.css, app/**/*.js"
 
   if [[ -z "$store_url" ]]; then
-    echo "Could not find url for store"
+    echo "Could not find url for store $store"
   else
     npx browser-sync start --proxy ${store_url} --https --files $files_to_watch
   fi

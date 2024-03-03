@@ -38,3 +38,20 @@ function get_mage_base_uri() {
   fi
   echo $baseuri
 }
+
+# Get specific Magento 2 Store Url
+function get_mage_store_uri() {
+  local store_url=""
+
+  if [[ -n "$MAGERUN_CLI" ]]; then
+    if [[ "$1" == "admin" ]]; then
+      store_url=$($MAGERUN_CLI sys:store:config:base-url:list --format csv | grep 1 -m 1 | head -1 | cut -d ',' -f3)
+    else
+      store_url=$($MAGERUN_CLI sys:store:config:base-url:list --format csv | grep $1 | cut -d ',' -f3)
+    fi
+  else
+    store_url=$(get_mage_base_uri)
+  fi
+
+  echo $store_url
+}
