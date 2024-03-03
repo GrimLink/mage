@@ -213,6 +213,13 @@ case "${@}" in
   is_mode_prod=0
   admin_session_lifetime=86400 # 24h in seconds
   admin_password_lifetime=0
+  purge_cmd="rm -rf"
+
+  if [[ $WARDEN == 1 ]]; then
+    # Run removal within environment, so that changes are in effect immediately.
+    # Changes will get synced back to host on MacOS.
+    purge_cmd="warden env exec -T php-fpm rm -rf"
+  fi;
 
   if [[ $3 == "production" ]] || [[ $3 == "prod" ]]; then
     deploy_mode="production --skip-compilation"
@@ -221,8 +228,8 @@ case "${@}" in
     admin_password_lifetime=90 # days
     echo "Also make sure to run 'mage build' or 'bin/magento setup:static-content:deploy', when running production mode"
   else
-    rm -rf generated/metadata/*
-    rm -rf generated/code/*
+    $purge_cmd generated/metadata/*
+    $purge_cmd generated/code/*
   fi
 
   $MAGENTO_CLI config:set -q dev/static/sign $is_mode_prod
@@ -233,9 +240,32 @@ case "${@}" in
   $MAGENTO_CLI deploy:mode:set $deploy_mode
   ;;
 
+"set countries"*)
+  default_country="NL"
+  default_countries="NL,BE,LU,DE"
+  countries="$(mage_lang_format_arguments ${3:-$default_countries})"
+  country="${3:-$default_country}"
+
+  $MAGENTO_CLI general/country/default - $country
+  $MAGENTO_CLI general/country/allow - $countries
+  $MAGENTO_CLI general/country/destinations - $countries
+  ;;
+
 "set maintenance"*)
   allowed_ips=${@:2}
 
+  ;;
+
+"log debug")
+  tail var/log/debug.log -n -f
+  ;;
+
+"log exception")
+  tail var/log/exception.log -n -f
+  ;;
+
+"log system")
+  tail var/log/system.log -n -f
   ;;
 
 "build"*)
