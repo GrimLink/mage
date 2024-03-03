@@ -97,7 +97,7 @@ case "${@}" in
   $MAGENTO_CLI indexer:reindex && $MAGENTO_CLI cache:flush
   ;;
 
-"purge"*)
+"purge")
   cleantasks=(
     'generated/metadata/*'
     'generated/code/*'
