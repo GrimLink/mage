@@ -35,7 +35,7 @@ function mage_help() {
   mage_help_cmd "set hyva"                        "Set theme: Hyva default"
   mage_help_cmd "set baldr"                       "Set theme: Siteation Baldr"
   mage_help_cmd "set mode [mode]"                 "Run deploy:mode:set with admin settings for dev"
-  mage_help_cmd "set countries [list_countries]"  "Set default store countries for all stores"
+  mage_help_cmd "set countries [list_countries]"  "Set the store countries"
   mage_help_cmd "log | log debug"                 "watch the debug log"
   mage_help_cmd "log exception"                   "watch the exception log"
   mage_help_cmd "log system"                      "watch the system log"

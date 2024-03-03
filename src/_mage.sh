@@ -228,18 +228,37 @@ case "${@}" in
   ;;
 
 "set countries"*)
-  default_country="NL"
-  default_countries="NL,BE,LU,DE"
-  countries="$(mage_lang_format_arguments ${@:3})"
-  country=$(echo "${3:-$default_country}" | cut -d ',' -f 1 | tr '[:lower:]' '[:upper:]')
+  scope=""
+  countries=""
+
+  for option in "${@:3}"; do
+    if [[ "$option" =~ ^store: ]]; then
+      # Extract argument after 'store:' (remove prefix)
+      stripped_option=${option#store:}
+      scope="$stripped_option"
+    else
+      countries="$countries $option"
+    fi
+  done
 
   if [[ -z "$countries" ]]; then
-    countries="$default_countries"
+    countries="NL,BE,LU,DE"
   fi
 
-  $MAGENTO_CLI general/country/default - $country
-  $MAGENTO_CLI general/country/allow - $countries
-  $MAGENTO_CLI general/country/destinations - $countries
+  if [[ -n "$scope" ]]; then
+    scope="--scope=stores --scope-code=${scope}"
+  fi
+
+  countries="$(mage_lang_format_arguments $countries)"
+  country=$(echo "${countries}" | cut -d ',' -f 1 | tr '[:lower:]' '[:upper:]')
+
+  echo "scope:$scope - countries:$countries"
+  $MAGENTO_CLI config:set $scope general/country/default $country
+  $MAGENTO_CLI config:set $scope general/country/allow $countries
+
+  if [[ -z "$scope" ]]; then
+    $MAGENTO_CLI config:set $scope general/country/destinations $countries
+  fi
   ;;
 
 "log" | "log debug")
