@@ -251,21 +251,16 @@ case "${@}" in
   $MAGENTO_CLI general/country/destinations - $countries
   ;;
 
-"set maintenance"*)
-  allowed_ips=${@:2}
-
-  ;;
-
-"log debug")
-  tail -f -n 3 var/log/debug.log
+"log" | "log debug")
+  tail -f -n 4 var/log/debug.log
   ;;
 
 "log exception")
-  tail -f -n 6 var/log/exception.log
+  tail -f -n 8 var/log/exception.log
   ;;
 
 "log system")
-  tail -f -n 6 var/log/system.log
+  tail -f -n 8 var/log/system.log
   ;;
 
 "build"*)
