@@ -1,5 +1,5 @@
 function mage_add_sample() {
-  read -p "What is your Magento base version (sample: 2.4): " mversion && echo ""
+  read -e -p "What is your Magento base version (sample: 2.4): " mversion && echo ""
   if [[ -z "$mversion" ]]; then echo "The Magento 2 version is empty, aborting.." && exit 1; fi
 
   if [[ ! -d "$HOME/.magento-sampledata/$mversion" ]]; then

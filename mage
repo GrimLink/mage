@@ -151,11 +151,11 @@ function mage_add_hyva() {
   echo "Make sure you have and license key or access to the gitlab env"
   echo "else cancel with Ctrl+C"
   echo ""
-  read -p "Is this a production setup (use license)? [N/y] "
+  read -e -p "Is this a production setup (use license)? [N/y] "
   echo ""
   if [[ $REPLY =~ ^[yY]|[yY][eE][sS]$ ]]; then
-    read -p "License key: " hyva_key && echo ""
-    read -p "Packagist url: " hyva_url && echo ""
+    read -e -p "License key: " hyva_key && echo ""
+    read -e -p "Packagist url: " hyva_url && echo ""
 
     $COMPOSER_CLI config --auth http-basic.hyva-themes.repo.packagist.com token $hyva_key
     $COMPOSER_CLI config repositories.private-packagist composer https://hyva-themes.repo.packagist.com/$hyva_url/
@@ -198,11 +198,11 @@ function mage_add_checkout() {
   echo "Make sure you have and license key or access to the gitlab env"
   echo "else cancel with Ctrl+C"
   echo ""
-  read -p "Is this a production setup (use license)? [N/y] "
+  read -e -p "Is this a production setup (use license)? [N/y] "
   echo ""
   if [[ $REPLY =~ ^[yY]|[yY][eE][sS]$ ]]; then
-    read -p "License key: " hyva_key && echo ""
-    read -p "Packagist url: " HYVA_URL && echo ""
+    read -e -p "License key: " hyva_key && echo ""
+    read -e -p "Packagist url: " HYVA_URL && echo ""
 
     $COMPOSER_CLI config --auth http-basic.hyva-themes.repo.packagist.com token $hyva_key
     $COMPOSER_CLI config repositories.private-packagist composer https://hyva-themes.repo.packagist.com/$HYVA_URL/
@@ -259,7 +259,7 @@ function mage_new_in_folder() {
     mkdir package-source
   fi
 
-  read -p "Create in package-source as local composer package? [y/N] "
+  read -e -p "Create in package-source as local composer package? [y/N] "
   echo ""
   if [[ $REPLY =~ ^[yY]|[yY][eE][sS]$ ]]; then
     echo "package-source";
@@ -272,7 +272,7 @@ function mage_new_theme() {
   local application="frontend"
   local default_parrent_theme="Hyva/default"
 
-  read -p "Is this a admin theme? [y/N] "
+  read -e -p "Is this a admin theme? [y/N] "
   echo ""
   if [[ $REPLY =~ ^[yY]|[yY][eE][sS]$ ]]; then
     local application="adminhtml"
@@ -280,22 +280,22 @@ function mage_new_theme() {
 
   local dest_path=$(mage_new_in_folder "app/design/${application}")
 
-  read -p "Theme Name: " theme_name
+  read -e -p "Theme Name: " theme_name
   if [[ -z "$theme_name" ]]; then echo "The 'Name' can not be empty" && exit 1; fi
 
   if [[ "$theme_name" == */* ]]; then
     local theme_vendor="${theme_name%%/*}"
     local theme_name="${theme_name#*\/}"
   else
-    read -p "Theme Vendor: " theme_vendor
+    read -e -p "Theme Vendor: " theme_vendor
     if [[ -z "$theme_vendor" ]]; then echo "The 'vendor' can not be empty" && exit 1; fi
   fi
 
-  read -p "Parrent Theme ($default_parrent_theme): " parrent_theme
+  read -e -p "Parrent Theme ($default_parrent_theme): " parrent_theme
   if [[ -z "$parrent_theme" ]]; then parrent_theme=$default_parrent_theme; fi
 
-  local theme_vendor="$($theme_vendor | tr '[:blank:]' '')"
-  local theme_name="$($theme_name | tr '[:blank:]' '')"
+  local theme_vendor="$(echo "$theme_vendor" | tr -d '[:blank:]')"
+  local theme_name="$(echo "$theme_name" | tr -d '[:blank:]')"
   local folder_name="${theme_vendor}/$(mage_kebab_case "$theme_name")"
 
   local dest_path="$dest_path/$folder_name"
@@ -315,19 +315,19 @@ function mage_new_theme() {
 function mage_new_module() {
   local dest_path=$(mage_new_in_folder "app/code")
 
-  read -p "Module Name: " module_name
+  read -e -p "Module Name: " module_name
   if [[ -z "$module_name" ]]; then echo "The 'Name' can not be empty" && exit 1; fi
 
   if [[ "$module_name" == */* ]]; then
     local module_vendor="${module_name%%/*}"
     local module_name="${module_name#*\/}"
   else
-    read -p "Module Vendor: " module_vendor
+    read -e -p "Module Vendor: " module_vendor
     if [[ -z "$module_vendor" ]]; then echo "The 'vendor' can not be empty" && exit 1; fi
   fi
 
-  local module_vendor="$($module_vendor | tr '[:blank:]' '')"
-  local module_name="$($module_name | tr '[:blank:]' '')"
+  local module_vendor="$(echo "$module_vendor" | tr -d '[:blank:]')"
+  local module_name="$(echo "$module_name" | tr -d '[:blank:]')"
   local folder_name="${module_vendor}/$(mage_kebab_case "$module_name")"
 
   local dest_path="$dest_path/$folder_name"
@@ -340,7 +340,7 @@ function mage_new_module() {
 }
 
 function mage_add_sample() {
-  read -p "What is your Magento base version (sample: 2.4): " mversion && echo ""
+  read -e -p "What is your Magento base version (sample: 2.4): " mversion && echo ""
   if [[ -z "$mversion" ]]; then echo "The Magento 2 version is empty, aborting.." && exit 1; fi
 
   if [[ ! -d "$HOME/.magento-sampledata/$mversion" ]]; then
@@ -499,10 +499,10 @@ case "${@}" in
   ;;
 
 "new admin")
-  read -p "Email (${GITEMAIL}) or: " useremail
-  read -p "Firstname (${GITNAME}) or: " userfirst
-  read -p "Lastname (admin) or: " userlast
-  read -p "User name (${ADMINNAME}) or: " username
+  read -e -p "Email (${GITEMAIL}) or: " useremail
+  read -e -p "Firstname (${GITNAME}) or: " userfirst
+  read -e -p "Lastname (admin) or: " userlast
+  read -e -p "User name (${ADMINNAME}) or: " username
   read -sp "Password (${ADMINPASS}) or: " userpass
 
   $MAGENTO_CLI admin:user:create \
@@ -534,7 +534,7 @@ case "${@}" in
 
   if [[ ! -f "$src/registration.php" ]]; then
     echo "This does not look like a Magento 2 module or theme"
-    read -p "Are you sure if you want to continue? [y/N] "
+    read -e -p "Are you sure if you want to continue? [y/N] "
     echo ""
     if [[ $REPLY =~ ^[yY]|[yY][eE][sS]$ ]]; then
       echo "Running '$MAGENTO_CLI i18n:collect-phrases' in '$src'"
@@ -624,15 +624,15 @@ case "${@}" in
   ;;
 
 "log debug")
-  tail var/log/debug.log -n -f
+  tail -f -n 3 var/log/debug.log
   ;;
 
 "log exception")
-  tail var/log/exception.log -n -f
+  tail -f -n 6 var/log/exception.log
   ;;
 
 "log system")
-  tail var/log/system.log -n -f
+  tail -f -n 6 var/log/system.log
   ;;
 
 "build"*)

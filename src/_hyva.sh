@@ -3,11 +3,11 @@ function mage_add_hyva() {
   echo "Make sure you have and license key or access to the gitlab env"
   echo "else cancel with Ctrl+C"
   echo ""
-  read -p "Is this a production setup (use license)? [N/y] "
+  read -e -p "Is this a production setup (use license)? [N/y] "
   echo ""
   if [[ $REPLY =~ ^[yY]|[yY][eE][sS]$ ]]; then
-    read -p "License key: " hyva_key && echo ""
-    read -p "Packagist url: " hyva_url && echo ""
+    read -e -p "License key: " hyva_key && echo ""
+    read -e -p "Packagist url: " hyva_url && echo ""
 
     $COMPOSER_CLI config --auth http-basic.hyva-themes.repo.packagist.com token $hyva_key
     $COMPOSER_CLI config repositories.private-packagist composer https://hyva-themes.repo.packagist.com/$hyva_url/
@@ -50,11 +50,11 @@ function mage_add_checkout() {
   echo "Make sure you have and license key or access to the gitlab env"
   echo "else cancel with Ctrl+C"
   echo ""
-  read -p "Is this a production setup (use license)? [N/y] "
+  read -e -p "Is this a production setup (use license)? [N/y] "
   echo ""
   if [[ $REPLY =~ ^[yY]|[yY][eE][sS]$ ]]; then
-    read -p "License key: " hyva_key && echo ""
-    read -p "Packagist url: " HYVA_URL && echo ""
+    read -e -p "License key: " hyva_key && echo ""
+    read -e -p "Packagist url: " HYVA_URL && echo ""
 
     $COMPOSER_CLI config --auth http-basic.hyva-themes.repo.packagist.com token $hyva_key
     $COMPOSER_CLI config repositories.private-packagist composer https://hyva-themes.repo.packagist.com/$HYVA_URL/

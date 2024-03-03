@@ -132,10 +132,10 @@ case "${@}" in
   ;;
 
 "new admin")
-  read -p "Email (${GITEMAIL}) or: " useremail
-  read -p "Firstname (${GITNAME}) or: " userfirst
-  read -p "Lastname (admin) or: " userlast
-  read -p "User name (${ADMINNAME}) or: " username
+  read -e -p "Email (${GITEMAIL}) or: " useremail
+  read -e -p "Firstname (${GITNAME}) or: " userfirst
+  read -e -p "Lastname (admin) or: " userlast
+  read -e -p "User name (${ADMINNAME}) or: " username
   read -sp "Password (${ADMINPASS}) or: " userpass
 
   $MAGENTO_CLI admin:user:create \
@@ -167,7 +167,7 @@ case "${@}" in
 
   if [[ ! -f "$src/registration.php" ]]; then
     echo "This does not look like a Magento 2 module or theme"
-    read -p "Are you sure if you want to continue? [y/N] "
+    read -e -p "Are you sure if you want to continue? [y/N] "
     echo ""
     if [[ $REPLY =~ ^[yY]|[yY][eE][sS]$ ]]; then
       echo "Running '$MAGENTO_CLI i18n:collect-phrases' in '$src'"

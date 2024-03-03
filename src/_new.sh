@@ -3,7 +3,7 @@ function mage_new_in_folder() {
     mkdir package-source
   fi
 
-  read -p "Create in package-source as local composer package? [y/N] "
+  read -e -p "Create in package-source as local composer package? [y/N] "
   echo ""
   if [[ $REPLY =~ ^[yY]|[yY][eE][sS]$ ]]; then
     echo "package-source";
@@ -16,7 +16,7 @@ function mage_new_theme() {
   local application="frontend"
   local default_parrent_theme="Hyva/default"
 
-  read -p "Is this a admin theme? [y/N] "
+  read -e -p "Is this a admin theme? [y/N] "
   echo ""
   if [[ $REPLY =~ ^[yY]|[yY][eE][sS]$ ]]; then
     local application="adminhtml"
@@ -24,18 +24,18 @@ function mage_new_theme() {
 
   local dest_path=$(mage_new_in_folder "app/design/${application}")
 
-  read -p "Theme Name: " theme_name
+  read -e -p "Theme Name: " theme_name
   if [[ -z "$theme_name" ]]; then echo "The 'Name' can not be empty" && exit 1; fi
 
   if [[ "$theme_name" == */* ]]; then
     local theme_vendor="${theme_name%%/*}"
     local theme_name="${theme_name#*\/}"
   else
-    read -p "Theme Vendor: " theme_vendor
+    read -e -p "Theme Vendor: " theme_vendor
     if [[ -z "$theme_vendor" ]]; then echo "The 'vendor' can not be empty" && exit 1; fi
   fi
 
-  read -p "Parrent Theme ($default_parrent_theme): " parrent_theme
+  read -e -p "Parrent Theme ($default_parrent_theme): " parrent_theme
   if [[ -z "$parrent_theme" ]]; then parrent_theme=$default_parrent_theme; fi
 
   local theme_vendor="$(echo "$theme_vendor" | tr -d '[:blank:]')"
@@ -59,14 +59,14 @@ function mage_new_theme() {
 function mage_new_module() {
   local dest_path=$(mage_new_in_folder "app/code")
 
-  read -p "Module Name: " module_name
+  read -e -p "Module Name: " module_name
   if [[ -z "$module_name" ]]; then echo "The 'Name' can not be empty" && exit 1; fi
 
   if [[ "$module_name" == */* ]]; then
     local module_vendor="${module_name%%/*}"
     local module_name="${module_name#*\/}"
   else
-    read -p "Module Vendor: " module_vendor
+    read -e -p "Module Vendor: " module_vendor
     if [[ -z "$module_vendor" ]]; then echo "The 'vendor' can not be empty" && exit 1; fi
   fi
 
