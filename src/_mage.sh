@@ -245,20 +245,19 @@ case "${@}" in
     countries="NL,BE,LU,DE"
   fi
 
-  if [[ -n "$scope" ]]; then
-    scope="--scope=stores --scope-code=${scope}"
-  fi
-
   countries="$(mage_lang_format_arguments $countries)"
   country=$(echo "${countries}" | cut -d ',' -f 1 | tr '[:lower:]' '[:upper:]')
 
-  echo "scope:$scope - countries:$countries"
-  $MAGENTO_CLI config:set $scope general/country/default $country
-  $MAGENTO_CLI config:set $scope general/country/allow $countries
-
-  if [[ -z "$scope" ]]; then
-    $MAGENTO_CLI config:set $scope general/country/destinations $countries
+  if [[ -n "$scope" ]]; then
+    echo "Setting the following countries: $countries for $scope"
+    scope="--scope=stores --scope-code=${scope}"
+  else
+    echo "Setting the following countries: $countries"
+    $MAGENTO_CLI config:set -q general/country/allow $countries
   fi
+
+  $MAGENTO_CLI config:set -q $scope general/country/default $country
+  $MAGENTO_CLI config:set -q $scope general/country/destinations $countries
   ;;
 
 "log" | "log debug")
