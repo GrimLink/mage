@@ -189,7 +189,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Cms install as this is never used, [Use create-project instead](https://github.com/GrimLink/create-project)
 
-## 1.0.1 - 2019-06-15 / [1.1.0] - 2019-11-06
+## 1.0.0 - 2019-06-10 / [1.1.0] - 2019-11-06
+
+Initial Release 🎉
 
 ### Added
 - Open multi store function
@@ -204,10 +206,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 - Reindex cmd for native solution
-
-## 1.0.0 - 2019-06-10
-
-Initial Release 🎉
 
 [unreleased]: https://github.com/olivierlacan/keep-a-changelog/compare/2.0.0...HEAD
 [2.0.0]: https://github.com/GrimLink/mage/compare/1.19.0...2.0.0
