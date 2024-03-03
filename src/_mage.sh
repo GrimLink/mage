@@ -257,15 +257,15 @@ case "${@}" in
   ;;
 
 "log debug")
-  tail var/log/debug.log -n -f
+  tail -f -n 3 var/log/debug.log
   ;;
 
 "log exception")
-  tail var/log/exception.log -n -f
+  tail -f -n 6 var/log/exception.log
   ;;
 
 "log system")
-  tail var/log/system.log -n -f
+  tail -f -n 6 var/log/system.log
   ;;
 
 "build"*)
