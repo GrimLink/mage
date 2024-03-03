@@ -1,88 +1,64 @@
 # Mage
 
-Mage is a simple bash helper
-on top of the options that Magento2 offers with `bin/magento`.
+**Mage** is a simple tool built on top of `bin/magento` to enhance your Magento 2 development experience. It provides shortcuts and custom functions to save you time and effort.
 
-The main focus of mage is being a shorthand and alias for `bin/magento`.
-so your typing less for the same commands.
+## Benefits of Using Mage
 
-`bin/magento` already offers the option of typing all there commands
-in shorter versions.
-
-E.g.
-
-| Full                      | Short             | mage       |
-| ------------------------- | ----------------- | ---------- |
-| `bin/magento cache:flush` | `bin/magento c:f` | `mage c:f` |
-
-But next to making typing less.
-mage also commes packing with a few custom functions.
-
-[Check them out at the commands section](#commands)
+* **Easier commands:** Mage introduces shorter aliases for common `bin/magento` commands, saving you keystrokes.
+* **Custom functions:** Mage offers helper commands like `watch` and `purge` for specific tasks.
+* **Open stores quickly:** Open your default store or specific store views with `mage open`.
+* **Efficient development:** The `watch` command automates cache cleaning on file changes, improving your workflow.
 
 ## Installation
 
-Download mage via:
+Download the script:
 
 ```bash
 wget https://raw.githubusercontent.com/GrimLink/mage/main/mage && chmod +x mage
 ```
 
-or if you prefer to use Curl:
+Alternatively, use curl:
 
 ```bash
 curl -O https://raw.githubusercontent.com/GrimLink/mage/main/mage && chmod +x mage
 ```
 
-## Commands
+## Available Commands
 
-| CMD                  | Description                                            |
-| -------------------- | ------------------------------------------------------ |
-| help                 | Show all options                                       |
-| self-update          | Update mage                                            |
-| info                 | Show minimal store info (e.g. version and uri)         |
-| stores               | Show all stores _\*1_                                  |
-| open                 | Open the default store, in the browser                 |
-| open admin           | Open store admin, in the browser                       |
-| open _STOREVIEW_     | Open specific storeview, in the browser _\*1_          |
-| watch                | Run cache-clean.js from mageTV                         |
-| browser-sync         | Run browser-sync on the default store view             |
-| purge                | Purge all static assets and caches                     |
-| new admin            | Create new admin user _\*2_                            |
-| new customer         | Create new customer _\*1_                              |
-| new theme            | Create new theme _\*2_                                 |
-| new module           | Create new module _\*2_                                |
-| new i18n             | Create new translations                                |
-| add sample           | Add sample data                                        |
-| add hyva             | Add Hyvä Theme _\*3_                                   |
-| add ray              | Add ray, requires the ray app                          |
-| add checkout         | Add Hyvä Checkout _\*3_                                |
-| config \| set config | Set Magento Configs                                    |
-| set hyva             | Set hyva default theme _\*4_                           |
-| set theme            | Set theme _\*4_                                        |
-| composer             | Run composer (Usefull for valet php)                   |
-| install \| i         | Run composer install or require                        |
-| update \| up         | Run composer update                                    |
-| remove \| rm         | Run composer remove                                    |
-| build                | Run `setup:static-content:deploy` with common defaults |
-| run                  | Run magerun2 _\*1_                                     |
+For a complete list, run `mage help`. Here are some highlights:
 
-Any other command will run the same as `bin/magento`
+* **`mage open [storeview]`:** Open your default store or a specific store based on the `storeview` name. You can also use `admin` instead of `storeview`, to open the admin panel.
+* **`mage watch`:** This alias for [mage2tv Cache Clean] monitors for Magento 2 file changes and clears only the affected cache, streamlining development.
+* **`mage purge`:** This command clears all static generated files and caches, useful for troubleshooting or forcing a hard reload.
 
-> _\*1_ requires [n98-magerun2](https://github.com/netz98/n98-magerun2)
->
-> _\*2_ add the flag `--yes` or `-y`, for using on yes all questions
->
-> _\*3_ requires [Hyvä license](https://www.hyva.io/hyva-themes-license.html) or gitlab access
->
-> _\*4_ requires [Yireo_ThemeCommands](https://github.com/yireo/Yireo_ThemeCommands)
+**Note:**
 
-## Supported platforms/environments
+* `mage run` requires the [n98-magerun2] module
+* Commands with "hyva" require a [Hyvä license] or GitLab access
+* `set theme` and `set hyva` requires the [Yireo_ThemeCommands] module
+* `set baldr` requires the [Siteation] Baldr Theme
 
-This scrips is tested in theses following platforms/environments,
-and works without any extra work.
+### Supported Platforms
 
-- OSX + Laravel Valet
-  - Also supports scoped php (`valet isolate`) in Laravel Valet 3
-- Most Linux platforms
-- [Warden](https://github.com/davidalger/warden) _(thanks to [@tdgroot](https://github.com/tdgroot))_
+Mage works without additional configuration on:
+
+* **macOS**
+* **Most Linux platforms**
+* **[Laravel Valet]**
+* **[Warden]:** Supported with thanks to [@tdgroot](https://github.com/tdgroot)
+
+## Contributing
+
+We welcome contributions to Mage! Fork the repository, make your changes, and submit a pull request.
+
+## License
+
+Mage is licensed under the MIT License. See the LICENSE file for details.
+
+[n98-magerun2]: https://github.com/netz98/n98-magerun2
+[Hyvä license]: https://www.hyva.io/hyva-themes-license.html
+[Yireo_ThemeCommands]: https://github.com/yireo/Yireo_ThemeCommands
+[mage2tv Cache Clean]: https://github.com/mage2tv/magento-cache-clean
+[Laravel Valet]: https://laravel.com/docs/valet
+[Warden]: https://github.com/wardenenv/warden
+[Siteation]: https://siteation.dev/
