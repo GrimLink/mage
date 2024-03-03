@@ -33,7 +33,7 @@ function mage_help() {
   mage_help_cmd "set hyva"          "Set Hyvä default theme"
   mage_help_cmd "set baldr"         "Set Siteation Baldr theme"
   mage_help_cmd "set config"        "Set Magento Configs"
-  mage_help_cmd "build"             "Run setup:static-content:deploy with common defaultsv"
+  mage_help_cmd "build"             "Run setup:static-content:deploy with common defaults"
   mage_help_cmd "run"               "Run magerun2"
   echo -e "\n${ITALIC}Anything else will run ${BLUE}bin/magento${RESET}"
   echo -e "${ITALIC}To see these copmmand again, run ${BLUE}mage help${RESET}"
