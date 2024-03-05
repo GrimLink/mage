@@ -426,7 +426,8 @@ case "${@}" in
   ;;
 
 "open"*)
-  store_url=$(get_mage_store_uri ${2:-1})
+  store=$2
+  store_url=$(get_mage_store_uri ${store:-1})
   admin_path=""
 
   # Prefetch admin URL data for open steps
