@@ -182,6 +182,11 @@ case "${@}" in
   mage_add_checkout
   ;;
 
+"add baldr")
+  composer config repositories.siteation/magento2-theme-baldr git git@github.com:Siteation/magento2-theme-baldr.git
+  composer require siteation/magento2-theme-baldr
+  ;;
+
 "set theme"*)
   $MAGENTO_CLI theme:change $3
   $MAGENTO_CLI cache:flush;

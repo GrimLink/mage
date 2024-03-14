@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `countries` commands to quickly set the countries for a store
 - `log` commands for easier log checking
 - support for store views to `browser-sync` command, same as with `open` command
+- new command `add baldr`
 
 ### Changed
 

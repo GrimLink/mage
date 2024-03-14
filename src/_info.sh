@@ -31,6 +31,7 @@ function mage_help() {
   mage_help_cmd "add sample"                      "Add sample data"
   mage_help_cmd "add hyva"                        "Add Hyva Theme"
   mage_help_cmd "add checkout"                    "Add Hyva Checkout"
+  mage_help_cmd "add baldr"                       "Add Siteation Baldr"
   mage_help_cmd "set theme [theme]"               "Run yireo theme:change"
   mage_help_cmd "set hyva"                        "Set theme: Hyva default"
   mage_help_cmd "set baldr"                       "Set theme: Siteation Baldr"
