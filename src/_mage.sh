@@ -278,6 +278,10 @@ case "${@}" in
   tail -f -n 8 var/log/system.log
   ;;
 
+"outdated")
+  $COMPOSER_CLI outdated --direct --no-dev --ignore symfony/finder --ignore symfony/process --format json > composer-outdated.json
+  ;;
+
 "build"*)
   mage_build ${@:2}
   ;;
