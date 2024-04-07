@@ -13,10 +13,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - new command `outdated`, this adds an easy overview of all direct composer dependencies
 
+### Changed
+
+- Add check for `yireo/magento2-theme-command` pkg, in `set theme` commands
+
 ### Fixed
 
 - `mage open admin` from opening the admin url
-- Add check for `yireo/magento2-theme-command` pkg, in `set theme` commands
 
 ## [2.0.0] - 2024-03-03
 
