@@ -220,7 +220,8 @@ Initial Release 🎉
 
 - Reindex cmd for native solution
 
-[unreleased]: https://github.com/olivierlacan/keep-a-changelog/compare/2.0.0...HEAD
+[unreleased]: https://github.com/olivierlacan/keep-a-changelog/compare/2.1.0...HEAD
+[2.1.0]: https://github.com/GrimLink/mage/compare/2.0.0...2.1.0
 [2.0.0]: https://github.com/GrimLink/mage/compare/1.19.0...2.0.0
 [1.19.0]: https://github.com/GrimLink/mage/compare/1.18.1...1.19.0
 [1.18.1]: https://github.com/GrimLink/mage/compare/1.18.0...1.18.1
