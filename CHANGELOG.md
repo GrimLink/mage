@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.1.0] - 2024-04-07
+
 ### Added
 
 - new command `outdated`, this adds an easy overview of all direct composer dependencies

@@ -230,7 +230,7 @@ function mage_add_checkout() {
   fi
 }
 
-MAGE_VERSION="2.0.0"
+MAGE_VERSION="2.1.0"
 
 function mage_version() {
   echo -e "\n${BOLD}Mage ${GREEN}${MAGE_VERSION}${RESET}"
@@ -263,6 +263,7 @@ function mage_help() {
   mage_help_cmd "add sample"                      "Add sample data"
   mage_help_cmd "add hyva"                        "Add Hyva Theme"
   mage_help_cmd "add checkout"                    "Add Hyva Checkout"
+  mage_help_cmd "add baldr"                       "Add Siteation Baldr"
   mage_help_cmd "set theme [theme]"               "Run yireo theme:change"
   mage_help_cmd "set hyva"                        "Set theme: Hyva default"
   mage_help_cmd "set baldr"                       "Set theme: Siteation Baldr"
@@ -271,6 +272,7 @@ function mage_help() {
   mage_help_cmd "log | log debug"                 "watch the debug log"
   mage_help_cmd "log exception"                   "watch the exception log"
   mage_help_cmd "log system"                      "watch the system log"
+  mage_help_cmd "outdated"                        "Show all direct outdated composer dependencies"
   mage_help_cmd "build"                           "Run setup:static-content:deploy with common defaults"
   mage_help_cmd "run"                             "Run magerun2"
 
@@ -426,7 +428,8 @@ case "${@}" in
   ;;
 
 "open"*)
-  store_url=$(get_mage_store_uri ${2:-1})
+  store=$2
+  store_url=$(get_mage_store_uri ${store:-1})
   admin_path=""
 
   # Prefetch admin URL data for open steps
@@ -572,9 +575,18 @@ case "${@}" in
   mage_add_checkout
   ;;
 
+"add baldr")
+  composer config repositories.siteation/magento2-theme-baldr git git@github.com:Siteation/magento2-theme-baldr.git
+  composer require siteation/magento2-theme-baldr
+  ;;
+
 "set theme"*)
-  $MAGENTO_CLI theme:change $3
-  $MAGENTO_CLI cache:flush;
+  if composer show yireo/magento2-theme-command > /dev/null 2>&1; then
+    $MAGENTO_CLI theme:change $3
+    $MAGENTO_CLI cache:flush;
+  else
+    echo "yireo/magento2-theme-command is not installed."
+  fi
   ;;
 
 "set hyva")
@@ -660,6 +672,10 @@ case "${@}" in
 
 "log system")
   tail -f -n 8 var/log/system.log
+  ;;
+
+"outdated")
+  $COMPOSER_CLI outdated --direct --no-dev --ignore symfony/finder --ignore symfony/process --format json > composer-outdated.json
   ;;
 
 "build"*)

@@ -1,4 +1,4 @@
-MAGE_VERSION="2.0.0"
+MAGE_VERSION="2.1.0"
 
 function mage_version() {
   echo -e "\n${BOLD}Mage ${GREEN}${MAGE_VERSION}${RESET}"
@@ -40,6 +40,7 @@ function mage_help() {
   mage_help_cmd "log | log debug"                 "watch the debug log"
   mage_help_cmd "log exception"                   "watch the exception log"
   mage_help_cmd "log system"                      "watch the system log"
+  mage_help_cmd "outdated"                        "Show all direct outdated composer dependencies"
   mage_help_cmd "build"                           "Run setup:static-content:deploy with common defaults"
   mage_help_cmd "run"                             "Run magerun2"
 
