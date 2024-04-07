@@ -189,8 +189,12 @@ case "${@}" in
   ;;
 
 "set theme"*)
-  $MAGENTO_CLI theme:change $3
-  $MAGENTO_CLI cache:flush;
+  if composer show yireo/magento2-theme-command > /dev/null 2>&1; then
+    $MAGENTO_CLI theme:change $3
+    $MAGENTO_CLI cache:flush;
+  else
+    echo "yireo/magento2-theme-command is not installed."
+  fi
   ;;
 
 "set hyva")
