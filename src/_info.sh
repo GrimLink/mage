@@ -1,4 +1,4 @@
-MAGE_VERSION="2.1.0"
+MAGE_VERSION="2.1.1"
 
 function mage_version() {
   echo -e "\n${BOLD}Mage ${GREEN}${MAGE_VERSION}${RESET}"

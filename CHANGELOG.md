@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+<!-- ## [2.1.1] - 2024-04-09 -->
+
+### Added
+
+- Hyva v1.3.7 support for contributers installation
+
 ## [2.1.0] - 2024-04-07
 
 ### Added
