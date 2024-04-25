@@ -150,6 +150,10 @@ case "${@}" in
   mage_new_module
   ;;
 
+"new patch"*)
+  mage_new_patch_file ${3}
+  ;;
+
 "new i18n"* | "new translate"*)
   src=${3:-.}
 

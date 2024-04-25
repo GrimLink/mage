@@ -27,6 +27,7 @@ function mage_help() {
   mage_help_cmd "new customer"                    "Create new customer"
   mage_help_cmd "new theme"                       "Create new theme"
   mage_help_cmd "new module"                      "Create new module"
+  mage_help_cmd "new patch"                       "Create new patch"
   mage_help_cmd "new i18n | new translate [src]"  "Create new translations"
   mage_help_cmd "add sample"                      "Add sample data"
   mage_help_cmd "add hyva"                        "Add Hyva Theme"

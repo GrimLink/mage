@@ -7,11 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-<!-- ## [2.1.1] - 2024-04-09 -->
+<!-- ## [2.1.1] - 2024-04-26 -->
 
 ### Added
 
-- Hyva v1.3.7 support for contributers installation
+- Hyva v1.3.7 support for contributors installation
+- `mage new patch` to easily create a new composer patch
 
 ## [2.1.0] - 2024-04-07
 

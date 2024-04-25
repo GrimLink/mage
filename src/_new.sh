@@ -82,3 +82,48 @@ function mage_new_module() {
   mage_make_file $dest_path/registration.php "${file_registration}"
   mage_make_file $dest_path/etc/module.xml "${file_xml}"
 }
+
+function mage_new_patch_file() {
+  src=${1}
+
+  # Remove leading slash
+  if [[ $src == /* ]]; then src="${src:1}"; fi
+
+  # Add vendor to path if omitted
+  if [[ $src != vendor/* ]]; then src="vendor/${src}"; fi
+
+  if [[ ! -f "$src" ]]; then
+    echo "Can not find $src make sure this is the right path" && exit 1;
+  fi
+
+  # Get the module src for the temp git dir
+  module_src=$(echo "$src" | cut -d '/' -f -3)
+  file_src=$(echo "$src" | cut -d '/' -f 4-)
+  patched_file_src="${src%.*}.patch"
+
+  cd $module_src
+  git init &> /dev/null
+  git add $file_src
+
+  patch_file_dir=$(dirname "patches/$patched_file_src")
+
+  read -rsn1 -p "Make your changes in $src when ready, press any key to continue";
+  echo "";
+
+  mkdir -p "../../../$patch_file_dir"
+  touch "../../../patches/$patched_file_src"
+  git diff > "../../../patches/$patched_file_src"
+
+  # Cleanup
+  git checkout . &> /dev/null
+  rm -rf .git
+  cd - &> /dev/null
+
+  # Add composer patch setting
+  vendor_folder_name=$(echo "$module_src" | sed 's/^vendor\///')
+  composer config extra.patches.$vendor_folder_name -j "{ \"Patch: $file_src\": \"patches/$patched_file_src\" }"
+
+  echo -e "Patch created in $patched_file_src".
+  echo -e "Patch added to to composer in extra.patches.$vendor_folder_name"
+  echo "Make sure the patch and settings in composer.json are correct before running composer install"
+}
