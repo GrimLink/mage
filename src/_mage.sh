@@ -175,6 +175,10 @@ case "${@}" in
   rm $src/i18n/temp.csv
   ;;
 
+"add patch"*)
+  mage_add_patch ${@:3}
+  ;;
+
 "add sample")
   mage_add_sample
   ;;
