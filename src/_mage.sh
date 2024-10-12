@@ -213,6 +213,10 @@ case "${@}" in
   mage set theme Siteation/baldr
   ;;
 
+"set mage-os")
+  convert_to_mage_os
+  ;;
+
 "set mode"*)
   deploy_mode="developer"
   is_mode_prod=0
