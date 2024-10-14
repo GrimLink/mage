@@ -14,6 +14,7 @@ function convert_to_mage_os() {
   composer remove magento/product-community-edition magento/composer-dependency-version-audit-plugin magento/composer-root-update-plugin --no-update
 
   composer config allow-plugins.'mage-os/*' true
+  rm -rf vendor
 
   # Install
   composer update --no-plugins --with-all-dependencies
