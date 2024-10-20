@@ -245,40 +245,71 @@ function mage_help_cmd() {
 function mage_help() {
   echo -e "${BOLD}CMD Options:${RESET}"
 
-  mage_help_cmd "self-update"                     "Update mage"
-  mage_help_cmd "info"                            "Show base config for store"
-  mage_help_cmd "stores"                          "Show all stores"
-  mage_help_cmd "open"                            "Open default store view"
-  mage_help_cmd "open admin"                      "Open store admin"
-  mage_help_cmd "open [storeview]"                "Open specific store view"
-  mage_help_cmd "watch"                           "Run cache-clean.js from mageTV"
-  mage_help_cmd "browser-sync"                    "Run browser-sync on default store view"
-  mage_help_cmd "browser-sync [storeview]"        "Run browser-sync on specific store view"
-  mage_help_cmd "reindex"                         "Reindex all indexes and clear cache"
-  mage_help_cmd "purge"                           "Purge all static assets"
-  mage_help_cmd "new admin"                       "Create new admin user"
-  mage_help_cmd "new customer"                    "Create new customer"
-  mage_help_cmd "new theme"                       "Create new theme"
-  mage_help_cmd "new module"                      "Create new module"
-  mage_help_cmd "new patch"                       "Create new patch"
-  mage_help_cmd "new i18n | new translate [src]"  "Create new translations"
-  mage_help_cmd "add sample"                      "Add sample data"
-  mage_help_cmd "add hyva"                        "Add Hyva Theme"
-  mage_help_cmd "add checkout"                    "Add Hyva Checkout"
-  mage_help_cmd "add baldr"                       "Add Siteation Baldr"
-  mage_help_cmd "set theme [theme]"               "Run yireo theme:change"
-  mage_help_cmd "set hyva"                        "Set theme: Hyva default"
-  mage_help_cmd "set baldr"                       "Set theme: Siteation Baldr"
-  mage_help_cmd "set mode [mode]"                 "Run deploy:mode:set with admin settings for dev"
-  mage_help_cmd "set countries [list_countries]"  "Set the store countries"
-  mage_help_cmd "log | log debug"                 "watch the debug log"
-  mage_help_cmd "log exception"                   "watch the exception log"
-  mage_help_cmd "log system"                      "watch the system log"
-  mage_help_cmd "outdated"                        "Show all direct outdated composer dependencies"
-  mage_help_cmd "build"                           "Run setup:static-content:deploy with common defaults"
-  mage_help_cmd "run"                             "Run magerun2"
+  mage_help_cmd "self-update"                           "Update mage"
+  mage_help_cmd "info"                                  "Show base config for store"
+  mage_help_cmd "stores"                                "Show all stores"
+  mage_help_cmd "open"                                  "Open default store view"
+  mage_help_cmd "open admin"                            "Open store admin"
+  mage_help_cmd "open [storeview]"                      "Open specific store view"
+  mage_help_cmd "watch"                                 "Run cache-clean.js from mageTV"
+  mage_help_cmd "browser-sync"                          "Run browser-sync on default store view"
+  mage_help_cmd "browser-sync [storeview]"              "Run browser-sync on specific store view"
+  mage_help_cmd "reindex"                               "Reindex all indexes and clear cache"
+  mage_help_cmd "purge"                                 "Purge all static assets"
+  mage_help_cmd "new admin"                             "Create new admin user"
+  mage_help_cmd "new customer"                          "Create new customer"
+  mage_help_cmd "new theme"                             "Create new theme"
+  mage_help_cmd "new module"                            "Create new module"
+  mage_help_cmd "new patch"                             "Create new patch"
+  mage_help_cmd "new i18n [src] | new translate [src]"  "Create new translations"
+  mage_help_cmd "add patch"                             "Add patch"
+  mage_help_cmd "add sample"                            "Add sample data"
+  mage_help_cmd "add hyva"                              "Add Hyva Theme"
+  mage_help_cmd "add checkout"                          "Add Hyva Checkout"
+  mage_help_cmd "add baldr"                             "Add Siteation Baldr"
+  mage_help_cmd "set theme [theme]"                     "Run yireo theme:change"
+  mage_help_cmd "set hyva"                              "Set theme: Hyva default"
+  mage_help_cmd "set baldr"                             "Set theme: Siteation Baldr"
+  mage_help_cmd "set mage-os"                           "Replace Magento2 with Mage-OS distro"
+  mage_help_cmd "set mode [mode]"                       "Run deploy:mode:set with admin settings for dev"
+  mage_help_cmd "set countries [list_countries]"        "Set the store countries"
+  mage_help_cmd "log | log debug"                       "watch the debug log"
+  mage_help_cmd "log exception"                         "watch the exception log"
+  mage_help_cmd "log system"                            "watch the system log"
+  mage_help_cmd "outdated"                              "Show all direct outdated composer dependencies"
+  mage_help_cmd "build"                                 "Run setup:static-content:deploy with common defaults"
+  mage_help_cmd "run"                                   "Run magerun2"
 
   echo -e "\n${ITALIC}Anything else will run ${BLUE}bin/magento${RESET}, ${ITALIC}To view this again, run ${BLUE}mage help${RESET}"
+}
+
+function convert_to_mage_os() {
+  if composer show magento/product-community-edition > /dev/null 2>&1; then
+    echo "This is not a Magento Community instalation" && exit 1;
+  fi
+
+  if composer show mage-os/product-community-edition > /dev/null 2>&1; then
+    echo "Mage-OS already installed!" && exit 1;
+  fi
+
+  echo "Consider removing any composer replaces, before starting";
+  echo "Consider removing any 3de party moduels that could impact the conversion";
+  read -rsn1 -p "When ready, press any key to continue";
+  echo "";
+
+  # Setup
+  composer config repositories.0 composer https://repo.mage-os.org/
+  composer require mage-os/product-community-edition --no-update
+  composer remove magento/product-community-edition magento/composer-dependency-version-audit-plugin magento/composer-root-update-plugin --no-update
+  composer remove sebastian/comparator --dev --no-update # remove if present
+
+  composer config allow-plugins.'mage-os/*' true
+  rm -rf vendor
+
+  # Install
+  composer update --no-plugins --with-all-dependencies
+  mage purge # Cleanup caches
+  mage s:up
 }
 
 function mage_new_in_folder() {
@@ -366,29 +397,53 @@ function mage_new_module() {
   mage_make_file $dest_path/etc/module.xml "${file_xml}"
 }
 
+function mage_add_patch() {
+  local vendor=${1};
+  local patch_name=${2};
+  local patch_src=${3};
+
+  if [[ -z "$vendor" ]]; then
+    echo "The vendor your patching, Example: magento/module-theme or hyva-themes/magento_theme"
+    read -e -p "Vendor Name: " vendor && echo ""
+  fi
+
+  if [[ -z "$patch_name" ]]; then
+    read -e -p "Patch Name: " patch_name && echo ""
+  fi
+
+  if [[ -z "$patch_src" ]]; then
+    echo "The source to patches/FOLDER or a git raw url"
+    read -e -p "Patch Source: " patch_src && echo ""
+  fi
+
+  if [[ ! "$patch_src" =~ ^https:// ]]; then
+    local patch_src="${patch_src%.*}.patch"
+  fi
+
+  composer config extra.patches.$vendor -j "{ \"$patch_name\": \"$patch_src\" }"
+  echo -e "Patch added to the composer.json in extra.patches.$vendor_folder_name"
+}
+
 function mage_new_patch_file() {
-  src=${1}
+  local src=${1}
 
   # Remove leading slash
   if [[ $src == /* ]]; then src="${src:1}"; fi
-
-  # Add vendor to path if omitted
-  if [[ $src != vendor/* ]]; then src="vendor/${src}"; fi
 
   if [[ ! -f "$src" ]]; then
     echo "Can not find $src make sure this is the right path" && exit 1;
   fi
 
   # Get the module src for the temp git dir
-  module_src=$(echo "$src" | cut -d '/' -f -3)
-  file_src=$(echo "$src" | cut -d '/' -f 4-)
-  patched_file_src="${src%.*}.patch"
+  local module_src=$(echo "$src" | cut -d '/' -f -3)
+  local file_src=$(echo "$src" | cut -d '/' -f 4-)
+  local patched_file_src="${src%.*}.patch"
 
   cd $module_src
   git init &> /dev/null
   git add $file_src
 
-  patch_file_dir=$(dirname "patches/$patched_file_src")
+  local patch_file_dir=$(dirname "patches/$patched_file_src")
 
   read -rsn1 -p "Make your changes in $src when ready, press any key to continue";
   echo "";
@@ -403,11 +458,16 @@ function mage_new_patch_file() {
   cd - &> /dev/null
 
   # Add composer patch setting
-  vendor_folder_name=$(echo "$module_src" | sed 's/^vendor\///')
-  composer config extra.patches.$vendor_folder_name -j "{ \"Patch: $file_src\": \"patches/$patched_file_src\" }"
+
+  read -p "Add patch to composer.json? [Y/n] "
+  echo ""
+  if [[ ! $REPLY =~ ^[nN]|[nN][oO]$ ]]; then
+    local vendor_folder_name=$(echo "$module_src" | sed 's/^vendor\///')
+    # Vendor Folder / Patch Name / Patch Source
+    mage_add_patch $vendor_folder_name "Patch: ${file_src}" "patches/${src}"
+  fi;
 
   echo -e "Patch created in $patched_file_src".
-  echo -e "Patch added to to composer in extra.patches.$vendor_folder_name"
   echo "Make sure the patch and settings in composer.json are correct before running composer install"
 }
 
@@ -614,6 +674,10 @@ case "${@}" in
   rm $src/i18n/temp.csv
   ;;
 
+"add patch"*)
+  mage_add_patch ${@:3}
+  ;;
+
 "add sample")
   mage_add_sample
   ;;
@@ -632,11 +696,11 @@ case "${@}" in
   ;;
 
 "set theme"*)
-  if composer show yireo/magento2-theme-command > /dev/null 2>&1; then
+  if composer show yireo/magento2-theme-commands > /dev/null 2>&1; then
     $MAGENTO_CLI theme:change $3
     $MAGENTO_CLI cache:flush;
   else
-    echo "yireo/magento2-theme-command is not installed."
+    echo "yireo/magento2-theme-commands is not installed."
   fi
   ;;
 
@@ -646,6 +710,10 @@ case "${@}" in
 
 "set baldr")
   mage set theme Siteation/baldr
+  ;;
+
+"set mage-os")
+  convert_to_mage_os
   ;;
 
 "set mode"*)

@@ -7,9 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.2.0] - 2024-10-20
+
 ### Added
 
 - `mage set mage-os` to easily switch from Adobe Magento to Mage-OS distro
+
+### Fixed
+
+- Typo in set theme check
 
 ## [2.1.1] - 2024-05-29
 

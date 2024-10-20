@@ -37,6 +37,7 @@ function mage_help() {
   mage_help_cmd "set theme [theme]"                     "Run yireo theme:change"
   mage_help_cmd "set hyva"                              "Set theme: Hyva default"
   mage_help_cmd "set baldr"                             "Set theme: Siteation Baldr"
+  mage_help_cmd "set mage-os"                           "Replace Magento2 with Mage-OS distro"
   mage_help_cmd "set mode [mode]"                       "Run deploy:mode:set with admin settings for dev"
   mage_help_cmd "set countries [list_countries]"        "Set the store countries"
   mage_help_cmd "log | log debug"                       "watch the debug log"
