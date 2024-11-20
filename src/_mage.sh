@@ -299,7 +299,11 @@ case "${@}" in
   ;;
 
 "build"*)
-  mage_build ${@:2}
+  default_args="-j 4"
+  args=${@:2}
+
+  # Deploy static content
+  $MAGENTO_CLI setup:static-content:deploy ${args:-$default_args}
   ;;
 
 "run"*)
