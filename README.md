@@ -31,6 +31,7 @@ For a complete list, run `mage help`. Here are some highlights:
 * **`mage watch`:** This alias for [mage2tv Cache Clean] monitors for Magento 2 file changes and clears only the affected cache, streamlining development.
 * **`mage purge`:** This command clears all static generated files and caches, useful for troubleshooting or forcing a hard reload.
 * **`mage set mage-os`:** Easily replace Magento2 distro with the Mage-OS distro
+* **`mage outdated`:** Show all direct outdated composer dependencies
 
 **Note:**
 
