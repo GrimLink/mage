@@ -32,7 +32,7 @@ For a complete list, run `mage help`. Here are some highlights:
 * **`mage purge`:** This command clears all static generated files and caches, useful for troubleshooting or forcing a hard reload.
 * **`mage set mage-os`:** Easily replace Magento2 distro with the Mage-OS distro
 * **`mage outdated`:** Show all direct outdated composer dependencies
-* **`mage run`:** Runs [n98-magerun2] commands
+* **`mage run [action]`:** Runs [n98-magerun2] commands
 
 **Note:**
 
