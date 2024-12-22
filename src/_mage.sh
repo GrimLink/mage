@@ -282,6 +282,14 @@ case "${@}" in
   $MAGENTO_CLI config:set -q $scope general/country/destinations $countries
   ;;
 
+"set fpc" | "set fpc default")
+  $MAGENTO_CLI config:set system/full_page_cache/caching_application 1
+  ;;
+
+"set fpc varnish")
+  $MAGENTO_CLI config:set system/full_page_cache/caching_application 2
+  ;;
+
 "log" | "log debug")
   tail -f -n 4 var/log/debug.log
   ;;
