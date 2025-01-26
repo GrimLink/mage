@@ -15,6 +15,7 @@ function mage_help() {
   mage_help_cmd "self-update"                           "Update mage"
   mage_help_cmd "info"                                  "Show base config for store"
   mage_help_cmd "stores"                                "Show all stores"
+  mage_help_cmd "start"                                 "Open default store view and admin, plus supported code and git client"
   mage_help_cmd "open"                                  "Open default store view"
   mage_help_cmd "open admin"                            "Open store admin"
   mage_help_cmd "open [storeview]"                      "Open specific store view"

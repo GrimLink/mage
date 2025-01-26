@@ -35,6 +35,25 @@ case "${@}" in
   fi
   ;;
 
+"start")
+  if [[ "$EDITOR" == "code" ]]; then
+    echo "Opening VSCode.."; code .
+  fi
+
+  if [ -d .git ]; then
+    if command -v github &>/dev/null; then
+      echo "Opening Github Desktop.."; github .;
+    elif command -v fork &>/dev/null; then
+      echo "Opening Fork.."; fork;
+    elif command -v gittower &>/dev/null; then
+      echo "Opening Gittower.."; gittower;
+    fi
+  fi
+
+  mage open admin;
+  mage open;
+  ;;
+
 "open"*)
   store=$2
   store_url=$(get_mage_store_uri ${store:-1})

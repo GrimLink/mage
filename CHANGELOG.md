@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `mage start` as a super shortcut for running `mage open admin`, `mage open` and opening the preferd editor and suported git client.
+
 ## [2.2.0] - 2024-10-20
 
 ### Added
