@@ -105,37 +105,7 @@ case "${@}" in
   ;;
 
 "purge")
-  cleantasks=(
-    'generated/metadata/*'
-    'generated/code/*'
-    'pub/static/*'
-    'var/cache/*'
-    'var/composer_home/*'
-    'var/page_cache/*'
-    'var/view_preprocessed/*'
-  );
-  purge_cmd="rm -rf"
-
-  if [[ $WARDEN == 1 ]]; then
-    # Run removal within environment, so that changes are in effect immediately.
-    # Changes will get synced back to host on MacOS.
-    purge_cmd="warden env exec -T php-fpm rm -rf"
-  fi;
-
-  for i in "${cleantasks[@]}"; do
-    $purge_cmd ${i} &
-    echo -e " [${GREEN}✓${RESET}] ${i}"
-  done
-
-  if command -v $REDIS_CLI >/dev/null 2>&1; then
-    $REDIS_CLI flushall > /dev/null 2>&1
-    echo -e " [${GREEN}✓${RESET}] Redis caches flushed"
-  fi
-
-  if command -v $VARNISH_CLI >/dev/null 2>&1; then
-    $VARNISH_CLI 'ban req.url ~ .' > /dev/null 2>&1
-    echo -e " [${GREEN}✓${RESET}] Varnish caches flushed"
-  fi
+  mage_purge
   ;;
 
 "new admin")
@@ -241,13 +211,6 @@ case "${@}" in
   is_mode_prod=0
   admin_session_lifetime=86400 # 24h in seconds
   admin_password_lifetime=0
-  purge_cmd="rm -rf"
-
-  if [[ $WARDEN == 1 ]]; then
-    # Run removal within environment, so that changes are in effect immediately.
-    # Changes will get synced back to host on MacOS.
-    purge_cmd="warden env exec -T php-fpm rm -rf"
-  fi;
 
   if [[ $3 == "production" ]] || [[ $3 == "prod" ]]; then
     deploy_mode="production --skip-compilation"
@@ -256,8 +219,8 @@ case "${@}" in
     admin_password_lifetime=90 # days
     echo "Also make sure to run 'mage build' or 'bin/magento setup:static-content:deploy', when running production mode"
   else
-    $purge_cmd generated/metadata/*
-    $purge_cmd generated/code/*
+    $PURGE_CLI generated/metadata/*
+    $PURGE_CLI generated/code/*
   fi
 
   $MAGENTO_CLI config:set -q dev/static/sign $is_mode_prod

@@ -17,6 +17,7 @@ MAGERUN_CLI=""
 REDIS_CLI="redis-cli"
 VARNISH_CLI="varnishadm" # We never use varnish on a local machine, and prefer to never use it
 COMPOSER_CLI="composer"
+PURGE_CLI="rm -rf"
 OPEN_CLI="xdg-open" # Linux
 GET_CLI="wget" # Linux
 
@@ -51,4 +52,7 @@ if [ -f .env ] && grep -q "WARDEN_ENV_NAME" .env && [[ ! "$PATH" == /var/www/htm
   REDIS_CLI="warden env exec redis redis-cli"
   VARNISH_CLI="warden env exec -T varnish varnishadm"
   COMPOSER_CLI="warden env exec php-fpm composer"
+  # Run removal within environment, so that changes are in effect immediately.
+  # Changes will get synced back to the host
+  PURGE_CLI="warden env exec -T php-fpm rm -rf"
 fi
