@@ -55,21 +55,7 @@ case "${@}" in
   ;;
 
 "open"*)
-  store=$2
-  store_url=$(get_mage_store_uri ${store:-1})
-  admin_path=""
-
-  # Prefetch admin URL data for open steps
-  if [[ "$store" == "admin" ]]; then
-    admin_path=$(grep frontName app/etc/env.php | tail -1 | cut -d '>' -f2 | cut -d '"' -f2 | cut -d "'" -f2)
-  fi
-
-  if [[ -z "$store_url" ]]; then
-    echo "Could not find url for store $store"
-  else
-    echo -e "Opening: ${store_url}${admin_path}"
-    $OPEN_CLI ${store_url}${admin_path}
-  fi
+  mage_open $2;
   ;;
 
 "watch")
