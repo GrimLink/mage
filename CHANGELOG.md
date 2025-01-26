@@ -233,20 +233,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Initial Release 🎉
 
-### Added
-- Open multi store function
-- Readme
-- Default user name to admin task
-- Admin cmd with flag `--yes` for yes to all questions
-
-### Changed
-
-- Info cmd with Magento version
-
-### Removed
-
-- Reindex cmd for native solution
-
 [unreleased]: https://github.com/GrimLink/mage/compare/2.2.0...HEAD
 [2.2.0]: https://github.com/GrimLink/mage/compare/2.1.1...2.2.0
 [2.1.1]: https://github.com/GrimLink/mage/compare/2.1.0...2.1.1
