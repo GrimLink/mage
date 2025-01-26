@@ -22,6 +22,7 @@ MAGERUN_CLI=""
 REDIS_CLI="redis-cli"
 VARNISH_CLI="varnishadm" # We never use varnish on a local machine, and prefer to never use it
 COMPOSER_CLI="composer"
+PURGE_CLI="rm -rf"
 OPEN_CLI="xdg-open" # Linux
 GET_CLI="wget" # Linux
 
@@ -56,54 +57,10 @@ if [ -f .env ] && grep -q "WARDEN_ENV_NAME" .env && [[ ! "$PATH" == /var/www/htm
   REDIS_CLI="warden env exec redis redis-cli"
   VARNISH_CLI="warden env exec -T varnish varnishadm"
   COMPOSER_CLI="warden env exec php-fpm composer"
+  # Run removal within environment, so that changes are in effect immediately.
+  # Changes will get synced back to the host
+  PURGE_CLI="warden env exec -T php-fpm rm -rf"
 fi
-
-function mage_build() {
-  local jobs=4
-
-  # Frontend variables with default values
-  local langs="en_US nl_NL"
-  local default_args="$langs $jobs"
-  local args=""
-
-  # Admin variables with default values
-  local admin_default_args="en_US $jobs"
-  local admin_args="en_US"
-
-  for option in "${@}"; do
-    if [[ "$option" =~ ^a: ]]; then
-      # Extract argument after 'a:' (remove prefix)
-      local stripped_option=${option#a:}
-      local admin_args="$admin_args $stripped_option"
-    else
-      local args="$args $option"
-    fi
-  done
-
-  # If language is not found in ARGS add the default
-  if [[ $args != *_* ]]; then
-    local args="$langs $args"
-  fi
-
-  # If Jobs is not found in ARGS add the default
-  if [[ "$args" != *"-j"* ]] || [[ "$args" != *"--jobs"* ]]; then
-    local args="$args -j $jobs"
-  fi
-
-  # If Jobs is not found in ADMIN_ARGS add the default
-  if [[ "$admin_args" != *"-j"* ]] || [[ "$admin_args" != *"--jobs"* ]]; then
-    local admin_args="$admin_args -j $jobs"
-  fi
-
-  # If force is found in ARGS add it to both Frontend and Admin args
-  if [[ "$args" == *"-f"* ]] || [[ "$args" == *"--force"* ]]; then
-    local admin_args="$admin_args -f"
-  fi
-
-  # Deploy static content
-  $MAGENTO_CLI setup:static-content:deploy -a adminhtml ${admin_args:-$admin_default_args} &&
-  $MAGENTO_CLI setup:static-content:deploy -a frontend ${args:-$default_args}
-}
 
 # Helper to format language inputs
 function mage_lang_format_arguments() {
@@ -184,6 +141,7 @@ function mage_add_hyva() {
       'hyva-themes/magento2-email-module'
       'hyva-themes/magento2-order-cancellation-webapi'
       'hyva-themes/magento2-default-theme'
+      'hyva-themes/magento2-cms-tailwind-jit'
       'hyva-themes/magento2-compat-module-fallback'
       'hyva-themes/magento2-theme-fallback'
       'hyva-themes/magento2-luma-checkout'
@@ -201,7 +159,7 @@ function mage_add_hyva() {
   $MAGENTO_CLI config:set customer/captcha/enable 0
   $MAGENTO_CLI s:up
 
-  if composer show yireo/magento2-theme-commands >/dev/null 2>&1; then
+  if $COMPOSER_CLI show yireo/magento2-theme-commands >/dev/null 2>&1; then
     $MAGENTO_CLI theme:change Hyva/default
   fi
 
@@ -231,7 +189,7 @@ function mage_add_checkout() {
   fi
 }
 
-MAGE_VERSION="2.2.0"
+MAGE_VERSION="2.3.0"
 
 function mage_version() {
   echo -e "\n${BOLD}Mage ${GREEN}${MAGE_VERSION}${RESET}"
@@ -247,35 +205,46 @@ function mage_help() {
 
   mage_help_cmd "self-update"                           "Update mage"
   mage_help_cmd "info"                                  "Show base config for store"
-  mage_help_cmd "stores"                                "Show all stores"
+
+  mage_help_cmd "start"                                 "Open store and admin with code editor and git client"
   mage_help_cmd "open"                                  "Open default store view"
   mage_help_cmd "open admin"                            "Open store admin"
   mage_help_cmd "open [storeview]"                      "Open specific store view"
+  mage_help_cmd "stores"                                "Show all stores"
+
   mage_help_cmd "watch"                                 "Run cache-clean.js from mageTV"
   mage_help_cmd "browser-sync"                          "Run browser-sync on default store view"
   mage_help_cmd "browser-sync [storeview]"              "Run browser-sync on specific store view"
+
   mage_help_cmd "reindex"                               "Reindex all indexes and clear cache"
   mage_help_cmd "purge"                                 "Purge all static assets"
+
   mage_help_cmd "new admin"                             "Create new admin user"
   mage_help_cmd "new customer"                          "Create new customer"
   mage_help_cmd "new theme"                             "Create new theme"
   mage_help_cmd "new module"                            "Create new module"
   mage_help_cmd "new patch"                             "Create new patch"
   mage_help_cmd "new i18n [src] | new translate [src]"  "Create new translations"
+
   mage_help_cmd "add patch"                             "Add patch"
   mage_help_cmd "add sample"                            "Add sample data"
   mage_help_cmd "add hyva"                              "Add Hyva Theme"
   mage_help_cmd "add checkout"                          "Add Hyva Checkout"
   mage_help_cmd "add baldr"                             "Add Siteation Baldr"
+
+  mage_help_cmd "set mage-os"                           "Replace Magento2 with Mage-OS distro"
   mage_help_cmd "set theme [theme]"                     "Run yireo theme:change"
   mage_help_cmd "set hyva"                              "Set theme: Hyva default"
   mage_help_cmd "set baldr"                             "Set theme: Siteation Baldr"
-  mage_help_cmd "set mage-os"                           "Replace Magento2 with Mage-OS distro"
-  mage_help_cmd "set mode [mode]"                       "Run deploy:mode:set with admin settings for dev"
+  mage_help_cmd "set mode [mode]"                       "Set deploy mode with admin settings for dev or prod"
   mage_help_cmd "set countries [list_countries]"        "Set the store countries"
+  mage_help_cmd "set fsp | set fpc default"             "Set the full page cache to system"
+  mage_help_cmd "set fpc varnish"                       "Set the full page cache to varnish"
+
   mage_help_cmd "log | log debug"                       "watch the debug log"
   mage_help_cmd "log exception"                         "watch the exception log"
   mage_help_cmd "log system"                            "watch the system log"
+
   mage_help_cmd "outdated"                              "Show all direct outdated composer dependencies"
   mage_help_cmd "build"                                 "Run setup:static-content:deploy with common defaults"
   mage_help_cmd "run"                                   "Run magerun2"
@@ -284,11 +253,11 @@ function mage_help() {
 }
 
 function convert_to_mage_os() {
-  if composer show magento/product-community-edition > /dev/null 2>&1; then
+  if $COMPOSER_CLI show magento/product-community-edition > /dev/null 2>&1; then
     echo "This is not a Magento Community instalation" && exit 1;
   fi
 
-  if composer show mage-os/product-community-edition > /dev/null 2>&1; then
+  if $COMPOSER_CLI show mage-os/product-community-edition > /dev/null 2>&1; then
     echo "Mage-OS already installed!" && exit 1;
   fi
 
@@ -298,16 +267,16 @@ function convert_to_mage_os() {
   echo "";
 
   # Setup
-  composer config repositories.0 composer https://repo.mage-os.org/
-  composer require mage-os/product-community-edition --no-update
-  composer remove magento/product-community-edition magento/composer-dependency-version-audit-plugin magento/composer-root-update-plugin --no-update
-  composer remove sebastian/comparator --dev --no-update # remove if present
+  $COMPOSER_CLI config repositories.0 composer https://repo.mage-os.org/
+  $COMPOSER_CLI require mage-os/product-community-edition --no-update
+  $COMPOSER_CLI remove magento/product-community-edition magento/composer-dependency-version-audit-plugin magento/composer-root-update-plugin --no-update
+  $COMPOSER_CLI remove sebastian/comparator --dev --no-update # remove if present
 
-  composer config allow-plugins.'mage-os/*' true
+  $COMPOSER_CLI config allow-plugins.'mage-os/*' true
   rm -rf vendor
 
   # Install
-  composer update --no-plugins --with-all-dependencies
+  $COMPOSER_CLI update --no-plugins --with-all-dependencies
   mage purge # Cleanup caches
   mage s:up
 }
@@ -397,6 +366,60 @@ function mage_new_module() {
   mage_make_file $dest_path/etc/module.xml "${file_xml}"
 }
 
+function mage_open() {
+  local store=$2
+  local store_url=$(get_mage_store_uri ${store:-1})
+  local admin_path=""
+
+  # Prefetch admin URL data for open steps
+  if [[ "$store" == "admin" ]]; then
+    local admin_path=$(grep frontName app/etc/env.php | tail -1 | cut -d '>' -f2 | cut -d '"' -f2 | cut -d "'" -f2)
+  fi
+
+  if [[ -z "$store_url" ]]; then
+    echo "Could not find url for store $store"
+  else
+    echo -e "Opening: ${store_url}${admin_path}"
+    $OPEN_CLI ${store_url}${admin_path}
+  fi
+}
+
+function mage_open_editor() {
+  case $EDITOR in
+  "phpstorm")
+    echo "Opening PHPStorm.."; phpstorm .
+    ;;
+
+  "code" | "code -w" | "code --wait")
+    echo "Opening VSCode.."; code .
+    ;;
+
+  "zed" | "zed -w" | "zed --wait")
+    echo "Opening Zed.."; zed .
+    ;;
+
+  "subl" | "subl -w" | "subl --wait")
+    echo "Opening Sublime Text.."; subl .
+    ;;
+
+  "*")
+    echo "No valid EDITOR found"
+    ;;
+  esac;
+}
+
+function mage_open_gitclient() {
+  if [ -d .git ]; then
+    if command -v github &>/dev/null; then
+      echo "Opening Github Desktop.."; github .;
+    elif command -v fork &>/dev/null; then
+      echo "Opening Fork.."; fork;
+    elif command -v gittower &>/dev/null; then
+      echo "Opening Gittower.."; gittower;
+    fi
+  fi
+}
+
 function mage_add_patch() {
   local vendor=${1};
   local patch_name=${2};
@@ -420,7 +443,7 @@ function mage_add_patch() {
     local patch_src="${patch_src%.*}.patch"
   fi
 
-  composer config extra.patches.$vendor -j "{ \"$patch_name\": \"$patch_src\" }"
+  $COMPOSER_CLI config extra.patches.$vendor -j "{ \"$patch_name\": \"$patch_src\" }"
   echo -e "Patch added to the composer.json in extra.patches.$vendor_folder_name"
 }
 
@@ -471,6 +494,33 @@ function mage_new_patch_file() {
   echo "Make sure the patch and settings in composer.json are correct before running composer install"
 }
 
+function mage_purge() {
+  local cleantasks=(
+    'generated/metadata/*'
+    'generated/code/*'
+    'pub/static/*'
+    'var/cache/*'
+    'var/composer_home/*'
+    'var/page_cache/*'
+    'var/view_preprocessed/*'
+  );
+
+  for i in "${cleantasks[@]}"; do
+    $PURGE_CLI ${i} &
+    echo -e " [${GREEN}✓${RESET}] ${i}"
+  done
+
+  if command -v $REDIS_CLI >/dev/null 2>&1; then
+    $REDIS_CLI flushall > /dev/null 2>&1
+    echo -e " [${GREEN}✓${RESET}] Redis caches flushed"
+  fi
+
+  if command -v $VARNISH_CLI >/dev/null 2>&1; then
+    $VARNISH_CLI 'ban req.url ~ .' > /dev/null 2>&1
+    echo -e " [${GREEN}✓${RESET}] Varnish caches flushed"
+  fi
+}
+
 function mage_add_sample() {
   read -e -p "What is your Magento base version (sample: 2.4): " mversion && echo ""
   if [[ -z "$mversion" ]]; then echo "The Magento 2 version is empty, aborting.." && exit 1; fi
@@ -490,8 +540,8 @@ function mage_add_sample() {
   $MAGENTO_CLI setup:upgrade
 
   # Set theme to Hyva if present
-  if composer show hyva-themes/magento2-default-theme >/dev/null 2>&1; then
-    if composer show yireo/magento2-theme-commands >/dev/null 2>&1; then
+  if $COMPOSER_CLI show hyva-themes/magento2-default-theme >/dev/null 2>&1; then
+    if $COMPOSER_CLI show yireo/magento2-theme-commands >/dev/null 2>&1; then
       $MAGENTO_CLI theme:change Hyva/default
     fi
   fi
@@ -534,22 +584,15 @@ case "${@}" in
   fi
   ;;
 
+"start")
+  mage_open_editor
+  mage_open_gitclient
+  mage open admin
+  mage open
+  ;;
+
 "open"*)
-  store=$2
-  store_url=$(get_mage_store_uri ${store:-1})
-  admin_path=""
-
-  # Prefetch admin URL data for open steps
-  if [[ "$store" == "admin" ]]; then
-    admin_path=$(grep frontName app/etc/env.php | tail -1 | cut -d '>' -f2 | cut -d '"' -f2 | cut -d "'" -f2)
-  fi
-
-  if [[ -z "$store_url" ]]; then
-    echo "Could not find url for store $store"
-  else
-    echo -e "Opening: ${store_url}${admin_path}"
-    $OPEN_CLI ${store_url}${admin_path}
-  fi
+  mage_open $2;
   ;;
 
 "watch")
@@ -585,37 +628,7 @@ case "${@}" in
   ;;
 
 "purge")
-  cleantasks=(
-    'generated/metadata/*'
-    'generated/code/*'
-    'pub/static/*'
-    'var/cache/*'
-    'var/composer_home/*'
-    'var/page_cache/*'
-    'var/view_preprocessed/*'
-  );
-  purge_cmd="rm -rf"
-
-  if [[ $WARDEN == 1 ]]; then
-    # Run removal within environment, so that changes are in effect immediately.
-    # Changes will get synced back to host on MacOS.
-    purge_cmd="warden env exec -T php-fpm rm -rf"
-  fi;
-
-  for i in "${cleantasks[@]}"; do
-    $purge_cmd ${i} &
-    echo -e " [${GREEN}✓${RESET}] ${i}"
-  done
-
-  if command -v $REDIS_CLI >/dev/null 2>&1; then
-    $REDIS_CLI flushall > /dev/null 2>&1
-    echo -e " [${GREEN}✓${RESET}] Redis caches flushed"
-  fi
-
-  if command -v $VARNISH_CLI >/dev/null 2>&1; then
-    $VARNISH_CLI 'ban req.url ~ .' > /dev/null 2>&1
-    echo -e " [${GREEN}✓${RESET}] Varnish caches flushed"
-  fi
+  mage_purge
   ;;
 
 "new admin")
@@ -721,13 +734,6 @@ case "${@}" in
   is_mode_prod=0
   admin_session_lifetime=86400 # 24h in seconds
   admin_password_lifetime=0
-  purge_cmd="rm -rf"
-
-  if [[ $WARDEN == 1 ]]; then
-    # Run removal within environment, so that changes are in effect immediately.
-    # Changes will get synced back to host on MacOS.
-    purge_cmd="warden env exec -T php-fpm rm -rf"
-  fi;
 
   if [[ $3 == "production" ]] || [[ $3 == "prod" ]]; then
     deploy_mode="production --skip-compilation"
@@ -736,8 +742,8 @@ case "${@}" in
     admin_password_lifetime=90 # days
     echo "Also make sure to run 'mage build' or 'bin/magento setup:static-content:deploy', when running production mode"
   else
-    $purge_cmd generated/metadata/*
-    $purge_cmd generated/code/*
+    $PURGE_CLI generated/metadata/*
+    $PURGE_CLI generated/code/*
   fi
 
   $MAGENTO_CLI config:set -q dev/static/sign $is_mode_prod
@@ -781,6 +787,14 @@ case "${@}" in
   $MAGENTO_CLI config:set -q $scope general/country/destinations $countries
   ;;
 
+"set fpc" | "set fpc default")
+  $MAGENTO_CLI config:set system/full_page_cache/caching_application 1
+  ;;
+
+"set fpc varnish")
+  $MAGENTO_CLI config:set system/full_page_cache/caching_application 2
+  ;;
+
 "log" | "log debug")
   tail -f -n 4 var/log/debug.log
   ;;
@@ -798,7 +812,9 @@ case "${@}" in
   ;;
 
 "build"*)
-  mage_build ${@:2}
+  default_args="-j 4"
+  args=${@:2}
+  $MAGENTO_CLI setup:static-content:deploy ${args:-$default_args}
   ;;
 
 "run"*)
