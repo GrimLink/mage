@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `mage start` as a super shortcut for running `mage open admin`, `mage open`
   and opening the preferred editor and supported visual git client.
+- `mage set fsp | set fpc default` to set the full page cache to system
+- `mage set fsp varnish` to set the full page cache to varnish
 
 ## [2.2.0] - 2024-10-20
 
