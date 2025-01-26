@@ -36,22 +36,10 @@ case "${@}" in
   ;;
 
 "start")
-  if [[ "$EDITOR" == "code" ]]; then
-    echo "Opening VSCode.."; code .
-  fi
-
-  if [ -d .git ]; then
-    if command -v github &>/dev/null; then
-      echo "Opening Github Desktop.."; github .;
-    elif command -v fork &>/dev/null; then
-      echo "Opening Fork.."; fork;
-    elif command -v gittower &>/dev/null; then
-      echo "Opening Gittower.."; gittower;
-    fi
-  fi
-
-  mage open admin;
-  mage open;
+  mage_open_editor
+  mage_open_gitclient
+  mage open admin
+  mage open
   ;;
 
 "open"*)
@@ -277,8 +265,6 @@ case "${@}" in
 "build"*)
   default_args="-j 4"
   args=${@:2}
-
-  # Deploy static content
   $MAGENTO_CLI setup:static-content:deploy ${args:-$default_args}
   ;;
 

@@ -16,3 +16,38 @@ function mage_open() {
   fi
 }
 
+function mage_open_editor() {
+  case $EDITOR in
+  "phpstorm")
+    echo "Opening PHPStorm.."; phpstorm .
+    ;;
+
+  "code" | "code -w" | "code --wait")
+    echo "Opening VSCode.."; code .
+    ;;
+
+  "zed" | "zed -w" | "zed --wait")
+    echo "Opening Zed.."; zed .
+    ;;
+
+  "subl" | "subl -w" | "subl --wait")
+    echo "Opening Sublime Text.."; subl .
+    ;;
+
+  "*")
+    echo "No valid EDITOR found"
+    ;;
+  esac;
+}
+
+function mage_open_gitclient() {
+  if [ -d .git ]; then
+    if command -v github &>/dev/null; then
+      echo "Opening Github Desktop.."; github .;
+    elif command -v fork &>/dev/null; then
+      echo "Opening Fork.."; fork;
+    elif command -v gittower &>/dev/null; then
+      echo "Opening Gittower.."; gittower;
+    fi
+  fi
+}
