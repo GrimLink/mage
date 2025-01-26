@@ -7,11 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.3.0] - 2025-01-26
+
 ### Added
 
 - `mage start` as a super shortcut for running `mage open admin`, `mage open`
   and opening the preferred editor and supported visual git client.
-- `mage set fsp | set fpc default` to set the full page cache to system
+- `mage set fsp | mage set fpc default` to set the full page cache to system
 - `mage set fsp varnish` to set the full page cache to varnish
 
 ## [2.2.0] - 2024-10-20
@@ -233,7 +235,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Initial Release 🎉
 
-[unreleased]: https://github.com/GrimLink/mage/compare/2.2.0...HEAD
+[unreleased]: https://github.com/GrimLink/mage/compare/2.3.0...HEAD
+[2.3.0]: https://github.com/GrimLink/mage/compare/2.2.0...2.3.0
 [2.2.0]: https://github.com/GrimLink/mage/compare/2.1.1...2.2.0
 [2.1.1]: https://github.com/GrimLink/mage/compare/2.1.0...2.1.1
 [2.1.0]: https://github.com/GrimLink/mage/compare/2.0.0...2.1.0
