@@ -17,8 +17,8 @@ function mage_add_sample() {
   $MAGENTO_CLI setup:upgrade
 
   # Set theme to Hyva if present
-  if composer show hyva-themes/magento2-default-theme >/dev/null 2>&1; then
-    if composer show yireo/magento2-theme-commands >/dev/null 2>&1; then
+  if $COMPOSER_CLI show hyva-themes/magento2-default-theme >/dev/null 2>&1; then
+    if $COMPOSER_CLI show yireo/magento2-theme-commands >/dev/null 2>&1; then
       $MAGENTO_CLI theme:change Hyva/default
     fi
   fi

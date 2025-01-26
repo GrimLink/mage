@@ -37,7 +37,7 @@ function mage_add_hyva() {
   $MAGENTO_CLI config:set customer/captcha/enable 0
   $MAGENTO_CLI s:up
 
-  if composer show yireo/magento2-theme-commands >/dev/null 2>&1; then
+  if $COMPOSER_CLI show yireo/magento2-theme-commands >/dev/null 2>&1; then
     $MAGENTO_CLI theme:change Hyva/default
   fi
 

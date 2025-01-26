@@ -21,7 +21,7 @@ function mage_add_patch() {
     local patch_src="${patch_src%.*}.patch"
   fi
 
-  composer config extra.patches.$vendor -j "{ \"$patch_name\": \"$patch_src\" }"
+  $COMPOSER_CLI config extra.patches.$vendor -j "{ \"$patch_name\": \"$patch_src\" }"
   echo -e "Patch added to the composer.json in extra.patches.$vendor_folder_name"
 }
 
