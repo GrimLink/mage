@@ -25,7 +25,7 @@ curl -O https://raw.githubusercontent.com/GrimLink/mage/main/mage && chmod +x ma
 
 ## Available Commands
 
-For a complete list, run `mage help`. Here are some highlights:
+For a complete list, run `mage help`, or view the [src/_info.sh](https://github.com/GrimLink/mage/blob/main/src/_info.sh). Here are some highlights:
 
 * **`mage open [storeview]`:** Open your default store or a specific store based on the `storeview` name. You can also use `admin` instead of `storeview`, to open the admin panel.
 * **`mage watch`:** This alias for [mage2tv Cache Clean] monitors for Magento 2 file changes and clears only the affected cache, streamlining development.
