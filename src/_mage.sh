@@ -262,6 +262,10 @@ case "${@}" in
   $COMPOSER_CLI outdated --direct --no-dev --ignore symfony/finder --ignore symfony/process --format json > composer-outdated.json
   ;;
 
+"build hyva")
+  mage_build_hyva
+  ;;
+
 "build"*)
   default_args="-j 4"
   args=${@:2}

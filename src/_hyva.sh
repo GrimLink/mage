@@ -66,3 +66,10 @@ function mage_add_checkout() {
     $COMPOSER_CLI require hyva-themes/magento2-hyva-checkout --prefer-source
   fi
 }
+
+function mage_build_hyva() {
+  if [ ! -d vendor/hyva-themes/magento2-default-theme/web/tailwind/node_modules ]; then
+    $NPM_CLI --prefix vendor/hyva-themes/magento2-default-theme/web/tailwind install;
+  fi
+  $NPM_CLI --prefix vendor/hyva-themes/magento2-default-theme/web/tailwind run build;
+}
