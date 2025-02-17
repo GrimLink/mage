@@ -55,3 +55,7 @@ function get_mage_store_uri() {
 
   echo $store_url
 }
+
+function get_composer_pkg_version() {
+  echo -e $($COMPOSER_CLI show $1 | grep 'versions' | grep -o -E '\*\ .+' | awk '{print $2}' | cut -d',' -f1)
+}

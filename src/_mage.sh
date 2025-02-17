@@ -16,12 +16,18 @@ case "${@}" in
   ;;
 
 "info")
-  $MAGENTO_CLI --version
+  echo -e "Magento: $GREEN$($MAGENTO_CLI --version | sed 's/Magento CLI //')$RESET"
+  if $COMPOSER_CLI show hyva-themes/magento2-default-theme > /dev/null 2>&1; then
+    echo -e "Hyva Theme: $GREEN$(get_composer_pkg_version 'hyva-themes/magento2-default-theme')$RESET"
+    echo -e "Hyva Module: $GREEN$(get_composer_pkg_version 'hyva-themes/magento2-theme-module')$RESET"
+  fi
+  echo -e "PHP: $GREEN$($PHP_CLI --version | grep ^PHP | cut -d' ' -f2)$RESET"
+  echo -e "NODE: $GREEN$($NODE_CLI --version | sed 's/v//')$RESET"
   echo -e "Base URI: $(get_mage_base_uri)"
   echo -e "Admin URI: $(grep frontName app/etc/env.php | tail -1 | cut -d ">" -f2 | cut -d "'" -f2)"
   echo -e "Database: $(grep dbname app/etc/env.php | tail -1 | cut -d ">" -f2 | cut -d "'" -f2)"
-  $MAGENTO_CLI maintenance:status
   $MAGENTO_CLI deploy:mode:show
+  $MAGENTO_CLI maintenance:status
   if [[ -n "$MAGENTO_CLI config:show catalog/search/engine" ]]; then
     echo -e "Search Engine: $($MAGENTO_CLI config:show catalog/search/engine)"
   fi
@@ -155,12 +161,12 @@ case "${@}" in
   ;;
 
 "add baldr")
-  composer config repositories.siteation/magento2-theme-baldr git git@github.com:Siteation/magento2-theme-baldr.git
-  composer require siteation/magento2-theme-baldr
+  $COMPOSER_CLI config repositories.siteation/magento2-theme-baldr git git@github.com:Siteation/magento2-theme-baldr.git
+  $COMPOSER_CLI require siteation/magento2-theme-baldr
   ;;
 
 "set theme"*)
-  if composer show yireo/magento2-theme-commands > /dev/null 2>&1; then
+  if $COMPOSER_CLI show yireo/magento2-theme-commands > /dev/null 2>&1; then
     $MAGENTO_CLI theme:change $3
     $MAGENTO_CLI cache:flush;
   else

@@ -16,7 +16,9 @@ MAGENTO_CLI="bin/magento"
 MAGERUN_CLI=""
 REDIS_CLI="redis-cli"
 VARNISH_CLI="varnishadm" # We never use varnish on a local machine, and prefer to never use it
+PHP_CLI="php"
 COMPOSER_CLI="composer"
+NODE_CLI="node"
 NPM_CLI="npm"
 PURGE_CLI="rm -rf"
 OPEN_CLI="xdg-open" # Linux
@@ -52,7 +54,9 @@ if [ -f .env ] && grep -q "WARDEN_ENV_NAME" .env && [[ ! "$PATH" == /var/www/htm
   MAGERUN_CLI="warden env exec php-fpm n98-magerun"
   REDIS_CLI="warden env exec redis redis-cli"
   VARNISH_CLI="warden env exec -T varnish varnishadm"
+  PHP_CLI="warden env exec php-fpm php"
   COMPOSER_CLI="warden env exec php-fpm composer"
+  NODE_CLI="warden env exec php-fpm node"
   NPM_CLI="warden env exec php-fpm npm"
   # Run removal within environment, so that changes are in effect immediately.
   # Changes will get synced back to the host
