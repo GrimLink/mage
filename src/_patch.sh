@@ -25,6 +25,10 @@ function mage_add_patch() {
   echo -e "Patch added to the composer.json in extra.patches.$vendor_folder_name"
 }
 
+function mage_new_patch_branch_diff() {
+  git diff $(git rev-parse --abbrev-ref origin/HEAD)..$(git branch --show-current) > $(git branch --show-current).patch
+}
+
 function mage_new_patch_file() {
   local src=${1}
 
