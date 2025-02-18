@@ -62,7 +62,7 @@ case "${@}" in
 
   if [[ $WARDEN == 1 ]]; then
     # NOTE: we need to sadly hard code the path,
-    # but lukcy we can since the warden container is always the same
+    # but lucky we can since the warden container is always the same
     warden env exec php-fpm /home/www-data/.composer/vendor/bin/cache-clean.js -w
   else
     $cache_cli
