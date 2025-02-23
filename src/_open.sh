@@ -5,7 +5,10 @@ function mage_open() {
 
   # Prefetch admin URL data for open steps
   if [[ "$store" == "admin" ]]; then
-    local admin_path=$(grep frontName app/etc/env.php | tail -1 | cut -d '>' -f2 | cut -d '"' -f2 | cut -d "'" -f2)
+    local admin_path=$(php -r "
+      \$array = include('app/etc/env.php');
+      if (isset(\$array['backend']['frontName'])) { echo \$array['backend']['frontName']; }
+    " 2>/dev/null);
   fi
 
   if [[ -z "$store_url" ]]; then
