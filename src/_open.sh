@@ -5,10 +5,16 @@ function mage_open() {
 
   # Prefetch admin URL data for open steps
   if [[ "$store" == "admin" ]]; then
-    local admin_path=$(php -r "
-      \$array = include('app/etc/env.php');
-      if (isset(\$array['backend']['frontName'])) { echo \$array['backend']['frontName']; }
-    " 2>/dev/null);
+    local admin_custom_path=$($MAGENTO_CLI config:show admin/url/use_custom_path)
+
+    if [[ $admin_custom_path == "1" ]]; then
+      local admin_path=$($MAGENTO_CLI config:show admin/url/custom_path)
+    else
+      local admin_path=$(php -r "
+        \$array = include('app/etc/env.php');
+        if (isset(\$array['backend']['frontName'])) { echo \$array['backend']['frontName']; }
+      " 2>/dev/null)
+    fi
   fi
 
   if [[ -z "$store_url" ]]; then
