@@ -280,13 +280,13 @@ case "${@}" in
 
 "run"*)
   if [[ -n "$MAGERUN_CLI" ]]; then
-    $MAGERUN_CLI ${@:2}
+    $MAGERUN_CLI "${@:2}"
   else
     echo $NO_MAGERUN_MSG
   fi
   ;;
 
 *)
-  $MAGENTO_CLI $@
+  $MAGENTO_CLI "$@"
   ;;
 esac

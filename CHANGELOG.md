@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- mage commands that are passed on to `bin/magento` or magerun with quoted arguments
+
 ## [2.3.1] - 2025-02-26
 
 ### Fixed
