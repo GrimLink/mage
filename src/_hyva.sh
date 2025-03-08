@@ -22,7 +22,7 @@ function mage_add_hyva() {
       'hyva-themes/magento2-cms-tailwind-jit'
       'hyva-themes/magento2-compat-module-fallback'
       'hyva-themes/magento2-theme-fallback'
-      'hyva-themes/magento2-mollie-theme-bundle'
+      'hyva-themes/magento2-mollie-theme-bundle git@gitlab.hyva.io:hyva-themes/hyva-compat/magento2-mollie-theme-bundle.git'
       'hyva-themes/magento2-luma-checkout'
     );
 
