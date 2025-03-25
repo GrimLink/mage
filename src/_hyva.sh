@@ -19,6 +19,7 @@ function mage_add_hyva() {
       'hyva-themes/magento2-email-module'
       'hyva-themes/magento2-order-cancellation-webapi'
       'hyva-themes/magento2-default-theme'
+      'hyva-themes/magento2-default-theme-csp'
       'hyva-themes/magento2-cms-tailwind-jit'
       'hyva-themes/magento2-compat-module-fallback'
       'hyva-themes/magento2-theme-fallback'
