@@ -21,7 +21,10 @@ MAGENTO_CLI="bin/magento"
 MAGERUN_CLI=""
 REDIS_CLI="redis-cli"
 VARNISH_CLI="varnishadm" # We never use varnish on a local machine, and prefer to never use it
+PHP_CLI="php"
 COMPOSER_CLI="composer"
+NODE_CLI="node"
+NPM_CLI="npm"
 PURGE_CLI="rm -rf"
 OPEN_CLI="xdg-open" # Linux
 GET_CLI="wget" # Linux
@@ -56,7 +59,10 @@ if [ -f .env ] && grep -q "WARDEN_ENV_NAME" .env && [[ ! "$PATH" == /var/www/htm
   MAGERUN_CLI="warden env exec php-fpm n98-magerun"
   REDIS_CLI="warden env exec redis redis-cli"
   VARNISH_CLI="warden env exec -T varnish varnishadm"
+  PHP_CLI="warden env exec php-fpm php"
   COMPOSER_CLI="warden env exec php-fpm composer"
+  NODE_CLI="warden env exec php-fpm node"
+  NPM_CLI="warden env exec php-fpm npm"
   # Run removal within environment, so that changes are in effect immediately.
   # Changes will get synced back to the host
   PURGE_CLI="warden env exec -T php-fpm rm -rf"
@@ -120,6 +126,10 @@ function get_mage_store_uri() {
   echo $store_url
 }
 
+function get_composer_pkg_version() {
+  echo -e $($COMPOSER_CLI show $1 | grep 'versions' | grep -o -E '\*\ .+' | awk '{print $2}' | cut -d',' -f1)
+}
+
 function mage_add_hyva() {
   echo "Installing Hyva theme..."
   echo "Make sure you have and license key or access to the gitlab env"
@@ -152,6 +162,7 @@ function mage_add_hyva() {
     done
 
     $COMPOSER_CLI config repositories.hyva-themes/magento2-graphql-tokens git git@github.com:hyva-themes/magento2-graphql-tokens.git
+    $COMPOSER_CLI config repositories.hyva-themes/magento2-mollie-theme-bundle git git@gitlab.hyva.io:hyva-themes/hyva-compat/magento2-mollie-theme-bundle.git
     $COMPOSER_CLI require hyva-themes/magento2-luma-checkout --prefer-source
     $COMPOSER_CLI require hyva-themes/magento2-default-theme --prefer-source
   fi
@@ -189,7 +200,14 @@ function mage_add_checkout() {
   fi
 }
 
-MAGE_VERSION="2.3.1"
+function mage_build_hyva() {
+  if [ ! -d vendor/hyva-themes/magento2-default-theme/web/tailwind/node_modules ]; then
+    $NPM_CLI --prefix vendor/hyva-themes/magento2-default-theme/web/tailwind install;
+  fi
+  $NPM_CLI --prefix vendor/hyva-themes/magento2-default-theme/web/tailwind run build;
+}
+
+MAGE_VERSION="2.3.2"
 
 function mage_version() {
   echo -e "\n${BOLD}Mage ${GREEN}${MAGE_VERSION}${RESET}"
@@ -373,7 +391,16 @@ function mage_open() {
 
   # Prefetch admin URL data for open steps
   if [[ "$store" == "admin" ]]; then
-    local admin_path=$(grep frontName app/etc/env.php | tail -1 | cut -d '>' -f2 | cut -d '"' -f2 | cut -d "'" -f2)
+    local admin_custom_path=$($MAGENTO_CLI config:show admin/url/use_custom_path)
+
+    if [[ $admin_custom_path == "1" ]]; then
+      local admin_path=$($MAGENTO_CLI config:show admin/url/custom_path)
+    else
+      local admin_path=$(php -r "
+        \$array = include('app/etc/env.php');
+        if (isset(\$array['backend']['frontName'])) { echo \$array['backend']['frontName']; }
+      " 2>/dev/null)
+    fi
   fi
 
   if [[ -z "$store_url" ]]; then
@@ -445,6 +472,10 @@ function mage_add_patch() {
 
   $COMPOSER_CLI config extra.patches.$vendor -j "{ \"$patch_name\": \"$patch_src\" }"
   echo -e "Patch added to the composer.json in extra.patches.$vendor_folder_name"
+}
+
+function mage_new_patch_branch_diff() {
+  git diff $(git rev-parse --abbrev-ref origin/HEAD)..$(git branch --show-current) > $(git branch --show-current).patch
 }
 
 function mage_new_patch_file() {
@@ -565,12 +596,18 @@ case "${@}" in
   ;;
 
 "info")
-  $MAGENTO_CLI --version
+  echo -e "Magento: $GREEN$($MAGENTO_CLI --version | sed 's/Magento CLI //')$RESET"
+  if $COMPOSER_CLI show hyva-themes/magento2-default-theme > /dev/null 2>&1; then
+    echo -e "Hyva Theme: $GREEN$(get_composer_pkg_version 'hyva-themes/magento2-default-theme')$RESET"
+    echo -e "Hyva Module: $GREEN$(get_composer_pkg_version 'hyva-themes/magento2-theme-module')$RESET"
+  fi
+  echo -e "PHP: $GREEN$($PHP_CLI --version | grep ^PHP | cut -d' ' -f2)$RESET"
+  echo -e "NODE: $GREEN$($NODE_CLI --version | sed 's/v//')$RESET"
   echo -e "Base URI: $(get_mage_base_uri)"
   echo -e "Admin URI: $(grep frontName app/etc/env.php | tail -1 | cut -d ">" -f2 | cut -d "'" -f2)"
   echo -e "Database: $(grep dbname app/etc/env.php | tail -1 | cut -d ">" -f2 | cut -d "'" -f2)"
-  $MAGENTO_CLI maintenance:status
   $MAGENTO_CLI deploy:mode:show
+  $MAGENTO_CLI maintenance:status
   if [[ -n "$MAGENTO_CLI config:show catalog/search/engine" ]]; then
     echo -e "Search Engine: $($MAGENTO_CLI config:show catalog/search/engine)"
   fi
@@ -605,7 +642,7 @@ case "${@}" in
 
   if [[ $WARDEN == 1 ]]; then
     # NOTE: we need to sadly hard code the path,
-    # but lukcy we can since the warden container is always the same
+    # but lucky we can since the warden container is always the same
     warden env exec php-fpm /home/www-data/.composer/vendor/bin/cache-clean.js -w
   else
     $cache_cli
@@ -704,12 +741,12 @@ case "${@}" in
   ;;
 
 "add baldr")
-  composer config repositories.siteation/magento2-theme-baldr git git@github.com:Siteation/magento2-theme-baldr.git
-  composer require siteation/magento2-theme-baldr
+  $COMPOSER_CLI config repositories.siteation/magento2-theme-baldr git git@github.com:Siteation/magento2-theme-baldr.git
+  $COMPOSER_CLI require siteation/magento2-theme-baldr
   ;;
 
 "set theme"*)
-  if composer show yireo/magento2-theme-commands > /dev/null 2>&1; then
+  if $COMPOSER_CLI show yireo/magento2-theme-commands > /dev/null 2>&1; then
     $MAGENTO_CLI theme:change $3
     $MAGENTO_CLI cache:flush;
   else
@@ -811,6 +848,10 @@ case "${@}" in
   $COMPOSER_CLI outdated --direct --no-dev --ignore symfony/finder --ignore symfony/process --format json > composer-outdated.json
   ;;
 
+"build hyva")
+  mage_build_hyva
+  ;;
+
 "build"*)
   default_args="-j 4"
   args=${@:2}
@@ -819,14 +860,14 @@ case "${@}" in
 
 "run"*)
   if [[ -n "$MAGERUN_CLI" ]]; then
-    $MAGERUN_CLI ${@:2}
+    $MAGERUN_CLI "${@:2}"
   else
     echo $NO_MAGERUN_MSG
   fi
   ;;
 
 *)
-  $MAGENTO_CLI $@
+  $MAGENTO_CLI "$@"
   ;;
 esac
 

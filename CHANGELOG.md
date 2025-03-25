@@ -7,9 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.3.2] - 2025-02-26
+
 ### Fixed
 
-- mage commands that are passed on to `bin/magento` or magerun with quoted arguments
+- `mage` commands that are passed on to `bin/magento` or magerun with quoted arguments
 - Missing dependency for Hyvä 1.3.10 and newer for the gitlab install
 
 ## [2.3.1] - 2025-02-26
