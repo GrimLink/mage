@@ -22,7 +22,6 @@ function mage_add_hyva() {
       'hyva-themes/magento2-cms-tailwind-jit'
       'hyva-themes/magento2-compat-module-fallback'
       'hyva-themes/magento2-theme-fallback'
-      'hyva-themes/magento2-mollie-theme-bundle git@gitlab.hyva.io:hyva-themes/hyva-compat/magento2-mollie-theme-bundle.git'
       'hyva-themes/magento2-luma-checkout'
     );
 
@@ -31,6 +30,7 @@ function mage_add_hyva() {
     done
 
     $COMPOSER_CLI config repositories.hyva-themes/magento2-graphql-tokens git git@github.com:hyva-themes/magento2-graphql-tokens.git
+    $COMPOSER_CLI config repositories.hyva-themes/magento2-mollie-theme-bundle git git@gitlab.hyva.io:hyva-themes/hyva-compat/magento2-mollie-theme-bundle.git
     $COMPOSER_CLI require hyva-themes/magento2-luma-checkout --prefer-source
     $COMPOSER_CLI require hyva-themes/magento2-default-theme --prefer-source
   fi
