@@ -154,10 +154,28 @@ case "${@}" in
 
 "add hyva")
   mage_add_hyva
+  read -p "Add Checkout? [Y/n] "
+  echo ""
+  if [[ ! $REPLY =~ ^[nN]|[nN][oO]$ ]]; then
+    mage_add_hyva_checkout
+  fi
+
+  read -p "Add Commerce? [Y/n] "
+  echo ""
+  if [[ ! $REPLY =~ ^[nN]|[nN][oO]$ ]]; then
+    mage_add_hyva_commerce
+  fi
+
+  $MAGENTO_CLI s:up
+  mage_build_hyva
   ;;
 
-"add checkout")
-  mage_add_checkout
+"add checkout" | "add hyva checkout")
+  mage_add_hyva_checkout
+  ;;
+
+"add hyva commerce")
+  mage_add_hyva_commerce
   ;;
 
 "add baldr")

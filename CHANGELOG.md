@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.3.3] - 2025-04-13
+
+### Changed
+
+- Improve way how `add hyva` works for Licenses and development cases
+  - license addition is now optional. It will prompt for the license if `auth.json` is missing.
+  - Both versions don't install the Luma fallback checkout by default
+  - Added support for Hyvä Commerce
+
 ## [2.3.2] - 2025-02-26
 
 ### Fixed
@@ -248,7 +257,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Initial Release 🎉
 
-[unreleased]: https://github.com/GrimLink/mage/compare/2.3.1...HEAD
+[unreleased]: https://github.com/GrimLink/mage/compare/2.3.2...HEAD
+[2.3.2]: https://github.com/GrimLink/mage/compare/2.3.1...2.3.2
 [2.3.1]: https://github.com/GrimLink/mage/compare/2.3.0...2.3.1
 [2.3.0]: https://github.com/GrimLink/mage/compare/2.2.0...2.3.0
 [2.2.0]: https://github.com/GrimLink/mage/compare/2.1.1...2.2.0
