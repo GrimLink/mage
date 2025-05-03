@@ -9,6 +9,7 @@ BLUE='\033[1;34m'
 GITNAME="$(git config --global --get user.name | head -n1 | cut -d " " -f1)"
 GITEMAIL="$(git config --global --get user.email)"
 ADMINNAME="$(echo "$GITNAME" | tr '[:upper:]' '[:lower:]')"
+ADMINEMAIL="${GITEMAIL}"
 ADMINPASS="admin123$"
 
 WARDEN=0
