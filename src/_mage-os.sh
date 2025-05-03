@@ -1,10 +1,10 @@
 function convert_to_mage_os() {
-  if $COMPOSER_CLI show magento/product-community-edition > /dev/null 2>&1; then
-    echo "This is not a Magento Community instalation" && exit 1;
+  if ! $COMPOSER_CLI show magento/product-community-edition >/dev/null 2>&1; then
+    echo "This is not a Magento Community installation" && exit 1
   fi
 
-  if $COMPOSER_CLI show mage-os/product-community-edition > /dev/null 2>&1; then
-    echo "Mage-OS already installed!" && exit 1;
+  if $COMPOSER_CLI show mage-os/product-community-edition >/dev/null 2>&1; then
+    echo "Mage-OS already installed!" && exit 1
   fi
 
   echo "Consider removing any composer replaces, before starting";
