@@ -23,6 +23,6 @@ function convert_to_mage_os() {
 
   # Install
   $COMPOSER_CLI update --no-plugins --with-all-dependencies
-  mage purge # Cleanup caches
-  mage s:up
+  mage_purge # Cleanup caches
+  $MAGENTO_CLI s:up
 }
