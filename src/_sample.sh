@@ -22,4 +22,7 @@ function mage_add_sample() {
       $MAGENTO_CLI theme:change Hyva/default
     fi
   fi
+
+  $MAGENTO_CLI indexer:reindex
+  $MAGENTO_CLI cache:flush
 }
