@@ -21,6 +21,9 @@ function mage_add_sample() {
     if $COMPOSER_CLI show yireo/magento2-theme-commands >/dev/null 2>&1; then
       $MAGENTO_CLI theme:change Hyva/default
     fi
+
+    # Unset default styles from sample data
+    $MAGENTO_CLI config:set design/head/includes ""
   fi
 
   $MAGENTO_CLI indexer:reindex
