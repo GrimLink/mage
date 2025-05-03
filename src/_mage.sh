@@ -33,6 +33,25 @@ case "${@}" in
   fi
   ;;
 
+"install"*)
+  mage_install $2
+  ;;
+
+"setup"*)
+  mage_setup $2
+  ;;
+
+"create"*)
+  mage_install $2
+  mage_setup $2
+
+  read -p "Add ? [y/N] "
+  echo ""
+  if [[ $REPLY =~ ^[yY]|[yY][eE][sS]$ ]]; then
+    mage_add_sample
+  fi
+  ;;
+
 "stores")
   if [[ -n "$MAGERUN_CLI" ]]; then
     $MAGERUN_CLI sys:store:config:base-url:list --format txt
