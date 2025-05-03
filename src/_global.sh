@@ -35,7 +35,7 @@ fi
 if [[ ! -d app/etc ]]; then
   # Allow the following commands to run, even if the folder is not root Magento,
   # if else exit mage
-  if [[ $1 != "help" ]] && [[ $1 != "self-update" ]]; then
+  if [[ $1 != "help" ]] && [[ $1 != "self-update" ]] && [[ $1 != "install" ]] && [[ $1 != "create" ]]; then
     echo "This does not look like the Magento 2 root folder, aborting.." && exit 1
   fi
 fi
