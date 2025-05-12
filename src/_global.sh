@@ -10,7 +10,7 @@ GITNAME="$(git config --global --get user.name | head -n1 | cut -d " " -f1)"
 GITEMAIL="$(git config --global --get user.email)"
 ADMINNAME="$(echo "$GITNAME" | tr '[:upper:]' '[:lower:]')"
 ADMINEMAIL="${GITEMAIL}"
-ADMINPASS="admin123$"
+ADMINPASS="m2_admin123$"
 
 WARDEN=0
 MAGENTO_CLI="bin/magento"
