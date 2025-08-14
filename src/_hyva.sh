@@ -42,12 +42,10 @@ function mage_add_hyva() {
 function mage_add_hyva_dev() {
   echo "Adding repositories..."
 
-  # Core Module Deps
-  $COMPOSER_CLI config repositories.hyva-themes/magento2-mollie-theme-bundle git git@gitlab.hyva.io:hyva-themes/hyva-compat/magento2-mollie-theme-bundle.git
-
   # Core Theme Deps
   $COMPOSER_CLI config repositories.hyva-themes/magento2-reset-theme git git@gitlab.hyva.io:hyva-themes/magento2-reset-theme.git
   $COMPOSER_CLI config repositories.hyva-themes/magento2-theme-module git git@gitlab.hyva.io:hyva-themes/magento2-theme-module.git
+  $COMPOSER_CLI config repositories.hyva-themes/magento2-mollie-theme-bundle git git@gitlab.hyva.io:hyva-themes/hyva-compat/magento2-mollie-theme-bundle.git
   $COMPOSER_CLI config repositories.hyva-themes/magento2-email-module git git@gitlab.hyva.io:hyva-themes/magento2-email-module.git
   # magento2-graphql-tokens Found on: https://packagist.org/packages/hyva-themes/magento2-graphql-tokens
   # magento2-graphql-view-model Found on: https://packagist.org/packages/hyva-themes/magento2-graphql-view-model
@@ -68,6 +66,13 @@ function mage_add_hyva_dev() {
   $COMPOSER_CLI config repositories.hyva-themes/commerce git git@gitlab.hyva.io:hyva-commerce/metapackage-commerce.git
   $COMPOSER_CLI config repositories.hyva-themes/commerce-module-commerce git git@gitlab.hyva.io:hyva-commerce/module-commerce.git
   $COMPOSER_CLI config repositories.hyva-themes/commerce-module-cms git git@gitlab.hyva.io:hyva-commerce/module-cms.git
+  $COMPOSER_CLI config repositories.hyva-themes/commerce-module-image-editor git git@gitlab.hyva.io:hyva-commerce/module-image-editor.git
+  $COMPOSER_CLI config repositories.hyva-themes/commerce-module-admin-theme git git@gitlab.hyva.io:hyva-commerce/module-admin-theme.git
+  $COMPOSER_CLI config repositories.hyva-themes/commerce-theme-adminhtml git git@gitlab.hyva.io:hyva-commerce/theme-adminhtml.git
+  $COMPOSER_CLI config repositories.hyva-themes/commerce-module-admin-dashboard git git@gitlab.hyva.io:hyva-commerce/module-admin-dashboard.git
+  # Dev Deps
+  $COMPOSER_CLI config repositories.hyva-themes/commerce-module-admin-dashboard-google-crux-history-widget git git@gitlab.hyva.io:hyva-commerce/module-admin-dashboard-google-crux-history-widget.git
+  $COMPOSER_CLI config repositories.hyva-themes/commerce-module-media-optimization git git@gitlab.hyva.io:hyva-commerce/module-media-optimization.git
 
   echo "Installing Hyva theme..."
   $COMPOSER_CLI require hyva-themes/magento2-default-theme --prefer-source
