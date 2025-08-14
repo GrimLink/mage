@@ -62,11 +62,11 @@ function mage_help() {
 }
 
 function mage_info() {
-  local hyva_version="$(get_composer_pkg_version 'hyva-themes/magento2-theme-module')"
-  local hyva_theme_version="$(get_composer_pkg_version 'hyva-themes/magento2-default-theme')"
   echo -e "Magento: $GREEN$($MAGENTO_CLI --version | sed 's/Magento CLI //')$RESET"
 
   if $COMPOSER_CLI show hyva-themes/magento2-default-theme > /dev/null 2>&1; then
+    local hyva_version="$(get_composer_pkg_version 'hyva-themes/magento2-theme-module')"
+    local hyva_theme_version="$(get_composer_pkg_version 'hyva-themes/magento2-default-theme')"
     echo -e "Hyva: $GREEN$hyva_version$RESET"
     if [ "$hyva_version" != "$hyva_theme_version" ]; then
       echo -e " - Theme: $GREEN$hyva_theme_version$RESET"
