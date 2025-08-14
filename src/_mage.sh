@@ -158,21 +158,40 @@ case "${@}" in
   ;;
 
 "add hyva")
-  mage_add_hyva
-  read -p "Add Checkout? [Y/n] "
-  echo ""
-  if [[ ! $REPLY =~ ^[nN]|[nN][oO]$ ]]; then
+  echo "Make sure you have and license key or access to the gitlab env"
+  read -rsn1 -p "When ready, press any key to continue";
+  echo "";
+
+  read -p "Is this a production setup (use license)? [N/y]" HYVA_PRODUCTION && echo ""
+  read -p "Add Checkout? [Y/n]" HYVA_ADD_CHECKOUT && echo ""
+  read -p "Add Commerce? [Y/n]" HYVA_ADD_COMMERCE && echo ""
+
+  if [[ -z "$HYVA_PRODUCTION" ]]; then HYVA_PRODUCTION="No"; fi
+  if [[ -z "$HYVA_ADD_CHECKOUT" ]]; then HYVA_ADD_CHECKOUT="Yes"; fi
+  if [[ -z "$HYVA_ADD_COMMERCE" ]]; then HYVA_ADD_COMMERCE="Yes"; fi
+
+  mage_add_hyva $HYVA_PRODUCTION
+
+  if [[ ! $HYVA_ADD_CHECKOUT =~ ^[nN]|[nN][oO]$ ]]; then
+    echo ""
     mage_add_hyva_checkout
   fi
 
-  read -p "Add Commerce? [Y/n] "
-  echo ""
-  if [[ ! $REPLY =~ ^[nN]|[nN][oO]$ ]]; then
-    mage_add_hyva_commerce
+  if [[ ! $HYVA_ADD_COMMERCE =~ ^[nN]|[nN][oO]$ ]]; then
+    echo ""
+    mage_add_hyva_commerce $HYVA_PRODUCTION
   fi
 
   $MAGENTO_CLI s:up
+
+  if $COMPOSER_CLI show yireo/magento2-theme-commands >/dev/null 2>&1; then
+    $MAGENTO_CLI theme:change Hyva/default
+  fi
+
   mage_build_hyva
+
+  echo "Done!"
+  echo "For more information, see the docs -> https://docs.hyva.io/hyva-themes/getting-started/ "
   ;;
 
 "add checkout" | "add hyva checkout")

@@ -1,10 +1,7 @@
 function mage_add_hyva() {
-  echo "Make sure you have and license key or access to the gitlab env"
-  echo "else cancel with Ctrl+C"
-  echo ""
-  read -e -p "Is this a production setup (use license)? [N/y] "
-  echo ""
-  if [[ $REPLY =~ ^[yY]|[yY][eE][sS]$ ]]; then
+  local use_hyva_production=$1
+
+  if [[ $use_hyva_production =~ ^[yY]|[yY][eE][sS]$ ]]; then
     if [ ! -f "auth.json" ]; then
       read -e -p "No license found, add license? [Y/n] "
       echo ""
@@ -28,15 +25,6 @@ function mage_add_hyva() {
   fi;
 
   $MAGENTO_CLI config:set customer/captcha/enable 0
-
-  if $COMPOSER_CLI show yireo/magento2-theme-commands >/dev/null 2>&1; then
-    $MAGENTO_CLI theme:change Hyva/default
-  fi
-
-  echo "Done!"
-  echo "Navigate to the Content > Design > Configuration admin section to activate the theme"
-  echo ""
-  echo "For more see the docs -> https://docs.hyva.io/hyva-themes/getting-started/ "
 }
 
 function mage_add_hyva_dev() {
@@ -84,8 +72,17 @@ function mage_add_hyva_checkout() {
 }
 
 function mage_add_hyva_commerce() {
+  local use_hyva_production=$1
+
   echo "Installing Hyva Commerce..."
-  $COMPOSER_CLI require hyva-themes/commerce
+  if [[ $use_hyva_production =~ ^[yY]|[yY][eE][sS]$ ]]; then
+    $COMPOSER_CLI require hyva-themes/commerce
+  else
+    $COMPOSER_CLI require hyva-themes/commerce-module-cms
+    $COMPOSER_CLI require hyva-themes/commerce-module-image-editor
+    $COMPOSER_CLI require hyva-themes/commerce-theme-adminhtml
+    $COMPOSER_CLI require hyva-themes/commerce-module-admin-dashboard
+  fi
 }
 
 function mage_build_hyva() {

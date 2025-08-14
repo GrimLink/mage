@@ -8,9 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+### Changed
+
+- `add hyva` to ask each question before installing
+
 ### Fixed
 
 - Use of `version` command outside Magento
+- `set theme` for adding Hyvä
 
 ## [2.3.3] - 2025-04-13
 
