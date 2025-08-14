@@ -19,24 +19,24 @@ case "${@}" in
   mage_info
   ;;
 
-"install"*)
-  mage_install $2
-  ;;
+# "install"*)
+#   mage_install $2
+#   ;;
 
-"setup"*)
-  mage_setup $2
-  ;;
+# "setup"*)
+#   mage_setup $2
+#   ;;
 
-"create"*)
-  mage_install $2
-  mage_setup $2
+# "create"*)
+#   mage_install $2
+#   mage_setup $2
 
-  read -p "Add ? [y/N] "
-  echo ""
-  if [[ $REPLY =~ ^[yY]|[yY][eE][sS]$ ]]; then
-    mage_add_sample
-  fi
-  ;;
+#   read -p "Add ? [y/N] "
+#   echo ""
+#   if [[ $REPLY =~ ^[yY]|[yY][eE][sS]$ ]]; then
+#     mage_add_sample
+#   fi
+#   ;;
 
 "stores")
   if [[ -n "$MAGERUN_CLI" ]]; then
