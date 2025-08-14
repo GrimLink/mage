@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+
+### Fixed
+
+- Use of `version` command outside Magento
+
 ## [2.3.3] - 2025-04-13
 
 ### Changed
