@@ -16,21 +16,7 @@ case "${@}" in
   ;;
 
 "info")
-  echo -e "Magento: $GREEN$($MAGENTO_CLI --version | sed 's/Magento CLI //')$RESET"
-  if $COMPOSER_CLI show hyva-themes/magento2-default-theme > /dev/null 2>&1; then
-    echo -e "Hyva Theme: $GREEN$(get_composer_pkg_version 'hyva-themes/magento2-default-theme')$RESET"
-    echo -e "Hyva Module: $GREEN$(get_composer_pkg_version 'hyva-themes/magento2-theme-module')$RESET"
-  fi
-  echo -e "PHP: $GREEN$($PHP_CLI --version | grep ^PHP | cut -d' ' -f2)$RESET"
-  echo -e "NODE: $GREEN$($NODE_CLI --version | sed 's/v//')$RESET"
-  echo -e "Base URI: $(get_mage_base_uri)"
-  echo -e "Admin URI: $(grep frontName app/etc/env.php | tail -1 | cut -d ">" -f2 | cut -d "'" -f2)"
-  echo -e "Database: $(grep dbname app/etc/env.php | tail -1 | cut -d ">" -f2 | cut -d "'" -f2)"
-  $MAGENTO_CLI deploy:mode:show
-  $MAGENTO_CLI maintenance:status
-  if [[ -n "$MAGENTO_CLI config:show catalog/search/engine" ]]; then
-    echo -e "Search Engine: $($MAGENTO_CLI config:show catalog/search/engine)"
-  fi
+  mage_info
   ;;
 
 "install"*)
