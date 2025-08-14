@@ -14,7 +14,8 @@ BLUE='\033[1;34m'
 GITNAME="$(git config --global --get user.name | head -n1 | cut -d " " -f1)"
 GITEMAIL="$(git config --global --get user.email)"
 ADMINNAME="$(echo "$GITNAME" | tr '[:upper:]' '[:lower:]')"
-ADMINPASS="admin123$"
+ADMINEMAIL="${GITEMAIL}"
+ADMINPASS="m2_admin123$"
 
 WARDEN=0
 MAGENTO_CLI="bin/magento"
@@ -39,7 +40,7 @@ fi
 if [[ ! -d app/etc ]]; then
   # Allow the following commands to run, even if the folder is not root Magento,
   # if else exit mage
-  if [[ $1 != "help" ]] && [[ $1 != "self-update" ]]; then
+  if [[ $1 != "-v" ]] && [[ $1 != "--version" ]] && [[ $1 != "version" ]] && [[ $1 != "help" ]] && [[ $1 != "self-update" ]] && [[ $1 != "install" ]] && [[ $1 != "create" ]]; then
     echo "This does not look like the Magento 2 root folder, aborting.." && exit 1
   fi
 fi
@@ -131,12 +132,9 @@ function get_composer_pkg_version() {
 }
 
 function mage_add_hyva() {
-  echo "Make sure you have and license key or access to the gitlab env"
-  echo "else cancel with Ctrl+C"
-  echo ""
-  read -e -p "Is this a production setup (use license)? [N/y] "
-  echo ""
-  if [[ $REPLY =~ ^[yY]|[yY][eE][sS]$ ]]; then
+  local use_hyva_production=$1
+
+  if [[ $use_hyva_production =~ ^[yY]|[yY][eE][sS]$ ]]; then
     if [ ! -f "auth.json" ]; then
       read -e -p "No license found, add license? [Y/n] "
       echo ""
@@ -160,26 +158,15 @@ function mage_add_hyva() {
   fi;
 
   $MAGENTO_CLI config:set customer/captcha/enable 0
-
-  if $COMPOSER_CLI show yireo/magento2-theme-commands >/dev/null 2>&1; then
-    $MAGENTO_CLI theme:change Hyva/default
-  fi
-
-  echo "Done!"
-  echo "Navigate to the Content > Design > Configuration admin section to activate the theme"
-  echo ""
-  echo "For more see the docs -> https://docs.hyva.io/hyva-themes/getting-started/ "
 }
 
 function mage_add_hyva_dev() {
   echo "Adding repositories..."
 
-  # Core Module Deps
-  $COMPOSER_CLI config repositories.hyva-themes/magento2-mollie-theme-bundle git git@gitlab.hyva.io:hyva-themes/hyva-compat/magento2-mollie-theme-bundle.git
-
   # Core Theme Deps
   $COMPOSER_CLI config repositories.hyva-themes/magento2-reset-theme git git@gitlab.hyva.io:hyva-themes/magento2-reset-theme.git
   $COMPOSER_CLI config repositories.hyva-themes/magento2-theme-module git git@gitlab.hyva.io:hyva-themes/magento2-theme-module.git
+  $COMPOSER_CLI config repositories.hyva-themes/magento2-mollie-theme-bundle git git@gitlab.hyva.io:hyva-themes/hyva-compat/magento2-mollie-theme-bundle.git
   $COMPOSER_CLI config repositories.hyva-themes/magento2-email-module git git@gitlab.hyva.io:hyva-themes/magento2-email-module.git
   # magento2-graphql-tokens Found on: https://packagist.org/packages/hyva-themes/magento2-graphql-tokens
   # magento2-graphql-view-model Found on: https://packagist.org/packages/hyva-themes/magento2-graphql-view-model
@@ -200,6 +187,13 @@ function mage_add_hyva_dev() {
   $COMPOSER_CLI config repositories.hyva-themes/commerce git git@gitlab.hyva.io:hyva-commerce/metapackage-commerce.git
   $COMPOSER_CLI config repositories.hyva-themes/commerce-module-commerce git git@gitlab.hyva.io:hyva-commerce/module-commerce.git
   $COMPOSER_CLI config repositories.hyva-themes/commerce-module-cms git git@gitlab.hyva.io:hyva-commerce/module-cms.git
+  $COMPOSER_CLI config repositories.hyva-themes/commerce-module-image-editor git git@gitlab.hyva.io:hyva-commerce/module-image-editor.git
+  $COMPOSER_CLI config repositories.hyva-themes/commerce-module-admin-theme git git@gitlab.hyva.io:hyva-commerce/module-admin-theme.git
+  $COMPOSER_CLI config repositories.hyva-themes/commerce-theme-adminhtml git git@gitlab.hyva.io:hyva-commerce/theme-adminhtml.git
+  $COMPOSER_CLI config repositories.hyva-themes/commerce-module-admin-dashboard git git@gitlab.hyva.io:hyva-commerce/module-admin-dashboard.git
+  # Dev Deps
+  $COMPOSER_CLI config repositories.hyva-themes/commerce-module-admin-dashboard-google-crux-history-widget git git@gitlab.hyva.io:hyva-commerce/module-admin-dashboard-google-crux-history-widget.git
+  $COMPOSER_CLI config repositories.hyva-themes/commerce-module-media-optimization git git@gitlab.hyva.io:hyva-commerce/module-media-optimization.git
 
   echo "Installing Hyva theme..."
   $COMPOSER_CLI require hyva-themes/magento2-default-theme --prefer-source
@@ -211,8 +205,17 @@ function mage_add_hyva_checkout() {
 }
 
 function mage_add_hyva_commerce() {
+  local use_hyva_production=$1
+
   echo "Installing Hyva Commerce..."
-  $COMPOSER_CLI require hyva-themes/commerce
+  if [[ $use_hyva_production =~ ^[yY]|[yY][eE][sS]$ ]]; then
+    $COMPOSER_CLI require hyva-themes/commerce
+  else
+    $COMPOSER_CLI require hyva-themes/commerce-module-cms
+    $COMPOSER_CLI require hyva-themes/commerce-module-image-editor
+    $COMPOSER_CLI require hyva-themes/commerce-theme-adminhtml
+    $COMPOSER_CLI require hyva-themes/commerce-module-admin-dashboard
+  fi
 }
 
 function mage_build_hyva() {
@@ -222,7 +225,7 @@ function mage_build_hyva() {
   $NPM_CLI --prefix vendor/hyva-themes/magento2-default-theme/web/tailwind run build;
 }
 
-MAGE_VERSION="2.3.3"
+MAGE_VERSION="2.3.4"
 
 function mage_version() {
   echo -e "\n${BOLD}Mage ${GREEN}${MAGE_VERSION}${RESET}"
@@ -285,13 +288,38 @@ function mage_help() {
   echo -e "\n${ITALIC}Anything else will run ${BLUE}bin/magento${RESET}, ${ITALIC}To view this again, run ${BLUE}mage help${RESET}"
 }
 
-function convert_to_mage_os() {
-  if $COMPOSER_CLI show magento/product-community-edition > /dev/null 2>&1; then
-    echo "This is not a Magento Community instalation" && exit 1;
+function mage_info() {
+  echo -e "Magento: $GREEN$($MAGENTO_CLI --version | sed 's/Magento CLI //')$RESET"
+
+  if $COMPOSER_CLI show hyva-themes/magento2-default-theme > /dev/null 2>&1; then
+    local hyva_version="$(get_composer_pkg_version 'hyva-themes/magento2-theme-module')"
+    local hyva_theme_version="$(get_composer_pkg_version 'hyva-themes/magento2-default-theme')"
+    echo -e "Hyva: $GREEN$hyva_version$RESET"
+    if [ "$hyva_version" != "$hyva_theme_version" ]; then
+      echo -e " - Theme: $GREEN$hyva_theme_version$RESET"
+    fi
+    echo -e " - Modules: $($MAGENTO_CLI module:status | grep 'Hyva_' | sed 's/Hyva_//g' | paste -sd ',')"
   fi
 
-  if $COMPOSER_CLI show mage-os/product-community-edition > /dev/null 2>&1; then
-    echo "Mage-OS already installed!" && exit 1;
+  echo -e "PHP: $GREEN$($PHP_CLI --version | grep ^PHP | cut -d' ' -f2)$RESET"
+  echo -e "NODE: $GREEN$($NODE_CLI --version | sed 's/v//')$RESET"
+  echo -e "Base URI: $(get_mage_base_uri)"
+  echo -e "Admin URI: $(grep frontName app/etc/env.php | tail -1 | cut -d ">" -f2 | cut -d "'" -f2)"
+  echo -e "Database: $(grep dbname app/etc/env.php | tail -1 | cut -d ">" -f2 | cut -d "'" -f2)"
+  $MAGENTO_CLI deploy:mode:show
+  $MAGENTO_CLI maintenance:status
+  if [[ -n "$MAGENTO_CLI config:show catalog/search/engine" ]]; then
+    echo -e "Search Engine: $($MAGENTO_CLI config:show catalog/search/engine)"
+  fi
+}
+
+function convert_to_mage_os() {
+  if ! $COMPOSER_CLI show magento/product-community-edition >/dev/null 2>&1; then
+    echo "This is not a Magento Community installation" && exit 1
+  fi
+
+  if $COMPOSER_CLI show mage-os/product-community-edition >/dev/null 2>&1; then
+    echo "Mage-OS already installed!" && exit 1
   fi
 
   echo "Consider removing any composer replaces, before starting";
@@ -310,8 +338,8 @@ function convert_to_mage_os() {
 
   # Install
   $COMPOSER_CLI update --no-plugins --with-all-dependencies
-  mage purge # Cleanup caches
-  mage s:up
+  mage_purge # Cleanup caches
+  $MAGENTO_CLI s:up
 }
 
 function mage_new_in_folder() {
@@ -590,7 +618,13 @@ function mage_add_sample() {
     if $COMPOSER_CLI show yireo/magento2-theme-commands >/dev/null 2>&1; then
       $MAGENTO_CLI theme:change Hyva/default
     fi
+
+    # Unset default styles from sample data
+    $MAGENTO_CLI config:set design/head/includes ""
   fi
+
+  $MAGENTO_CLI indexer:reindex
+  $MAGENTO_CLI cache:flush
 }
 
 case "${@}" in
@@ -611,22 +645,27 @@ case "${@}" in
   ;;
 
 "info")
-  echo -e "Magento: $GREEN$($MAGENTO_CLI --version | sed 's/Magento CLI //')$RESET"
-  if $COMPOSER_CLI show hyva-themes/magento2-default-theme > /dev/null 2>&1; then
-    echo -e "Hyva Theme: $GREEN$(get_composer_pkg_version 'hyva-themes/magento2-default-theme')$RESET"
-    echo -e "Hyva Module: $GREEN$(get_composer_pkg_version 'hyva-themes/magento2-theme-module')$RESET"
-  fi
-  echo -e "PHP: $GREEN$($PHP_CLI --version | grep ^PHP | cut -d' ' -f2)$RESET"
-  echo -e "NODE: $GREEN$($NODE_CLI --version | sed 's/v//')$RESET"
-  echo -e "Base URI: $(get_mage_base_uri)"
-  echo -e "Admin URI: $(grep frontName app/etc/env.php | tail -1 | cut -d ">" -f2 | cut -d "'" -f2)"
-  echo -e "Database: $(grep dbname app/etc/env.php | tail -1 | cut -d ">" -f2 | cut -d "'" -f2)"
-  $MAGENTO_CLI deploy:mode:show
-  $MAGENTO_CLI maintenance:status
-  if [[ -n "$MAGENTO_CLI config:show catalog/search/engine" ]]; then
-    echo -e "Search Engine: $($MAGENTO_CLI config:show catalog/search/engine)"
-  fi
+  mage_info
   ;;
+
+# "install"*)
+#   mage_install $2
+#   ;;
+
+# "setup"*)
+#   mage_setup $2
+#   ;;
+
+# "create"*)
+#   mage_install $2
+#   mage_setup $2
+
+#   read -p "Add ? [y/N] "
+#   echo ""
+#   if [[ $REPLY =~ ^[yY]|[yY][eE][sS]$ ]]; then
+#     mage_add_sample
+#   fi
+#   ;;
 
 "stores")
   if [[ -n "$MAGERUN_CLI" ]]; then
@@ -748,21 +787,40 @@ case "${@}" in
   ;;
 
 "add hyva")
-  mage_add_hyva
-  read -p "Add Checkout? [Y/n] "
-  echo ""
-  if [[ ! $REPLY =~ ^[nN]|[nN][oO]$ ]]; then
+  echo "Make sure you have and license key or access to the gitlab env"
+  read -rsn1 -p "When ready, press any key to continue";
+  echo "";
+
+  read -p "Is this a production setup (use license)? [N/y]" HYVA_PRODUCTION && echo ""
+  read -p "Add Checkout? [Y/n]" HYVA_ADD_CHECKOUT && echo ""
+  read -p "Add Commerce? [Y/n]" HYVA_ADD_COMMERCE && echo ""
+
+  if [[ -z "$HYVA_PRODUCTION" ]]; then HYVA_PRODUCTION="No"; fi
+  if [[ -z "$HYVA_ADD_CHECKOUT" ]]; then HYVA_ADD_CHECKOUT="Yes"; fi
+  if [[ -z "$HYVA_ADD_COMMERCE" ]]; then HYVA_ADD_COMMERCE="Yes"; fi
+
+  mage_add_hyva $HYVA_PRODUCTION
+
+  if [[ ! $HYVA_ADD_CHECKOUT =~ ^[nN]|[nN][oO]$ ]]; then
+    echo ""
     mage_add_hyva_checkout
   fi
 
-  read -p "Add Commerce? [Y/n] "
-  echo ""
-  if [[ ! $REPLY =~ ^[nN]|[nN][oO]$ ]]; then
-    mage_add_hyva_commerce
+  if [[ ! $HYVA_ADD_COMMERCE =~ ^[nN]|[nN][oO]$ ]]; then
+    echo ""
+    mage_add_hyva_commerce $HYVA_PRODUCTION
   fi
 
   $MAGENTO_CLI s:up
+
+  if $COMPOSER_CLI show yireo/magento2-theme-commands >/dev/null 2>&1; then
+    $MAGENTO_CLI theme:change Hyva/default
+  fi
+
   mage_build_hyva
+
+  echo "Done!"
+  echo "For more information, see the docs -> https://docs.hyva.io/hyva-themes/getting-started/ "
   ;;
 
 "add checkout" | "add hyva checkout")
