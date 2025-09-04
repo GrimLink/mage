@@ -294,6 +294,17 @@ case "${@}" in
   $MAGENTO_CLI config:set system/full_page_cache/caching_application 2
   ;;
 
+"set csp")
+  if [[ -n "$MAGERUN_CLI" ]]; then
+    $MAGERUN_CLI config:env:set system/default/csp/policies/storefront/scripts/inline 0
+    $MAGERUN_CLI config:env:set system/default/csp/policies/storefront/scripts/eval 0
+    $MAGERUN_CLI config:env:set system/default/csp/mode/storefront/report_only 0
+    $MAGENTO_CLI app:config:import
+  else
+    echo $NO_MAGERUN_MSG
+  fi
+  ;;
+
 "log" | "log debug")
   tail -f -n 4 var/log/debug.log
   ;;
