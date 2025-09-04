@@ -1,8 +1,7 @@
 MAGE_VERSION="2.3.4"
 
 function mage_version() {
-  echo -e "\n${BOLD}Mage ${GREEN}${MAGE_VERSION}${RESET}"
-  echo -e "${ITALIC}See https://github.com/GrimLink/mage for the last version${RESET}\n"
+  echo -e "\n${BOLD}Mage ${GREEN}${MAGE_VERSION}${RESET}, ${ITALIC}See https://github.com/GrimLink/mage for the latest version${RESET}\n"
 }
 
 function mage_help_cmd() {
@@ -10,7 +9,7 @@ function mage_help_cmd() {
 }
 
 function mage_help() {
-  echo -e "${BOLD}CMD Options:${RESET}"
+  echo -e "${BOLD}Available commands:${RESET}"
 
   mage_help_cmd "self-update"                           "Update mage"
   mage_help_cmd "info"                                  "Show base config for store"
@@ -49,6 +48,7 @@ function mage_help() {
   mage_help_cmd "set countries [list_countries]"        "Set the store countries"
   mage_help_cmd "set fsp | set fpc default"             "Set the full page cache to system"
   mage_help_cmd "set fpc varnish"                       "Set the full page cache to varnish"
+  mage_help_cmd "set csp"                               "Enable CSP mode for Magento"
 
   mage_help_cmd "log | log debug"                       "watch the debug log"
   mage_help_cmd "log exception"                         "watch the exception log"
