@@ -1,7 +1,25 @@
 function mage_setup() {
-  local current_folder=$(basename "$(pwd)")
-  local name="${1:-$current_folder}"
+  # If a project name is provided as an argument, change into that directory.
+  # If no argument is provided, assume we are already in the project directory.
+  if [[ -n "$1" ]]; then
+    if [[ -d "$1" ]]; then
+      cd "$1"
+    else
+      echo "Error: Directory '$1' not found."
+      exit 1
+    fi
+  fi
 
+  # Now that we are in the correct directory, check if it's a Magento project.
+  if [ ! -e "composer.json" ]; then
+    echo "Error: This does not look like a Magento project directory ('composer.json' is missing)."
+    exit 1
+  fi
+
+  # Set the name based on the current directory.
+  local name=$(basename "$(pwd)")
+
+  # Default config
   local url="https://${name}.test/"
   local admin_url="${name//-}_admin"
 
@@ -15,23 +33,6 @@ function mage_setup() {
   local backend_redis_server="127.0.0.1"
   local page_redis_server="127.0.0.1"
 
-  if [ -e "app/etc/config.php" ]; then
-    echo -e "$name has already been setup, aborting.." && exit
-  fi
-
-  if [[ $(valet -V | cut -f1,2 -d ' ') == "Laravel Valet" ]]; then
-    valet secure $name
-
-    if command -v mysql &> /dev/null; then
-      mysql -uroot -proot -e "DROP DATABASE \`${db_name}\`;"
-      mysql -uroot -proot -e "CREATE DATABASE \`${db_name}\`;"
-    else
-      echo "mysql not found!"
-      echo "Make sure to create a database before running 'mage setup' again"
-      exit
-    fi
-  fi
-
   if [[ $WARDEN == 1 ]]; then
     local db_host="db"
     local db_name="magento"
@@ -44,6 +45,31 @@ function mage_setup() {
     local page_redis_server="redis"
   fi
 
+  # Setup db, if not using warden
+  if [[ $WARDEN == 0 ]]; then
+    if command -v mysql &> /dev/null; then
+      echo "Setting up database..."
+      mysql -uroot -proot -e "DROP DATABASE IF EXISTS \`${db_name}\`;"
+      mysql -uroot -proot -e "CREATE DATABASE \`${db_name}\`;"
+    else
+      echo "mysql not found!"
+      echo "Make sure to create a database before running 'mage setup' again"
+      exit 1
+    fi
+  fi
+
+  # Setup Certificate
+  if [[ $VALET == 1 ]]; then
+    echo "Securing with Valet..."
+    valet secure $name
+  fi
+
+  if [[ $WARDEN == 1 ]]; then
+    echo "Signing certificate with Warden..."
+    warden sign-certificate $name.test
+  fi
+
+  echo "Running Magento setup install..."
   $MAGENTO_CLI setup:install \
     --backend-frontname="${admin_url}" \
     --base-url="${url}" \
@@ -59,7 +85,7 @@ function mage_setup() {
     --opensearch-enable-auth=0 \
     --opensearch-timeout=15 \
     --session-save=redis \
-    --session-save-redis-host="${redis_host}" \
+    --session-save-redis-host="${session_redis_host}" \
     --session-save-redis-db=2 \
     --session-save-redis-max-concurrency=20 \
     --cache-backend=redis \
@@ -72,7 +98,8 @@ function mage_setup() {
     --admin-lastname="admin" \
     --admin-email="${ADMINEMAIL}" \
     --admin-user="${ADMINNAME}" \
-    --admin-password="${ADMINPASS}"
+    --admin-password="${ADMINPASS}" \
+    "$@"
 
   echo "Setting default values for Store config"
   $MAGENTO_CLI config:set general/store_information/name $name
@@ -84,7 +111,8 @@ function mage_setup() {
   $MAGENTO_CLI deploy:mode:set developer
 
   echo "Disabling 2FA"
-  if grep -q 'Magento_AdminAdobeImsTwoFactorAuth' app/etc/config.php; then
+  if grep -q 'Magento_AdminAdobeImsTwoFactorAuth' app/etc/config.php;
+  then
     $MAGENTO_CLI module:disable Magento_AdminAdobeImsTwoFactorAuth
   fi
   $MAGENTO_CLI module:disable Magento_TwoFactorAuth

@@ -19,30 +19,34 @@ case "${@}" in
   mage_info
   ;;
 
-# "install"*)
-#   mage_install $2
-#   ;;
+"modules")
+  get_mage_modules
+  ;;
 
-# "setup"*)
-#   mage_setup $2
-#   ;;
+"install" | "create")
+  echo "No name was given for the magento project, aborting.."
+  ;;
 
-# "create"*)
-#   mage_install $2
-#   mage_setup $2
+"install "*)
+  mage_install $2
+  ;;
 
-#   read -p "Add ? [y/N] "
-#   echo ""
-#   if [[ $REPLY =~ ^[yY]|[yY][eE][sS]$ ]]; then
-#     mage_add_sample
-#   fi
-#   ;;
+"setup")
+  mage_setup
+  ;;
 
-"stores")
-  if [[ -n "$MAGERUN_CLI" ]]; then
-    $MAGERUN_CLI sys:store:config:base-url:list --format txt
-  else
-    echo $NO_MAGERUN_MSG
+"setup "*)
+  mage_setup $2
+  ;;
+
+"create "*)
+  mage_install $2
+  mage_setup
+
+  read -p "Add sample data? [y/N] "
+  echo ""
+  if [[ $REPLY =~ ^[yY]|[yY][eE][sS]$ ]]; then
+    mage_add_sample
   fi
   ;;
 
