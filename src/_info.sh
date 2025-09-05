@@ -60,26 +60,52 @@ function mage_help() {
 }
 
 function mage_info() {
-  echo -e "Magento: $GREEN$($MAGENTO_CLI --version | sed 's/Magento CLI //')$RESET"
+  local mage_version="$($MAGENTO_CLI --version --ansi | sed 's/ CLI /: /')"
+  local hyva_version=""
+  local mage_mode=$($MAGENTO_CLI deploy:mode:show)
+  local mage_status=$($MAGENTO_CLI maintenance:status)
+  local mage_search=$($MAGENTO_CLI config:show catalog/search/engine)
+  local mage_mod_count=$(get_mage_module_count)
 
-  if $COMPOSER_CLI show hyva-themes/magento2-default-theme > /dev/null 2>&1; then
+  if $COMPOSER_CLI show hyva-themes/magento2-theme-module > /dev/null 2>&1; then
     local hyva_version="$(get_composer_pkg_version 'hyva-themes/magento2-theme-module')"
-    local hyva_theme_version="$(get_composer_pkg_version 'hyva-themes/magento2-default-theme')"
-    echo -e "Hyva: $GREEN$hyva_version$RESET"
-    if [ "$hyva_version" != "$hyva_theme_version" ]; then
-      echo -e " - Theme: $GREEN$hyva_theme_version$RESET"
-    fi
-    echo -e " - Modules: $($MAGENTO_CLI module:status | grep 'Hyva_' | sed 's/Hyva_//g' | paste -sd ',')"
   fi
 
-  echo -e "PHP: $GREEN$($PHP_CLI --version | grep ^PHP | cut -d' ' -f2)$RESET"
-  echo -e "NODE: $GREEN$($NODE_CLI --version | sed 's/v//')$RESET"
-  echo -e "Base URI: $(get_mage_base_uri)"
-  echo -e "Admin URI: $(grep frontName app/etc/env.php | tail -1 | cut -d ">" -f2 | cut -d "'" -f2)"
-  echo -e "Database: $(grep dbname app/etc/env.php | tail -1 | cut -d ">" -f2 | cut -d "'" -f2)"
-  $MAGENTO_CLI deploy:mode:show
-  $MAGENTO_CLI maintenance:status
-  if [[ -n "$MAGENTO_CLI config:show catalog/search/engine" ]]; then
-    echo -e "Search Engine: $($MAGENTO_CLI config:show catalog/search/engine)"
+  if [[ -n $hyva_version ]]; then
+    echo -e "$mage_version (Using Hyvä Module ${GREEN}$hyva_version${RESET})"
+  else
+    echo -e "$mage_version\n"
+  fi
+
+  if echo $mage_mode | grep -q "production"; then
+    echo -e "- Mode: ${GREEN}Production${RESET}"
+  elif echo $mage_mode | grep -q "developer"; then
+    echo -e "- Mode: ${YELLOW}Developer${RESET}"
+  else
+    echo -e "- Mode: ${RED}Default, please switch to another mode${RESET}"
+  fi
+
+  if echo $mage_status | grep -q "enabled"; then
+    echo -e "- Maintenance: ${RED}ON!${RESET}"
+  else
+    echo -e "- Maintenance: ${GREEN}OFF${RESET}"
+  fi
+
+  echo -e "- Base URI: $(get_mage_base_uri)"
+  echo -e "- Admin URI: $(get_mage_base_uri)$(get_mage_admin_path)"
+  echo -e "- Database name: $(grep dbname app/etc/env.php | tail -1 | cut -d ">" -f2 | cut -d "'" -f2 | cut -d '"' -f2)"
+
+  if [[ -n "$mage_search" ]]; then
+    echo -e "- Search Engine: $mage_search"
+  fi
+
+  echo -e "- PHP version: ${GREEN}$($PHP_CLI --version | grep ^PHP | cut -d' ' -f2)${RESET}"
+  echo -e "- Node version: ${GREEN}$($NODE_CLI --version | sed 's/v//')${RESET}"
+  if (( $mage_mod_count < 25 )); then
+    echo -e "- Modules Installed: ${GREEN}$mage_mod_count${RESET}"
+  elif (( $mage_mod_count < 50 )); then
+    echo -e "- Modules Installed: ${YELLOW}$mage_mod_count${RESET}"
+  else
+    echo -e "- Modules Installed: ${RED}$mage_mod_count${RESET} (It's recommended to remove some modules for better performance)"
   fi
 }
