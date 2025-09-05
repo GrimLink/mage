@@ -15,7 +15,7 @@ done
 sorted_files+=("_mage.sh")
 
 function merge_files() {
-  echo -e "#!/bin/bash\n"
+  echo -e "#!/usr/bin/env bash\n"
   echo "# Mage is a collection of easy commands and aliases for bin/magento"
   echo -e "# For those who hate typing long shell commands\n"
 
