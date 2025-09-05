@@ -1,5 +1,5 @@
 case "${@}" in
-"version" | "-v" | "--version")
+"version")
   mage_version
   ;;
 
@@ -50,11 +50,16 @@ case "${@}" in
   fi
   ;;
 
+"stores")
+  check_has_magerun
+  $MAGERUN_CLI sys:store:config:base-url:list --format txt
+  ;;
+
 "start")
   mage_open_editor
   mage_open_gitclient
-  mage open admin
-  mage open
+  mage_open admin
+  mage_open
   ;;
 
 "open"*)
@@ -113,11 +118,8 @@ case "${@}" in
   ;;
 
 "new customer")
-  if [[ -n "$MAGERUN_CLI" ]]; then
-    $MAGERUN_CLI customer:create
-  else
-    echo $NO_MAGERUN_MSG
-  fi
+  check_has_magerun
+  $MAGERUN_CLI customer:create
   ;;
 
 "new theme")
@@ -211,114 +213,48 @@ case "${@}" in
   $COMPOSER_CLI require siteation/magento2-theme-baldr
   ;;
 
+"set mage-os")
+  convert_to_mage_os
+  ;;
+
 "set theme"*)
+  SET_THEME_NAME=$3
+
+  if [[ $SET_THEME_NAME == "hyva" ]]; then
+    SET_THEME_NAME="Hyva/default"
+  fi
+
+  if [[ $SET_THEME_NAME == "baldr" ]]; then
+    SET_THEME_NAME="Siteation/baldr"
+  fi
+
   if $COMPOSER_CLI show yireo/magento2-theme-commands > /dev/null 2>&1; then
-    $MAGENTO_CLI theme:change $3
+    $MAGENTO_CLI theme:change $SET_THEME_NAME
     $MAGENTO_CLI cache:flush;
   else
     echo "yireo/magento2-theme-commands is not installed."
   fi
   ;;
 
-"set hyva")
-  mage set theme Hyva/default
-  ;;
-
-"set baldr")
-  mage set theme Siteation/baldr
-  ;;
-
-"set mage-os")
-  convert_to_mage_os
-  ;;
-
-"set mode"*)
-  deploy_mode="developer"
-  is_mode_prod=0
-  admin_session_lifetime=86400 # 24h in seconds
-  admin_password_lifetime=0
-
-  if [[ $3 == "production" ]] || [[ $3 == "prod" ]]; then
-    deploy_mode="production --skip-compilation"
-    is_mode_prod=1
-    admin_session_lifetime=43200 # 12h in seconds
-    admin_password_lifetime=90 # days
-    echo "Also make sure to run 'mage build' or 'bin/magento setup:static-content:deploy', when running production mode"
-  else
-    $PURGE_CLI generated/metadata/*
-    $PURGE_CLI generated/code/*
-  fi
-
-  $MAGENTO_CLI config:set -q dev/static/sign $is_mode_prod
-  $MAGENTO_CLI config:set -q admin/captcha/enable $is_mode_prod
-  $MAGENTO_CLI config:set -q admin/security/session_lifetime $admin_session_lifetime
-  $MAGENTO_CLI config:set -q admin/security/password_lifetime $admin_password_lifetime
-  $MAGENTO_CLI config:set -q admin/security/password_is_forced $is_mode_prod
-  $MAGENTO_CLI deploy:mode:set $deploy_mode
-  ;;
-
-"set countries"*)
-  scope=""
-  countries=""
-
-  for option in "${@:3}"; do
-    if [[ "$option" =~ ^store: ]]; then
-      # Extract argument after 'store:' (remove prefix)
-      stripped_option=${option#store:}
-      scope="$stripped_option"
-    else
-      countries="$countries $option"
-    fi
-  done
-
-  if [[ -z "$countries" ]]; then
-    countries="NL,BE,LU,DE"
-  fi
-
-  countries="$(mage_lang_format_arguments $countries)"
-  country=$(echo "${countries}" | cut -d ',' -f 1 | tr '[:lower:]' '[:upper:]')
-
-  if [[ -n "$scope" ]]; then
-    echo "Setting the following countries: $countries for $scope"
-    scope="--scope=stores --scope-code=${scope}"
-  else
-    echo "Setting the following countries: $countries"
-    $MAGENTO_CLI config:set -q general/country/allow $countries
-  fi
-
-  $MAGENTO_CLI config:set -q $scope general/country/default $country
-  $MAGENTO_CLI config:set -q $scope general/country/destinations $countries
-  ;;
-
-"set fpc" | "set fpc default")
-  $MAGENTO_CLI config:set system/full_page_cache/caching_application 1
-  ;;
-
-"set fpc varnish")
-  $MAGENTO_CLI config:set system/full_page_cache/caching_application 2
+"set fpc" | "set fpc "*)
+  MAGENTO_FPC=$([[ $3 == "varnish" ]] && echo 2 || echo 1)
+  $MAGENTO_CLI config:set system/full_page_cache/caching_application $MAGENTO_FPC
   ;;
 
 "set csp")
-  if [[ -n "$MAGERUN_CLI" ]]; then
-    $MAGERUN_CLI config:env:set system/default/csp/policies/storefront/scripts/inline 0
-    $MAGERUN_CLI config:env:set system/default/csp/policies/storefront/scripts/eval 0
-    $MAGERUN_CLI config:env:set system/default/csp/mode/storefront/report_only 0
-    $MAGENTO_CLI app:config:import
-  else
-    echo $NO_MAGERUN_MSG
-  fi
+  check_has_magerun
+  $MAGERUN_CLI config:env:set system/default/csp/policies/storefront/scripts/inline 0
+  $MAGERUN_CLI config:env:set system/default/csp/policies/storefront/scripts/eval 0
+  $MAGERUN_CLI config:env:set system/default/csp/mode/storefront/report_only 0
+  $MAGENTO_CLI app:config:import
   ;;
 
-"log" | "log debug")
-  tail -f -n 4 var/log/debug.log
+"log "*)
+  tail -f -n 6 var/log/$2.log
   ;;
 
-"log exception")
-  tail -f -n 8 var/log/exception.log
-  ;;
-
-"log system")
-  tail -f -n 8 var/log/system.log
+"log")
+  tail -f -n 6 var/log/debug.log
   ;;
 
 "outdated")
@@ -336,11 +272,8 @@ case "${@}" in
   ;;
 
 "run"*)
-  if [[ -n "$MAGERUN_CLI" ]]; then
-    $MAGERUN_CLI "${@:2}"
-  else
-    echo $NO_MAGERUN_MSG
-  fi
+  check_has_magerun
+  $MAGERUN_CLI "${@:2}"
   ;;
 
 *)

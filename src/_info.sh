@@ -1,5 +1,3 @@
-MAGE_VERSION="2.3.4"
-
 function mage_version() {
   echo -e "\n${BOLD}Mage ${GREEN}${MAGE_VERSION}${RESET}, ${ITALIC}See https://github.com/GrimLink/mage for the latest version${RESET}\n"
 }

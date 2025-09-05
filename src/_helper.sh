@@ -1,15 +1,3 @@
-# Helper to format language inputs
-function mage_lang_format_arguments() {
-  formatted_args=""
-  for arg in "$@"; do
-    formatted_arg=$(tr '[a-z]' '[A-Z]' <<< "$arg")
-    formatted_arg="${formatted_arg// /}"
-    formatted_args="${formatted_args},${formatted_arg}"
-  done
-  formatted_args="${formatted_args:1}"
-  echo "$formatted_args"
-}
-
 # Creates a file/folder and echo the contents in one command
 function mage_make_file() {
   touch $1
@@ -56,6 +44,51 @@ function get_mage_store_uri() {
   echo $store_url
 }
 
+# Get the admin path based on the app/etc/env.php
+function get_mage_admin_path_env() {
+  php -r '
+    $array = include("app/etc/env.php");
+    if (isset($array["backend"]["frontName"])) { echo $array["backend"]["frontName"]; }
+  ' 2>/dev/null
+}
+
+# Get the Magento admin path
+function get_mage_admin_path() {
+  local admin_path=""
+  local admin_custom_path=$($MAGENTO_CLI config:show admin/url/use_custom_path)
+
+  if [[ $admin_custom_path == "1" ]]; then
+    local admin_path=$($MAGENTO_CLI config:show admin/url/custom_path)
+  else
+    local admin_path=$(get_mage_admin_path_env)
+  fi
+
+  echo $admin_path
+}
+
 function get_composer_pkg_version() {
-  echo -e $($COMPOSER_CLI show $1 | grep 'versions' | grep -o -E '\*\ .+' | awk '{print $2}' | cut -d',' -f1)
+  echo -e $($COMPOSER_CLI show $1 | grep 'versions' | grep -o -E '\* .+' | awk '{print $2}' | cut -d',' -f1)
+}
+
+function get_mage_modules() {
+  php -r '
+    $config = include "app/etc/config.php";
+    if (isset($config["modules"])) {
+      $modules = array_filter(array_keys($config["modules"]), function($module) {
+        return strpos($module, "Magento_") === false && strpos($module, "PayPal_Braintree") === false;
+      });
+      echo implode("\n", $modules);
+    }
+  ' 2>/dev/null
+}
+
+function get_mage_module_count() {
+  echo $(get_mage_modules | wc -l)
+}
+
+function check_has_magerun() {
+  if [[ -z "$MAGERUN_CLI" ]]; then
+    echo "Magerun2 is not installed or incompatible with current PHP version"
+    exit 1
+  fi
 }
