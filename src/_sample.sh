@@ -1,6 +1,21 @@
 function mage_add_sample() {
-  read -e -p "What is your Magento base version (sample: 2.4): " mversion && echo ""
-  if [[ -z "$mversion" ]]; then echo "The Magento 2 version is empty, aborting.." && exit 1; fi
+  local pkg_name=""
+  if grep -q 'magento/product-community-edition' composer.json; then
+    pkg_name='magento/product-community-edition'
+  elif grep -q 'magento/product-enterprise-edition' composer.json; then
+    pkg_name='magento/product-enterprise-edition'
+  elif grep -q 'mage-os/project-community-edition' composer.json; then
+    pkg_name='mage-os/project-community-edition'
+  else
+    echo "Could not determine Magento version from composer.json."
+    exit 1
+  fi
+
+  local mversion=$(get_composer_pkg_version $pkg_name)
+  if [[ -z "$mversion" ]]; then
+    echo "Could not determine Magento version from composer."
+    exit 1
+  fi
 
   if [[ ! -d "$HOME/.magento-sampledata/$mversion" ]]; then
     git clone -b $mversion git@github.com:magento/magento2-sample-data.git $HOME/.magento-sampledata/$mversion
