@@ -2,24 +2,20 @@ function mage_add_hyva() {
   local use_hyva_production=$1
 
   if [[ $use_hyva_production =~ ^[yY]|[yY][eE][sS]$ ]]; then
-    if [ ! -f "auth.json" ]; then
+    if [ ! -f "auth.json" ] && [ ! -f "$HOME/.composer/auth.json" ]; then
       read -e -p "No license found, add license? [Y/n] "
       echo ""
       if [[ ! $REPLY =~ ^[nN]|[nN][oO]$ ]]; then
         read -e -p "License key: " hyva_key && echo ""
-        read -e -p "Packagist url: " hyva_url && echo ""
         $COMPOSER_CLI config --auth http-basic.hyva-themes.repo.packagist.com token $hyva_key
-        $COMPOSER_CLI config repositories.private-packagist composer https://hyva-themes.repo.packagist.com/$hyva_url/
-        echo "Installing Hyva theme..."
-        $COMPOSER_CLI require hyva-themes/magento2-default-theme
-      else
-        echo "Installing Hyva theme..."
-        $COMPOSER_CLI require hyva-themes/magento2-default-theme
       fi
-    else
-      echo "Installing Hyva theme..."
-      $COMPOSER_CLI require hyva-themes/magento2-default-theme
     fi
+    read -e -p "Packagist domain (e.g. acme): " hyva_url && echo ""
+    if [[ -z $hyva_url ]]; then hyva_url="hyva-themes"; fi
+    $COMPOSER_CLI config repositories.private-packagist composer https://hyva-themes.repo.packagist.com/$hyva_url/
+
+    echo "Installing Hyva theme..."
+    $COMPOSER_CLI require hyva-themes/magento2-default-theme
   else
     mage_add_hyva_dev
   fi;
