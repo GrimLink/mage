@@ -4,10 +4,12 @@
 
 ## Benefits of Using Mage
 
+* **Easy Installation of Magento**: install any version and distribution.
 * **Easier commands:** Mage introduces shorter aliases for common `bin/magento` commands, saving you keystrokes.
 * **Custom functions:** Mage offers helper commands like `reindex` and `purge` for specific tasks.
 * **Open stores quickly:** Open your default store or specific store views with `mage open`.
 * **Efficient development:** The `watch` command automates cache cleaning on file changes, improving your workflow.
+* **Easier patch creation**: create patches only with a few arguments.
 
 ## Installation
 
@@ -27,10 +29,12 @@ curl -O https://raw.githubusercontent.com/GrimLink/mage/main/mage && chmod +x ma
 
 For a complete list, run `mage help`, or view the [src/_info.sh](https://github.com/GrimLink/mage/blob/main/src/_info.sh). Here are some highlights:
 
+* **`mage create`**: Create a new Magento project with only few arguments
 * **`mage open [storeview]`:** Open your default store or a specific store based on the `storeview` name. You can also use `admin` instead of `storeview`, to open the admin panel.
 * **`mage watch`:** This alias for [mage2tv Cache Clean] monitors for Magento 2 file changes and clears only the affected cache, streamlining development.
 * **`mage purge`:** This command clears all static generated files and caches, useful for troubleshooting or forcing a hard reload.
 * **`mage set mage-os`:** Easily replace Magento2 distro with the Mage-OS distro
+* **`mage new patch`:** Create a patch with ease
 * **`mage outdated`:** Show all direct outdated composer dependencies
 * **`mage run [action]`:** Runs [n98-magerun2] commands
 

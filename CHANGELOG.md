@@ -7,25 +7,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.4.0] - 2025-09-18
+
 ### Added
 
-- New Command `set csp`
-- extra arguments to `log` command
-  - `clear` to clear th logs
-  - `show` to show all log files
+- **`create`, `install`, and `setup` commands:**
+  These new commands integrate the functionality of the `create-project` script directly into Mage.
+  This allows for easier Magento project creation using `mage create [NAME]`,
+  which offers more flexibility than the previous method by removing static version numbers
+  and integrating with existing Mage options.
+  The new `create-project` implementation also sets more secure and complete defaults.
+- **`set csp` command:** A new command to configure Content Security Policy.
+- **`log` command enhancements:**
+  The `log` command now accepts `clear` and `show` arguments to clear logs and display all log files, respectively.
 
 ### Changed
 
-- Command `log` to now handle any log type, simply pass the name and that log will be shown
-- `new patch` command logic for adding support for creating a patch with multiple files
-- `add patch` command logic, this now uses the `composer.patches.json` file for the patches,
-  instead putting everything in the `composer.json`
+- **`log` command:**
+  The `log` command has been updated to display any log type by passing the log name as an argument.
+- **`new patch` command:**
+  The logic for the `new patch` command has been updated to support creating a single patch from multiple files.
+- **`add patch` command:**
+  The `add patch` command now uses a separate `composer.patches.json` file to store patch information,
+  keeping the main `composer.json` file cleaner.
 
 ### Removed
 
-- Command `set mode`, we found this to static and allows no easy config options
-  Also the create commands mostly handle this, so this command was made a bit redundant.
-- Command `set countries`, we are replacing this with the new `set config`
+- **`set mode` command:**
+  This command has been removed as it was too static and lacked configuration options.
+  The new `create` command now handles this functionality, making `set mode` redundant.
+- **`set countries` command:**
+  This command has been removed
+  and will be replaced by a more comprehensive `set config` command in a future release.
 
 ## [2.3.4] - 2025-08-14
 

@@ -289,6 +289,11 @@ case "${@}" in
   $MAGENTO_CLI setup:static-content:deploy ${args:-$default_args}
   ;;
 
+"version "* | "help "* | "self-update "*)
+  mage_help
+  echo -e "\n${BOLD}${RED}No arguments are expected for '$1'!${RESET}"
+  ;;
+
 "run" | "run "*)
   check_has_magerun
   $MAGERUN_CLI "${@:2}"

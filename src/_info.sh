@@ -19,15 +19,22 @@ function mage_help() {
   mage_help_cmd "outdated"                    "Show all direct outdated composer dependencies"
   mage_help_cmd "run"                         "Run magerun2"
 
+  mage_help_sub_header "Installation"
+  mage_help_cmd "create [NAME]"               "Alias for 'mage install' and 'mage setup'"
+  mage_help_cmd "install [NAME]"              "Installs a new Magento 2 Project"
+  mage_help_cmd "setup [NAME]"                "Configures and sets up the new Magento 2 Project"
+
   mage_help_sub_header "Development"
   mage_help_cmd "start"                       "Open store and admin with code editor and git client"
   mage_help_cmd "open [STOREVIEW]"            "Open the store view, default if empty"
-  mage_help_cmd "open "                       "Open store admin"
+  mage_help_cmd "open admin"                  "Open store admin"
   mage_help_cmd "watch"                       "Run cache-clean.js"
   mage_help_cmd "browser-sync [STOREVIEW]"    "Run browser-sync on a store view, default if empty"
   mage_help_cmd "reindex"                     "Reindex all indexes and clear cache"
   mage_help_cmd "purge"                       "Purge all static assets"
   mage_help_cmd "log [FILE:debug]"            "watch the log (default: debug)"
+  mage_help_cmd "log clear"                   "clear all logs"
+  mage_help_cmd "log show"                    "show all logs"
   mage_help_cmd "build"                       "Run setup:static-content:deploy with common defaults"
 
   mage_help_sub_header "Generators"
@@ -47,7 +54,7 @@ function mage_help() {
 
   mage_help_sub_header "Configuration"
   mage_help_cmd "set mage-os"                 "Replace Magento2 with Mage-OS distro"
-  mage_help_cmd "set theme [THEME]"           "Run yireo theme:change (shorthands: 'hyva' and 'baldr')"
+  mage_help_cmd "set theme [THEME]"           "Run yireo theme:change (shorthands: 'hyva', 'breeze' and 'baldr')"
   mage_help_cmd "set fsp [TYPE:default]"      "Set the full page cache to 'default' or 'varnish'"
   mage_help_cmd "set csp"                     "Enable CSP mode for Magento"
 

@@ -98,7 +98,6 @@ function mage_new_patch() {
   cd - &> /dev/null
 
   # Add composer patch setting
-
   read -p "Add patch to composer.json? [Y/n] "
   echo ""
   if [[ ! $REPLY =~ ^[nN]|[nN][oO]$ ]]; then
