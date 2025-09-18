@@ -62,7 +62,7 @@ case "${@}" in
   mage_open
   ;;
 
-"open"*)
+"open "*)
   mage_open $2;
   ;;
 
@@ -131,7 +131,7 @@ case "${@}" in
   ;;
 
 "new patch"*)
-  mage_new_patch_file ${3}
+  mage_new_patch ${@:3}
   ;;
 
 "new i18n"* | "new translate"*)

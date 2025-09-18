@@ -17,6 +17,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Command `log` to now handle any log type, simply pass the name and that log will be shown
+- `new patch` command logic for adding support for creating a patch with multiple files
+- `add patch` command logic, this now uses the `composer.patches.json` file for the patches,
+  instead putting everything in the `composer.json`
 
 ### Removed
 
