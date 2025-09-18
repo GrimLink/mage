@@ -29,6 +29,10 @@ function mage_add_sample() {
   mkdir -p pub/media/wysiwyg
   touch README.md
   php -f $HOME/.magento-sampledata/$mversion/dev/tools/build-sample-data.php -- --ce-source="$PWD"
+
+  # Unset default styles from sample data
+  $MAGENTO_CLI config:set design/head/includes "" &> /dev/null
+
   $MAGENTO_CLI setup:upgrade
 
   # Set theme to Hyva if present
@@ -36,9 +40,6 @@ function mage_add_sample() {
     if $COMPOSER_CLI show yireo/magento2-theme-commands >/dev/null 2>&1; then
       $MAGENTO_CLI theme:change Hyva/default
     fi
-
-    # Unset default styles from sample data
-    $MAGENTO_CLI config:set design/head/includes ""
   fi
 
   $MAGENTO_CLI indexer:reindex

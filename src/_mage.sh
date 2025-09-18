@@ -242,7 +242,7 @@ case "${@}" in
 
 "set fpc" | "set fpc "*)
   MAGENTO_FPC=$([[ $3 == "varnish" ]] && echo 2 || echo 1)
-  $MAGENTO_CLI config:set system/full_page_cache/caching_application $MAGENTO_FPC
+  $MAGENTO_CLI config:set system/full_page_cache/caching_application $MAGENTO_FPC &> /dev/null
   ;;
 
 "set csp")

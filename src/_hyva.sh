@@ -20,7 +20,7 @@ function mage_add_hyva() {
     mage_add_hyva_dev
   fi;
 
-  $MAGENTO_CLI config:set customer/captcha/enable 0
+  $MAGENTO_CLI config:set customer/captcha/enable 0 &> /dev/null
 }
 
 function mage_add_hyva_dev() {

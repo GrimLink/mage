@@ -25,7 +25,7 @@ GITNAME="$(git config --global --get user.name | head -n1 | cut -d " " -f1)"
 GITEMAIL="$(git config --global --get user.email)"
 ADMINNAME="$(echo "$GITNAME" | tr '[:upper:]' '[:lower:]')"
 ADMINEMAIL="${GITEMAIL}"
-ADMINPASS="magentoDev123$"
+ADMINPASS="magento_123$"
 
 # Load NVM if available, so the node version is the one used by the system
 [ -s "$HOME/.nvm/nvm.sh" ] && \. "$HOME/.nvm/nvm.sh"

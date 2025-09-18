@@ -30,7 +30,7 @@ GITNAME="$(git config --global --get user.name | head -n1 | cut -d " " -f1)"
 GITEMAIL="$(git config --global --get user.email)"
 ADMINNAME="$(echo "$GITNAME" | tr '[:upper:]' '[:lower:]')"
 ADMINEMAIL="${GITEMAIL}"
-ADMINPASS="magentoDev123$"
+ADMINPASS="magento_123$"
 
 # Load NVM if available, so the node version is the one used by the system
 [ -s "$HOME/.nvm/nvm.sh" ] && \. "$HOME/.nvm/nvm.sh"
@@ -228,7 +228,7 @@ function mage_add_hyva() {
     mage_add_hyva_dev
   fi;
 
-  $MAGENTO_CLI config:set customer/captcha/enable 0
+  $MAGENTO_CLI config:set customer/captcha/enable 0 &> /dev/null
 }
 
 function mage_add_hyva_dev() {
@@ -834,6 +834,10 @@ function mage_add_sample() {
   mkdir -p pub/media/wysiwyg
   touch README.md
   php -f $HOME/.magento-sampledata/$mversion/dev/tools/build-sample-data.php -- --ce-source="$PWD"
+
+  # Unset default styles from sample data
+  $MAGENTO_CLI config:set design/head/includes "" &> /dev/null
+
   $MAGENTO_CLI setup:upgrade
 
   # Set theme to Hyva if present
@@ -841,9 +845,6 @@ function mage_add_sample() {
     if $COMPOSER_CLI show yireo/magento2-theme-commands >/dev/null 2>&1; then
       $MAGENTO_CLI theme:change Hyva/default
     fi
-
-    # Unset default styles from sample data
-    $MAGENTO_CLI config:set design/head/includes ""
   fi
 
   $MAGENTO_CLI indexer:reindex
@@ -953,11 +954,11 @@ function mage_setup() {
     --admin-password="${ADMINPASS}"
 
   echo "Setting default values for Store config"
-  $MAGENTO_CLI config:set general/store_information/name $name
-  $MAGENTO_CLI config:set admin/usage/enabled 0
-  $MAGENTO_CLI config:set admin/security/session_lifetime 86400
-  $MAGENTO_CLI config:set admin/security/password_lifetime ""
-  $MAGENTO_CLI config:set admin/security/password_is_forced 0
+  $MAGENTO_CLI config:set general/store_information/name $name &> /dev/null
+  $MAGENTO_CLI config:set admin/usage/enabled 0 &> /dev/null
+  $MAGENTO_CLI config:set admin/security/session_lifetime 86400 &> /dev/null
+  $MAGENTO_CLI config:set admin/security/password_lifetime "" &> /dev/null
+  $MAGENTO_CLI config:set admin/security/password_is_forced 0 &> /dev/null
 
   $MAGENTO_CLI deploy:mode:set developer
 
@@ -1226,7 +1227,7 @@ case "${@}" in
 
 "set fpc" | "set fpc "*)
   MAGENTO_FPC=$([[ $3 == "varnish" ]] && echo 2 || echo 1)
-  $MAGENTO_CLI config:set system/full_page_cache/caching_application $MAGENTO_FPC
+  $MAGENTO_CLI config:set system/full_page_cache/caching_application $MAGENTO_FPC &> /dev/null
   ;;
 
 "set csp")
@@ -1275,7 +1276,6 @@ case "${@}" in
 
 "version "* | "help "* | "self-update "*)
   mage_help
-
   echo -e "\n${BOLD}${RED}No arguments are expected for '$1'!${RESET}"
   ;;
 

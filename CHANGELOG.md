@@ -23,6 +23,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **`info` command:** now displays the information of your env better, including colors.
+- **`info` command:** now displays the Modules Installed health
 - **`log` command:**
   The `log` command has been updated to display any log type by passing the log name as an argument.
 - **`new patch` command:**

@@ -101,11 +101,11 @@ function mage_setup() {
     --admin-password="${ADMINPASS}"
 
   echo "Setting default values for Store config"
-  $MAGENTO_CLI config:set general/store_information/name $name
-  $MAGENTO_CLI config:set admin/usage/enabled 0
-  $MAGENTO_CLI config:set admin/security/session_lifetime 86400
-  $MAGENTO_CLI config:set admin/security/password_lifetime ""
-  $MAGENTO_CLI config:set admin/security/password_is_forced 0
+  $MAGENTO_CLI config:set general/store_information/name $name &> /dev/null
+  $MAGENTO_CLI config:set admin/usage/enabled 0 &> /dev/null
+  $MAGENTO_CLI config:set admin/security/session_lifetime 86400 &> /dev/null
+  $MAGENTO_CLI config:set admin/security/password_lifetime "" &> /dev/null
+  $MAGENTO_CLI config:set admin/security/password_is_forced 0 &> /dev/null
 
   $MAGENTO_CLI deploy:mode:set developer
 
