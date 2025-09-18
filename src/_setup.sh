@@ -98,8 +98,7 @@ function mage_setup() {
     --admin-lastname="admin" \
     --admin-email="${ADMINEMAIL}" \
     --admin-user="${ADMINNAME}" \
-    --admin-password="${ADMINPASS}" \
-    "$@"
+    --admin-password="${ADMINPASS}"
 
   echo "Setting default values for Store config"
   $MAGENTO_CLI config:set general/store_information/name $name
