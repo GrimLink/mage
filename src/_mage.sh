@@ -253,12 +253,26 @@ case "${@}" in
   $MAGENTO_CLI app:config:import
   ;;
 
-"log "*)
-  tail -f -n 6 var/log/$2.log
-  ;;
+"log" | "log "*)
+  log_file="${2:-debug}"
 
-"log")
-  tail -f -n 6 var/log/debug.log
+  case "$log_file" in
+    "clear")
+      find var/log/ -name "*.log" -delete
+      ;;
+    "show")
+      ls -1 var/log/
+      ;;
+    *)
+      if [ -f "var/log/${log_file}.log" ]; then
+        tail -f -n 6 "var/log/${log_file}.log"
+      else
+        echo "Error: Log file not found: var/log/${log_file}.log"
+        echo "Available logs:"
+        ls -1 var/log/
+      fi
+      ;;
+  esac
   ;;
 
 "outdated")

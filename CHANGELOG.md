@@ -10,7 +10,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - New Command `set csp`
+- extra arguments to `log` command
+  - `clear` to clear th logs
+  - `show` to show all log files
 
+### Changed
+
+- Command `log` to now handle any log type, simply pass the name and that log will be shown
 ## [2.3.4] - 2025-08-14
 
 ### Changed
