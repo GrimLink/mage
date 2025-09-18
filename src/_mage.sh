@@ -23,8 +23,19 @@ case "${@}" in
   get_mage_modules
   ;;
 
-"install" | "create")
+"create" | "install")
   echo "No name was given for the magento project, aborting.."
+  ;;
+
+"create "*)
+  mage_install $2
+  mage_setup
+
+  read -p "Add sample data? [y/N] "
+  echo ""
+  if [[ $REPLY =~ ^[yY]|[yY][eE][sS]$ ]]; then
+    mage_add_sample
+  fi
   ;;
 
 "install "*)
@@ -37,17 +48,6 @@ case "${@}" in
 
 "setup "*)
   mage_setup $2
-  ;;
-
-"create "*)
-  mage_install $2
-  mage_setup
-
-  read -p "Add sample data? [y/N] "
-  echo ""
-  if [[ $REPLY =~ ^[yY]|[yY][eE][sS]$ ]]; then
-    mage_add_sample
-  fi
   ;;
 
 "stores")
