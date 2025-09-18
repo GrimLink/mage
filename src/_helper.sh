@@ -92,3 +92,27 @@ function check_has_magerun() {
     exit 1
   fi
 }
+
+function mage_add_valet_store() {
+  local store_name=${1:-'store'}
+  local store_code=${2:-'default'}
+  local is_commented=${3:-false}
+
+  if [ "$is_commented" = true ]; then
+    echo -e "\t// '${store_name}' => ["
+    echo -e "\t// \t'MAGE_RUN_CODE' => '${store_code}',"
+    echo -e "\t// \t'MAGE_RUN_TYPE' => 'store',"
+    echo -e "\t// ],"
+  else
+    echo -e "\t'${store_name}' => ["
+    echo -e "\t\t'MAGE_RUN_CODE' => '${store_code}',"
+    echo -e "\t\t'MAGE_RUN_TYPE' => 'store',"
+    echo -e "\t],"
+  fi
+}
+
+function mage_cleanup_sample_files() {
+  mkdir -p dev/sample-files
+  find . -maxdepth 1 -type f -name "*.sample" -exec mv {} dev/sample-files/ \;
+  echo "All files ending with '.sample' have been moved to 'dev/sample-files'"
+}

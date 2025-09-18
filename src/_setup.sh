@@ -115,4 +115,17 @@ function mage_setup() {
     $MAGENTO_CLI module:disable Magento_AdminAdobeImsTwoFactorAuth
   fi
   $MAGENTO_CLI module:disable Magento_TwoFactorAuth
+
+  # Prepare Multi Stores when using Valet
+  if [[ $VALET == 1 ]]; then
+    {
+      echo -e '<?php declare(strict_types=1);\n\nreturn ['
+      mage_add_valet_store "$name" "default"
+      mage_add_valet_store "store-2" "default2" true
+      echo '];'
+    } > .valet-env.php
+  fi
+
+  # Cleanup root sample files
+  mage_cleanup_sample_files
 }
