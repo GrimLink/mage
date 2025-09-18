@@ -228,6 +228,10 @@ case "${@}" in
     SET_THEME_NAME="Siteation/baldr"
   fi
 
+  if [[ $SET_THEME_NAME == "breeze" ]]; then
+    SET_THEME_NAME="Swissup/breeze-blank"
+  fi
+
   if $COMPOSER_CLI show yireo/magento2-theme-commands > /dev/null 2>&1; then
     $MAGENTO_CLI theme:change $SET_THEME_NAME
     $MAGENTO_CLI cache:flush;
