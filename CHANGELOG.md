@@ -17,6 +17,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Command `log` to now handle any log type, simply pass the name and that log will be shown
+
+### Removed
+
+- Command `set mode`, we found this to static and allows no easy config options
+  Also the create commands mostly handle this, so this command was made a bit redundant.
+- Command `set countries`, we are replacing this with the new `set config`
+
 ## [2.3.4] - 2025-08-14
 
 ### Changed
