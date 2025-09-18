@@ -269,13 +269,13 @@ case "${@}" in
   mage_build_hyva
   ;;
 
-"build"*)
+"build" | "build "*)
   default_args="-j 4"
   args=${@:2}
   $MAGENTO_CLI setup:static-content:deploy ${args:-$default_args}
   ;;
 
-"run"*)
+"run" | "run "*)
   check_has_magerun
   $MAGERUN_CLI "${@:2}"
   ;;
