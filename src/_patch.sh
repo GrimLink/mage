@@ -1,8 +1,13 @@
 
 function mage_add_patch() {
   local vendor="${1}";
-  local patch_src="${@: -1}";
-  local patch_name="${@:2:$#-2}";
+  local patch_src=""
+  local patch_name=""
+
+  if [[ $# -ge 2 ]]; then
+    patch_src="${@: -1}"
+    patch_name="${@:2:$#-2}"
+  fi
 
   if [[ -z "$vendor" ]]; then
     echo "The vendor your patching, Example: magento/module-theme or hyva-themes/magento_theme"
@@ -84,7 +89,7 @@ function mage_new_patch() {
     echo "Patch name cannot be empty."
     return 1
   fi
-  local patch_file_path="patches/${$module_name}/${patch_name}"
+  local patch_file_path="patches/${module_name}/${patch_name}"
 
   local patch_file_dir=$(dirname "../../../$patch_file_path")
 
