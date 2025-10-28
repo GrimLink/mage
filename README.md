@@ -31,7 +31,7 @@ For a complete list, run `mage help`, or view the [src/_info.sh](https://github.
 
 * **`mage create`**: Create a new Magento project with only few arguments
 * **`mage open [storeview]`:** Open your default store or a specific store based on the `storeview` name. You can also use `admin` instead of `storeview`, to open the admin panel.
-* **`mage watch`:** This alias for [mage2tv Cache Clean] monitors for Magento 2 file changes and clears only the affected cache, streamlining development.
+* **`mage watch`:** This alias for [Mage-OS Cache Clean] monitors for Magento 2 file changes and clears only the affected cache, streamlining development.
 * **`mage purge`:** This command clears all static generated files and caches, useful for troubleshooting or forcing a hard reload.
 * **`mage set mage-os`:** Easily replace Magento2 distro with the Mage-OS distro
 * **`mage new patch`:** Create a patch with ease
@@ -65,7 +65,7 @@ Mage is licensed under the MIT License. See the LICENSE file for details.
 [n98-magerun2]: https://github.com/netz98/n98-magerun2
 [Hyvä license]: https://www.hyva.io/hyva-themes-license.html
 [Yireo_ThemeCommands]: https://github.com/yireo/Yireo_ThemeCommands
-[mage2tv Cache Clean]: https://github.com/mage2tv/magento-cache-clean
+[Mage-OS Cache Clean]: https://github.com/mage-os/magento-cache-clean
 [Laravel Valet]: https://laravel.com/docs/valet
 [Warden]: https://github.com/wardenenv/warden
 [Siteation]: https://siteation.dev/
