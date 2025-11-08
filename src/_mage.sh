@@ -299,6 +299,14 @@ case "${@}" in
   $MAGERUN_CLI "${@:2}"
   ;;
 
+"enable" *)
+  if [[ "$2" == *"_"* ]]; then
+    $MAGENTO_CLI module:enable $2
+  else
+    $MAGENTO_CLI module:enable $($MAGENTO_CLI module:status | grep -E $2)
+  fi
+  ;;
+
 *)
   $MAGENTO_CLI "$@"
   ;;
