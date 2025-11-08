@@ -129,3 +129,10 @@ function mage_setup() {
   # Cleanup root sample files
   mage_cleanup_sample_files
 }
+
+function mage_getting_started() {
+  local name=$2
+  echo -e "$name is ready!"
+  echo -e "Enter your Magento project directory using ${BLUE}cd ./${name}${RESET}"
+  echo -e "Open your Magento project, using ${BLUE}mage open${RESET} or ${BLUE}mage open admin${RESET}"
+}

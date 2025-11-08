@@ -37,8 +37,7 @@ case "${@}" in
     mage_add_sample
   fi
 
-  echo -e "$2 is ready!"
-  echo -e "Enter your project directory using cd ./$2"
+  mage_getting_started $2
   ;;
 
 "install "*)
@@ -51,6 +50,7 @@ case "${@}" in
 
 "setup "*)
   mage_setup $2
+  mage_getting_started $2
   ;;
 
 "stores")
