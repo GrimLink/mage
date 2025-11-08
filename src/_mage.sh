@@ -46,6 +46,7 @@ case "${@}" in
 
 "setup")
   mage_setup
+  mage_getting_started $(basename "$(pwd)")
   ;;
 
 "setup "*)
