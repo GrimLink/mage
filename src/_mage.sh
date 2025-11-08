@@ -36,6 +36,9 @@ case "${@}" in
   if [[ $REPLY =~ ^[yY]|[yY][eE][sS]$ ]]; then
     mage_add_sample
   fi
+
+  echo -e "$2 is ready!"
+  echo -e "Enter your project directory using cd ./$2"
   ;;
 
 "install "*)
