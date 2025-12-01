@@ -61,8 +61,10 @@ elif command -v n98-magerun2 &>/dev/null && n98-magerun2 --version &>/dev/null; 
 fi
 
 # Valet Env
-if [[ $(valet -V | cut -f1,2 -d ' ') == "Laravel Valet" ]]; then
-  VALET=1
+if command -v valet &>/dev/null; then
+  if [[ $(valet -V | cut -f1,2 -d ' ') == "Laravel Valet" ]]; then
+    VALET=1
+  fi
 fi
 
 # Warden Env
