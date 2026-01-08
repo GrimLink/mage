@@ -168,15 +168,11 @@ case "${@}" in
   ;;
 
 "add hyva")
-  echo "Make sure you have and license key or access to the gitlab env"
-  read -rsn1 -p "When ready, press any key to continue";
-  echo "";
-
-  read -p "Is this a production setup (use license)? [N/y]" HYVA_PRODUCTION && echo ""
+  read -p "Is this a production setup (use license)? [Y/n]" HYVA_PRODUCTION && echo ""
   read -p "Add Checkout? [Y/n]" HYVA_ADD_CHECKOUT && echo ""
   read -p "Add Commerce? [Y/n]" HYVA_ADD_COMMERCE && echo ""
 
-  if [[ -z "$HYVA_PRODUCTION" ]]; then HYVA_PRODUCTION="No"; fi
+  if [[ -z "$HYVA_PRODUCTION" ]]; then HYVA_PRODUCTION="Yes"; fi
   if [[ -z "$HYVA_ADD_CHECKOUT" ]]; then HYVA_ADD_CHECKOUT="Yes"; fi
   if [[ -z "$HYVA_ADD_COMMERCE" ]]; then HYVA_ADD_COMMERCE="Yes"; fi
 
@@ -328,7 +324,7 @@ case "${@}" in
   ;;
 
 "build" | "build "*)
-  default_args="-j 4"
+  default_args="-j 6"
   args=${@:2}
   $MAGENTO_CLI setup:static-content:deploy ${args:-$default_args}
   ;;

@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.5.0] - 2026-01-08
+
 ### Added
 
 - Added `add` command as a shortcut for `composer require`.
@@ -17,7 +19,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added `get` command as a shortcut for getting all direct composer packages with a given name.
 - Added `enable` command as a shortcut for `bin/magento module:enable`.
 - Added `disable` command as a shortcut for `bin/magento module:disable`.
+
+### Changed
+
 - Refactors a few actions to function and cleanup to make mage more compact
+- Added CSP theme support to the `build hyva` command.
+- Set the default number of parallel jobs for the `build` command to 6.
+
+### Removed
+
+- Removed initial confirmation question when installing Hyva; the script now directly prompts for the installation type.
+
 ## [2.4.1] - 2025-09-29
 
 ### Fixed
