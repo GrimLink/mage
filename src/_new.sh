@@ -9,7 +9,7 @@ function mage_new_in_folder() {
     echo "package-source";
   else
     echo $1
-  fi;
+  fi
 }
 
 function mage_new_theme() {
@@ -20,7 +20,7 @@ function mage_new_theme() {
   echo ""
   if [[ $REPLY =~ ^[yY]|[yY][eE][sS]$ ]]; then
     local application="adminhtml"
-  fi;
+  fi
 
   local dest_path=$(mage_new_in_folder "app/design/${application}")
 

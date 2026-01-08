@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Refactors a few actions to function and cleanup to make mage more compact
 ## [2.4.1] - 2025-09-29
 
 ### Fixed

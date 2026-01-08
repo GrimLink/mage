@@ -149,7 +149,7 @@ case "${@}" in
       echo "Running '$MAGENTO_CLI i18n:collect-phrases' in '$src'"
     else
       exit 1
-    fi;
+    fi
   fi
 
   mkdir -p $src/i18n
@@ -194,7 +194,7 @@ case "${@}" in
 
   $MAGENTO_CLI s:up
 
-  if $COMPOSER_CLI show yireo/magento2-theme-commands >/dev/null 2>&1; then
+  if is_theme_cli_installed; then
     $MAGENTO_CLI theme:change Hyva/default
   fi
 
@@ -221,7 +221,7 @@ case "${@}" in
   convert_to_mage_os
   ;;
 
-"set theme"*)
+"set theme "*)
   SET_THEME_NAME=$3
 
   if [[ $SET_THEME_NAME == "hyva" ]]; then
@@ -236,7 +236,7 @@ case "${@}" in
     SET_THEME_NAME="Swissup/breeze-blank"
   fi
 
-  if $COMPOSER_CLI show yireo/magento2-theme-commands > /dev/null 2>&1; then
+  if is_theme_cli_installed; then
     $MAGENTO_CLI theme:change $SET_THEME_NAME
     $MAGENTO_CLI cache:flush;
   else

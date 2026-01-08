@@ -108,7 +108,7 @@ function mage_new_patch() {
   if [[ ! $REPLY =~ ^[nN]|[nN][oO]$ ]]; then
     # Vendor Folder / Patch Name / Patch Source
     mage_add_patch $module_name "Patch: ${patch_name}" "${patch_file_path}"
-  fi;
+  fi
 
   echo -e "Patch created in ${patch_file_path}.patch".
   echo "Make sure the patch and settings in composer.json are correct before running composer install"

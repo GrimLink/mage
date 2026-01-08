@@ -69,7 +69,7 @@ function mage_info() {
   local mage_search=$($MAGENTO_CLI config:show catalog/search/engine)
   local mage_mod_count=$(get_mage_module_count)
 
-  if $COMPOSER_CLI show hyva-themes/magento2-theme-module > /dev/null 2>&1; then
+  if is_hyva_installed; then
     local hyva_version="$(get_composer_pkg_version 'hyva-themes/magento2-theme-module')"
   fi
 

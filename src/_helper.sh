@@ -70,6 +70,14 @@ function get_composer_pkg_version() {
   echo -e $($COMPOSER_CLI show $1 | grep 'versions' | grep -o -E '\* .+' | awk '{print $2}' | cut -d',' -f1)
 }
 
+function is_hyva_installed() {
+  $COMPOSER_CLI show hyva-themes/magento2-theme-module > /dev/null 2>&1
+}
+
+function is_theme_cli_installed() {
+  $COMPOSER_CLI show yireo/magento2-theme-commands > /dev/null 2>&1
+}
+
 function get_mage_modules() {
   php -r '
     $config = include "app/etc/config.php";
