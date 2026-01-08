@@ -45,12 +45,17 @@ function mage_help() {
   mage_help_cmd "new patch"                   "Create new patch"
   mage_help_cmd "new i18n/translate [SRC]"    "Create new translations"
 
-  mage_help_sub_header "Add"
+  mage_help_sub_header "Add and Manage"
   mage_help_cmd "add patch"                   "Add patch"
   mage_help_cmd "add sample"                  "Add sample data"
   mage_help_cmd "add hyva"                    "Add Hyva Theme"
   mage_help_cmd "add checkout"                "Add Hyva Checkout"
   mage_help_cmd "add baldr"                   "Add Siteation Baldr"
+  mage_help_cmd "add [PKG]"                   "Add composer package"
+  mage_help_cmd "upd/update [PKG]"            "Update composer package(s)"
+  mage_help_cmd "del/remove [PKG]"            "Remove composer package(s)"
+  mage_help_cmd "enable [PKG]"                "Enable module(s)"
+  mage_help_cmd "disable [PKG]"               "Disable module(s)"
 
   mage_help_sub_header "Configuration"
   mage_help_cmd "set mage-os"                 "Replace Magento2 with Mage-OS distro"

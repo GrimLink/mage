@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Added `add` command as a shortcut for `composer require`.
+- Added `update` (alias `upd`) command, a shortcut for `composer update`.
+  It supports updating specific packages or all packages matching a search term with the `--all` flag (e.g., `mage update --all hyva-themes`).
+- Added `remove` (alias `del`) command, a shortcut for `composer remove`.
+  It supports removing specific packages or all packages matching a search term with the `--all` flag (e.g., `mage remove --all siteation`).
+- Added `get` command as a shortcut for getting all direct composer packages with a given name.
+- Added `enable` command as a shortcut for `bin/magento module:enable`.
+- Added `disable` command as a shortcut for `bin/magento module:disable`.
 - Refactors a few actions to function and cleanup to make mage more compact
 ## [2.4.1] - 2025-09-29
 

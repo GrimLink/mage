@@ -124,3 +124,7 @@ function mage_cleanup_sample_files() {
   find . -maxdepth 1 -type f -name "*.sample" -exec mv {} dev/sample-files/ \;
   echo "All files ending with '.sample' have been moved to 'dev/sample-files'"
 }
+
+function get_all_composer_pkgs() {
+  echo $($COMPOSER_CLI show --name-only --direct | grep -E "$@")
+}

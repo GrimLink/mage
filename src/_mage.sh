@@ -217,6 +217,10 @@ case "${@}" in
   $COMPOSER_CLI require siteation/magento2-theme-baldr
   ;;
 
+"add "*)
+  $COMPOSER_CLI require "${@:2}"
+  ;;
+
 "set mage-os")
   convert_to_mage_os
   ;;
@@ -279,8 +283,44 @@ case "${@}" in
   esac
   ;;
 
+"del "* | "remove "*)
+  if [[ "$2" == *"/"* ]]; then
+    $COMPOSER_CLI remove "${@:2}"
+  else
+    $COMPOSER_CLI remove $(get_all_composer_pkgs "${@:2}")
+  fi
+  ;;
+
+"upd "* | "update "*)
+  if [[ "$2" == *"/"* ]]; then
+    $COMPOSER_CLI update "${@:2}"
+  else
+    $COMPOSER_CLI update $(get_all_composer_pkgs "${@:2}")
+  fi
+  ;;
+
+"get "*)
+  echo $(get_all_composer_pkgs ${@:2});
+  ;;
+
 "outdated")
   $COMPOSER_CLI outdated --direct --no-dev --ignore symfony/finder --ignore symfony/process --format json > composer-outdated.json
+  ;;
+
+"enable "*)
+  if [[ "$2" == *"_"* ]]; then
+    $MAGENTO_CLI module:enable $2
+  else
+    $MAGENTO_CLI module:enable $($MAGENTO_CLI module:status | grep -E $2)
+  fi
+  ;;
+
+"disable "*)
+  if [[ "$2" == *"_"* ]]; then
+    $MAGENTO_CLI module:disable $2
+  else
+    $MAGENTO_CLI module:disable $($MAGENTO_CLI module:status | grep -E $2)
+  fi
   ;;
 
 "build hyva")
@@ -301,14 +341,6 @@ case "${@}" in
 "run" | "run "*)
   check_has_magerun
   $MAGERUN_CLI "${@:2}"
-  ;;
-
-"enable" *)
-  if [[ "$2" == *"_"* ]]; then
-    $MAGENTO_CLI module:enable $2
-  else
-    $MAGENTO_CLI module:enable $($MAGENTO_CLI module:status | grep -E $2)
-  fi
   ;;
 
 *)
