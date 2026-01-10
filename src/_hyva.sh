@@ -43,8 +43,8 @@ function mage_setup_dev() {
   )
 
   # Core Theme Deps
-  for pkg in hyva_themes; do
-    $COMPOSER_CLI config --append ${repo}/${pkg} git ${git_url}:hyva-themes/hyva-compat/${pkg}.git
+  for pkg in "${hyva_themes[@]}"; do
+    $COMPOSER_CLI config --append ${repo}/${pkg} git ${git_url}:hyva-themes/${pkg}.git
   done
 
   $COMPOSER_CLI config --append ${repo}/magento2-mollie-theme-bundle git ${git_url}:hyva-themes/hyva-compat/magento2-mollie-theme-bundle.git

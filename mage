@@ -3,7 +3,7 @@
 # Mage is a collection of easy commands and aliases for bin/magento
 # For those who hate typing long shell commands
 
-MAGE_VERSION="2.5.0"
+MAGE_VERSION="2.5.1"
 
 # Check if this is the Magento 2 root
 if [[ ! -d app/etc ]]; then
@@ -265,8 +265,8 @@ function mage_setup_dev() {
   )
 
   # Core Theme Deps
-  for pkg in hyva_themes; do
-    $COMPOSER_CLI config --append ${repo}/${pkg} git ${git_url}:hyva-themes/hyva-compat/${pkg}.git
+  for pkg in "${hyva_themes[@]}"; do
+    $COMPOSER_CLI config --append ${repo}/${pkg} git ${git_url}:hyva-themes/${pkg}.git
   done
 
   $COMPOSER_CLI config --append ${repo}/magento2-mollie-theme-bundle git ${git_url}:hyva-themes/hyva-compat/magento2-mollie-theme-bundle.git
