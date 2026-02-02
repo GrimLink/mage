@@ -3,7 +3,7 @@
 # Mage is a collection of easy commands and aliases for bin/magento
 # For those who hate typing long shell commands
 
-MAGE_VERSION="2.5.1"
+MAGE_VERSION="2.5.2"
 
 # Check if this is the Magento 2 root
 if [[ ! -d app/etc ]]; then
@@ -1092,6 +1092,10 @@ case "${@}" in
   mage_open_gitclient
   mage_open admin
   mage_open
+  ;;
+
+"open")
+  mage_open;
   ;;
 
 "open "*)
