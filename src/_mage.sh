@@ -66,6 +66,10 @@ case "${@}" in
   mage_open
   ;;
 
+"open")
+  mage_open;
+  ;;
+
 "open "*)
   mage_open $2;
   ;;
