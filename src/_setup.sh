@@ -121,9 +121,42 @@ function mage_setup() {
     {
       echo -e '<?php declare(strict_types=1);\n\nreturn ['
       mage_add_valet_store "$name" "default"
-      mage_add_valet_store "store-2" "default2" true
       echo '];'
     } > .valet-env.php
+  fi
+
+  # Scaffold dev/tools/ with multistore helpers from mage bin dir
+  local _bin_dir
+  _bin_dir="$(dirname "$0")"
+  if [[ -f "${_bin_dir}/create-store.php" ]]; then
+    mkdir -p dev/tools
+    cp "${_bin_dir}/create-store.php" dev/tools/create-store.php
+  fi
+  if [[ ! -f "dev/tools/stores.json" ]] && [[ -f "${_bin_dir}/stores.json" ]]; then
+    mkdir -p dev/tools
+    cp "${_bin_dir}/stores.json" dev/tools/stores.json
+  fi
+
+  # Create extra stores from stores.json (if present and non-empty)
+  if [[ $VALET == 1 ]]; then
+    _stores_file=""
+    if [[ -f "dev/tools/stores.json" ]]; then
+      _stores_file="dev/tools/stores.json"
+    elif [[ -f "stores.json" ]]; then
+      _stores_file="stores.json"
+    elif [[ -f "$(dirname "$0")/stores.json" ]]; then
+      _stores_file="$(dirname "$0")/stores.json"
+    fi
+
+    if [[ -n "$_stores_file" ]]; then
+      _count=$(python3 -c "import json; d=json.load(open('${_stores_file}')); print(len(d.get('stores',[])))" 2>/dev/null || echo 0)
+      if [[ "$_count" -gt 0 ]]; then
+        read -p "Create ${_count} store(s) from ${_stores_file}? [Y/n] " _ADD && echo ""
+        if [[ ! $_ADD =~ ^[nN] ]]; then
+          mage_add_stores_from_file "$_stores_file"
+        fi
+      fi
+    fi
   fi
 
   # Cleanup root sample files

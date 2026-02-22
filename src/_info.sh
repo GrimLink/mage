@@ -51,6 +51,8 @@ function mage_help() {
   mage_help_cmd "add hyva"                    "Add Hyva Theme"
   mage_help_cmd "add checkout"                "Add Hyva Checkout"
   mage_help_cmd "add baldr"                   "Add Siteation Baldr"
+  mage_help_cmd "add store"                   "Create a new store view (interactive)"
+  mage_help_cmd "add stores"                  "Create all stores from dev/tools/stores.json"
   mage_help_cmd "add [PKG]"                   "Add composer package"
   mage_help_cmd "upd/update [PKG]"            "Update composer package(s)"
   mage_help_cmd "del/remove [PKG]"            "Remove composer package(s)"

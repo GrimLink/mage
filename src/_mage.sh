@@ -217,6 +217,14 @@ case "${@}" in
   $COMPOSER_CLI require siteation/magento2-theme-baldr
   ;;
 
+"add store")
+  mage_add_store
+  ;;
+
+"add stores")
+  mage_add_stores_from_file
+  ;;
+
 "add "*)
   $COMPOSER_CLI require "${@:2}"
   ;;
