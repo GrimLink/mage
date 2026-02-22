@@ -8,7 +8,7 @@ MAGE_VERSION="2.5.2"
 # Check if this is the Magento 2 root
 if [[ ! -d app/etc ]]; then
   case "$1" in
-    version|help|self-update|install|setup|create)
+    version|help|self-update|install|setup|create|destroy)
       # Allow these commands to run even if not in Magento root
       ;;
     *)
@@ -88,6 +88,89 @@ if [ -f .env ] && grep -q "WARDEN_ENV_NAME" .env && [[ ! "$PATH" == /var/www/htm
   # Changes will get synced back to the host
   PURGE_CLI="warden env exec -T php-fpm rm -rf"
 fi
+
+# Fully remove a Magento project: folder, database, and all Valet links/certs.
+# Run from the PARENT directory of the project, e.g.:
+#   cd ~/Developer/magento && mage destroy my-project
+function mage_destroy_project() {
+  local name="$1"
+
+  if [[ -z "$name" ]]; then
+    echo "Usage: mage destroy <PROJECT-NAME>"
+    return 1
+  fi
+
+  if [[ ! -d "$name" ]]; then
+    echo "Error: Directory '${name}' not found in the current folder ($(pwd))."
+    echo "Run this command from the parent directory of the project."
+    return 1
+  fi
+
+  # Gather Valet domains by reading .valet-env.php — only top-level array keys
+  # (the ones with array values) are domain names; string-value keys are skipped.
+  local valet_env="${name}/.valet-env.php"
+  local domains=()
+  if [[ -f "$valet_env" ]]; then
+    while IFS= read -r _d; do
+      [[ -n "$_d" ]] && domains+=("$_d")
+    done < <(python3 -c "
+import re, sys
+content = open(sys.argv[1]).read()
+for k in re.findall(r\"'([^']+)'\\s*=>\\s*\\[\", content):
+    print(k)
+" "$valet_env")
+  fi
+
+  echo ""
+  echo -e "${RED}WARNING: This will permanently destroy:${RESET}"
+  echo "  • Project folder : $(pwd)/${name}"
+  echo "  • Database       : ${name}"
+  if [[ ${#domains[@]} -gt 0 ]]; then
+    echo "  • Valet domains  : ${domains[*]}"
+  fi
+  echo ""
+  read -p "Type the project name to confirm: " _confirm && echo ""
+
+  if [[ "$_confirm" != "$name" ]]; then
+    echo -e "Aborted — '${_confirm}' does not match '${name}'."
+    return 1
+  fi
+
+  # Valet cleanup — delete cert files, nginx configs, and site symlinks directly
+  # so we can do a single valet restart instead of one nginx restart per domain.
+  if [[ $VALET == 1 && ${#domains[@]} -gt 0 ]]; then
+    local _valet_cfg="$HOME/.config/valet"
+    echo "Removing Valet certificates, nginx configs and site links..."
+    for d in "${domains[@]}"; do
+      rm -f "${_valet_cfg}/Certificates/${d}.test.crt" \
+            "${_valet_cfg}/Certificates/${d}.test.csr" \
+            "${_valet_cfg}/Certificates/${d}.test.key" \
+            "${_valet_cfg}/Certificates/${d}.test.conf"
+      rm -f "${_valet_cfg}/Nginx/${d}.test"
+      rm -f "${_valet_cfg}/Sites/${d}"
+      sudo security delete-certificate -c "${d}.test" \
+        /Library/Keychains/System.keychain 2>/dev/null || true
+    done
+    echo "Restarting nginx once..."
+    valet restart
+  fi
+
+  # Drop database
+  echo "Dropping database '${name}'..."
+  if command -v mysql &>/dev/null; then
+    mysql -uroot -proot -e "DROP DATABASE IF EXISTS \`${name}\`;" 2>/dev/null \
+      || echo "  Warning: could not drop database (check credentials)."
+  else
+    echo "  Warning: mysql not found — skipping database removal."
+  fi
+
+  # Remove project folder
+  echo "Removing project folder '${name}'..."
+  rm -rf "${name}"
+
+  echo ""
+  echo -e "${GREEN}✓ Project '${name}' has been fully removed.${RESET}"
+}
 
 # Creates a file/folder and echo the contents in one command
 function mage_make_file() {
@@ -347,6 +430,7 @@ function mage_help() {
   mage_help_cmd "create [NAME]"               "Alias for 'mage install' and 'mage setup'"
   mage_help_cmd "install [NAME]"              "Installs a new Magento 2 Project"
   mage_help_cmd "setup [NAME]"                "Configures and sets up the new Magento 2 Project"
+  mage_help_cmd "destroy [NAME]"              "Fully remove a project (folder, DB, Valet links & certs)"
 
   mage_help_sub_header "Development"
   mage_help_cmd "start"                       "Open store and admin with code editor and git client"
@@ -871,9 +955,6 @@ function mage_add_sample() {
   touch README.md
   php -f $HOME/.magento-sampledata/$mversion/dev/tools/build-sample-data.php -- --ce-source="$PWD"
 
-  # Unset default styles from sample data
-  $MAGENTO_CLI config:set design/head/includes "" &> /dev/null
-
   $MAGENTO_CLI setup:upgrade
 
   # Set theme to Hyva if present
@@ -882,6 +963,9 @@ function mage_add_sample() {
       $MAGENTO_CLI theme:change Hyva/default
     fi
   fi
+
+  # Unset default styles from sample data
+  $MAGENTO_CLI config:set design/head/includes "" &> /dev/null
 
   $MAGENTO_CLI indexer:reindex
   $MAGENTO_CLI cache:flush
@@ -1053,6 +1137,14 @@ case "${@}" in
 
 "create" | "install")
   echo "No name was given for the magento project, aborting.."
+  ;;
+
+"destroy")
+  echo "No project name given. Usage: mage destroy <PROJECT-NAME>"
+  ;;
+
+"destroy "*)
+  mage_destroy_project "$2"
   ;;
 
 "create "*)

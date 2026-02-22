@@ -27,6 +27,14 @@ case "${@}" in
   echo "No name was given for the magento project, aborting.."
   ;;
 
+"destroy")
+  echo "No project name given. Usage: mage destroy <PROJECT-NAME>"
+  ;;
+
+"destroy "*)
+  mage_destroy_project "$2"
+  ;;
+
 "create "*)
   mage_install $2
   mage_setup

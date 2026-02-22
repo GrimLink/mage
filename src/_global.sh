@@ -3,7 +3,7 @@ MAGE_VERSION="2.5.2"
 # Check if this is the Magento 2 root
 if [[ ! -d app/etc ]]; then
   case "$1" in
-    version|help|self-update|install|setup|create)
+    version|help|self-update|install|setup|create|destroy)
       # Allow these commands to run even if not in Magento root
       ;;
     *)

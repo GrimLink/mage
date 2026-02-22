@@ -23,6 +23,7 @@ function mage_help() {
   mage_help_cmd "create [NAME]"               "Alias for 'mage install' and 'mage setup'"
   mage_help_cmd "install [NAME]"              "Installs a new Magento 2 Project"
   mage_help_cmd "setup [NAME]"                "Configures and sets up the new Magento 2 Project"
+  mage_help_cmd "destroy [NAME]"              "Fully remove a project (folder, DB, Valet links & certs)"
 
   mage_help_sub_header "Development"
   mage_help_cmd "start"                       "Open store and admin with code editor and git client"
