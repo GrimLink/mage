@@ -218,7 +218,7 @@ case "${@}" in
   ;;
 
 "add "*)
-  $COMPOSER_CLI require "${@:2}"
+  mage_add_package "${@:2}"
   ;;
 
 "set mage-os")
