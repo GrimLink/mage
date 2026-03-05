@@ -212,11 +212,6 @@ case "${@}" in
   mage_add_hyva_commerce
   ;;
 
-"add baldr")
-  $COMPOSER_CLI config repositories.siteation/magento2-theme-baldr git git@github.com:Siteation/magento2-theme-baldr.git
-  $COMPOSER_CLI require siteation/magento2-theme-baldr
-  ;;
-
 "add "*)
   mage_add_package "${@:2}"
   ;;
