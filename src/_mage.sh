@@ -172,24 +172,21 @@ case "${@}" in
   ;;
 
 "add hyva")
-  read -p "Is this a production setup (use license)? [Y/n]" HYVA_PRODUCTION && echo ""
-  read -p "Add Checkout? [Y/n]" HYVA_ADD_CHECKOUT && echo ""
-  read -p "Add Commerce? [Y/n]" HYVA_ADD_COMMERCE && echo ""
+  mage_add_hyva
 
-  if [[ -z "$HYVA_PRODUCTION" ]]; then HYVA_PRODUCTION="Yes"; fi
-  if [[ -z "$HYVA_ADD_CHECKOUT" ]]; then HYVA_ADD_CHECKOUT="Yes"; fi
-  if [[ -z "$HYVA_ADD_COMMERCE" ]]; then HYVA_ADD_COMMERCE="Yes"; fi
+  read -p "Add Checkout? [N/y]" HYVA_ADD_CHECKOUT && echo ""
+  read -p "Add Commerce? [N/y]" HYVA_ADD_COMMERCE && echo ""
+  if [[ -z "$HYVA_ADD_CHECKOUT" ]]; then HYVA_ADD_CHECKOUT="No"; fi
+  if [[ -z "$HYVA_ADD_COMMERCE" ]]; then HYVA_ADD_COMMERCE="No"; fi
 
-  mage_add_hyva $HYVA_PRODUCTION
-
-  if [[ ! $HYVA_ADD_CHECKOUT =~ ^[nN]|[nN][oO]$ ]]; then
+  if [[ $HYVA_ADD_CHECKOUT =~ ^[yY]|[yY][eE][sS]$ ]]; then
     echo ""
     mage_add_hyva_checkout
   fi
 
-  if [[ ! $HYVA_ADD_COMMERCE =~ ^[nN]|[nN][oO]$ ]]; then
+  if [[ $HYVA_ADD_COMMERCE =~ ^[yY]|[yY][eE][sS]$ ]]; then
     echo ""
-    mage_add_hyva_commerce $HYVA_PRODUCTION
+    mage_add_hyva_commerce
   fi
 
   $MAGENTO_CLI s:up

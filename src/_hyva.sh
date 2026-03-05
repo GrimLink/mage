@@ -1,7 +1,7 @@
 function mage_add_hyva() {
-  local use_hyva_production=$1
-
-  if [[ $use_hyva_production =~ ^[yY]|[yY][eE][sS]$ ]]; then
+  read -p "Is this a production setup (use license)? [Y/n] "
+  echo ""
+  if [[ ! $REPLY =~ ^[nN]|[nN][oO]$ ]]; then
     if [ ! -f "auth.json" ] && [ ! -f "$HOME/.composer/auth.json" ]; then
       read -e -p "No license found, add license? [Y/n] "
       echo ""
@@ -10,11 +10,15 @@ function mage_add_hyva() {
         $COMPOSER_CLI config --auth http-basic.hyva-themes.repo.packagist.com token $hyva_key
       fi
     fi
+
     read -e -p "Packagist domain (e.g. acme): " hyva_url && echo ""
     if [[ -z $hyva_url ]]; then hyva_url="hyva-themes"; fi
-    $COMPOSER_CLI config repositories.private-packagist composer https://hyva-themes.repo.packagist.com/$hyva_url/
+
+    if [ ! -f "composer.json" ] || ! grep -q "https://hyva-themes.repo.packagist.com/$hyva_url/" composer.json; then
+      $COMPOSER_CLI config repositories.private-packagist composer https://hyva-themes.repo.packagist.com/$hyva_url/
+    fi
   else
-    mage_setup_dev
+    mage_setup_hyva_dev
   fi
 
   echo "Installing Hyva theme..."
@@ -23,9 +27,7 @@ function mage_add_hyva() {
   $MAGENTO_CLI config:set customer/captcha/enable 0 &> /dev/null
 }
 
-function mage_setup_dev() {
-  echo "Adding repositories..."
-
+function mage_setup_hyva_dev() {
   local repo="repositories.hyva-themes"
   local git_url="git@gitlab.hyva.io"
   local hyva_themes=(
@@ -42,42 +44,57 @@ function mage_setup_dev() {
     magento2-theme-module
   )
 
-  # Core Theme Deps
   for pkg in "${hyva_themes[@]}"; do
-    $COMPOSER_CLI config --append ${repo}/${pkg} git ${git_url}:hyva-themes/${pkg}.git
+    if [ ! -f "composer.json" ] || ! grep -q "hyva-themes/${pkg}\.git" composer.json; then
+      $COMPOSER_CLI config --append ${repo}/${pkg} git ${git_url}:hyva-themes/${pkg}.git
+    fi
   done
 
-  $COMPOSER_CLI config --append ${repo}/magento2-mollie-theme-bundle git ${git_url}:hyva-themes/hyva-compat/magento2-mollie-theme-bundle.git
-
-  # Checkout Deps
-  $COMPOSER_CLI config --append ${repo}/hyva-checkout git ${git_url}:hyva-checkout/checkout.git
-
-  # Commerce Deps
-  $COMPOSER_CLI config --append ${repo}/commerce git ${git_url}:hyva-commerce/metapackage-commerce.git
-  $COMPOSER_CLI config --append ${repo}/commerce-module-commerce git ${git_url}:hyva-commerce/module-commerce.git
-  $COMPOSER_CLI config --append ${repo}/commerce-module-cms git ${git_url}:hyva-commerce/module-cms.git
-  $COMPOSER_CLI config --append ${repo}/commerce-module-image-editor git ${git_url}:hyva-commerce/module-image-editor.git
-  $COMPOSER_CLI config --append ${repo}/commerce-module-admin-theme git ${git_url}:hyva-commerce/module-admin-theme.git
-  $COMPOSER_CLI config --append ${repo}/commerce-theme-adminhtml git ${git_url}:hyva-commerce/theme-adminhtml.git
-  $COMPOSER_CLI config --append ${repo}/commerce-module-admin-dashboard git ${git_url}:hyva-commerce/module-admin-dashboard.git
-
-  # Dev Deps
-  $COMPOSER_CLI config --append ${repo}/commerce-module-admin-dashboard-google-crux-history-widget git ${git_url}:hyva-commerce/module-admin-dashboard-google-crux-history-widget.git
-  $COMPOSER_CLI config --append ${repo}/commerce-module-media-optimization git ${git_url}:hyva-commerce/module-media-optimization.git
+  if [ ! -f "composer.json" ] || ! grep -q "hyva-themes/hyva-compat/magento2-mollie-theme-bundle\.git" composer.json; then
+    $COMPOSER_CLI config --append ${repo}/magento2-mollie-theme-bundle git ${git_url}:hyva-themes/hyva-compat/magento2-mollie-theme-bundle.git
+  fi
 }
 
 function mage_add_hyva_checkout() {
   echo "Installing Hyva Checkout..."
+
+  if [ -f "composer.json" ] && grep -q -E "hyva-themes/magento2-default-theme(-csp)?\.git" composer.json; then
+    local repo="repositories.hyva-themes"
+    local git_url="git@gitlab.hyva.io"
+    if ! grep -q "hyva-checkout/checkout\.git" composer.json; then
+      $COMPOSER_CLI config --append ${repo}/hyva-checkout git ${git_url}:hyva-checkout/checkout.git
+    fi
+  fi
+
   $COMPOSER_CLI require hyva-themes/magento2-hyva-checkout
 }
 
 function mage_add_hyva_commerce() {
-  local use_hyva_production=$1
-
   echo "Installing Hyva Commerce..."
-  if [[ $use_hyva_production =~ ^[yY]|[yY][eE][sS]$ ]]; then
+
+  if [ ! -f "composer.json" ] || ! grep -q -E "hyva-themes/magento2-default-theme(-csp)?\.git" composer.json; then
     $COMPOSER_CLI require hyva-themes/commerce
   else
+    local repo="repositories.hyva-themes"
+    local git_url="git@gitlab.hyva.io"
+    local hyva_commerce_packages=(
+      metapackage-commerce
+      module-commerce
+      module-cms
+      module-image-editor
+      module-admin-theme
+      theme-adminhtml
+      module-admin-dashboard
+      module-admin-dashboard-google-crux-history-widget
+      module-media-optimization
+    )
+
+    for pkg in "${hyva_commerce_packages[@]}"; do
+      if [ ! -f "composer.json" ] || ! grep -q "hyva-commerce/${pkg}\.git" composer.json; then
+        $COMPOSER_CLI config --append ${repo}/${pkg} git ${git_url}:hyva-commerce/${pkg}.git
+      fi
+    done
+
     $COMPOSER_CLI require hyva-themes/commerce-module-cms
     $COMPOSER_CLI require hyva-themes/commerce-module-image-editor
     $COMPOSER_CLI require hyva-themes/commerce-theme-adminhtml
@@ -93,7 +110,7 @@ function mage_build_hyva() {
   fi
 
   if [ -d $path ]; then
-      if [ ! -d ${path}/web/tailwind/node_modules ]; then
+    if [ ! -d ${path}/web/tailwind/node_modules ]; then
       $NPM_CLI --prefix ${path}/web/tailwind i;
     fi
     $NPM_CLI --prefix ${path}/web/tailwind run build;
