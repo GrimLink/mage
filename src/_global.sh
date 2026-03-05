@@ -62,9 +62,7 @@ fi
 
 # Valet Env
 if command -v valet &>/dev/null; then
-  if [[ $(valet -V | cut -f1,2 -d ' ') == "Laravel Valet" ]]; then
-    VALET=1
-  fi
+  VALET=1
 fi
 
 # Warden Env
