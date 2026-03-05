@@ -32,6 +32,7 @@ function mage_help() {
   mage_help_cmd "browser-sync [STOREVIEW]"    "Run browser-sync on a store view, default if empty"
   mage_help_cmd "reindex"                     "Reindex all indexes and clear cache"
   mage_help_cmd "purge"                       "Purge all static assets"
+  mage_help_cmd "nuke"                        "Permanently delete the Magento project (DB, Env, Files)"
   mage_help_cmd "log [FILE:debug]"            "watch the log (default: debug)"
   mage_help_cmd "log clear"                   "clear all logs"
   mage_help_cmd "log show"                    "show all logs"

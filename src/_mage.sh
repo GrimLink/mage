@@ -110,6 +110,10 @@ case "${@}" in
   mage_purge
   ;;
 
+"nuke" | "destroy")
+  mage_nuke
+  ;;
+
 "new admin")
   read -e -p "Email (${GITEMAIL}) or: " useremail
   read -e -p "Firstname (${GITNAME}) or: " userfirst
