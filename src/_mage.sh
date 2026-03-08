@@ -134,6 +134,10 @@ case "${@}" in
   $MAGERUN_CLI customer:create
   ;;
 
+"new store"*)
+  mage_create_store_view $3
+  ;;
+
 "new theme")
   mage_new_theme
   ;;

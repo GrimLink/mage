@@ -41,6 +41,7 @@ function mage_help() {
   mage_help_sub_header "Generators"
   mage_help_cmd "new admin"                   "Create new admin user"
   mage_help_cmd "new customer"                "Create new customer"
+  mage_help_cmd "new store [NAME]"            "Create new store view"
   mage_help_cmd "new theme"                   "Create new theme"
   mage_help_cmd "new module"                  "Create new module"
   mage_help_cmd "new patch"                   "Create new patch"
