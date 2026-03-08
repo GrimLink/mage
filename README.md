@@ -43,7 +43,6 @@ For a complete list, run `mage help`, or view the [src/_info.sh](https://github.
 * `mage run` requires the [n98-magerun2] module
 * Commands with "hyva" require a [Hyvä license] or GitLab access
 * `set theme` and `set hyva` requires the [Yireo_ThemeCommands] module
-* `set baldr` requires the [Siteation] Baldr Theme
 
 ### Supported Platforms
 
