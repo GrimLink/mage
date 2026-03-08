@@ -18,16 +18,6 @@ function mage_nuke() {
     return 0
   fi
 
-  if [ ! -f "app/etc/env.php" ] && [ ! -d "app/etc" ]; then
-    echo "This doesn't look like a standard magento root (app/etc/env.php not found)."
-    read -p "Continue anyway? [y/N] "
-    echo ""
-    if [[ ! $REPLY =~ ^[yY]|[yY][eE][sS]$ ]]; then
-      echo "Aborting."
-      return 0
-    fi
-  fi
-
   if [[ $VALET == 1 ]]; then
     echo "Detected Valet environment."
     echo "Dropping database: $DIR_NAME"
