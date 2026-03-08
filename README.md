@@ -35,6 +35,7 @@ For a complete list, run `mage help`, or view the [src/_info.sh](https://github.
 * **`mage purge`:** This command clears all static generated files and caches, useful for troubleshooting or forcing a hard reload.
 * **`mage set mage-os`:** Easily replace Magento2 distro with the Mage-OS distro
 * **`mage new patch`:** Create a patch with ease
+* **`mage new store [url|prefix]`:** Programmatically create a new store view and configure its base URLs and routing (e.g., `mage new store luma` or `mage new store b2b.example.test`)
 * **`mage outdated`:** Show all direct outdated composer dependencies
 * **`mage run [action]`:** Runs [n98-magerun2] commands
 
