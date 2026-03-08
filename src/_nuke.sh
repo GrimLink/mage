@@ -21,7 +21,7 @@ function mage_nuke() {
   if [[ $VALET == 1 ]]; then
     echo "Detected Valet environment."
     echo "Dropping database: $DIR_NAME"
-    mysql -u root -e "DROP DATABASE IF EXISTS \`$DIR_NAME\`;"
+    mysql -uroot -proot -e "DROP DATABASE IF EXISTS \`$DIR_NAME\`;"
 
     echo "Unsecuring valet site..."
     valet unsecure
