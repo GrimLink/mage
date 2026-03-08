@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **`mage new store [url|prefix]` command:** Programmatically creates a new store view and configures its base URLs, Valet routing, and Warden routing.
+- **`mage nuke` (alias `mage destroy`) command:** Permanently deletes the Magento project (DB, Env, Files).
+- **`mage add [PKG|GIT_URL]` command:** Added support for providing raw Git repository URLs, which will be cloned to `package-source/` and required locally.
+- Helper function `get_composer_pkg_name_from_file` to reliably extract package names from local `composer.json` files.
+
+### Changed
+- Improved `mage add hyva` logic by splitting checkout/commerce functions and adding robust checks for production/development modes.
+- Improved `mage add hyva` logic to ensure duplicate repositories are not added to `composer.json`.
+- Cleaned up redundant logic in Valet initialization checks.
+
+### Removed
+- `mage add baldr` command alias (now superseded by the improved `add` options).
+
 ## [2.5.2] - 2026-02-02
 
 ### Fixed
