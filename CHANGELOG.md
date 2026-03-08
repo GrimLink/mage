@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.6.0] - 2026-03-08
+
 ### Added
 - **`mage new store [url|prefix]` command:** Programmatically creates a new store view and configures its base URLs, Valet routing, and Warden routing.
 - **`mage nuke` (alias `mage destroy`) command:** Permanently deletes the Magento project (DB, Env, Files).
@@ -359,7 +361,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Initial Release 🎉
 
-[unreleased]: https://github.com/GrimLink/mage/compare/2.3.2...HEAD
+[unreleased]: https://github.com/GrimLink/mage/compare/2.6.0...HEAD
+[2.6.0]: https://github.com/GrimLink/mage/compare/2.5.2...2.6.0
+[2.5.2]: https://github.com/GrimLink/mage/compare/2.5.1...2.5.2
+[2.5.1]: https://github.com/GrimLink/mage/compare/2.5.0...2.5.1
+[2.5.0]: https://github.com/GrimLink/mage/compare/2.4.1...2.5.0
+[2.4.1]: https://github.com/GrimLink/mage/compare/2.4.0...2.4.1
+[2.4.0]: https://github.com/GrimLink/mage/compare/2.3.4...2.4.0
+[2.3.4]: https://github.com/GrimLink/mage/compare/2.3.3...2.3.4
+[2.3.3]: https://github.com/GrimLink/mage/compare/2.3.2...2.3.3
 [2.3.2]: https://github.com/GrimLink/mage/compare/2.3.1...2.3.2
 [2.3.1]: https://github.com/GrimLink/mage/compare/2.3.0...2.3.1
 [2.3.0]: https://github.com/GrimLink/mage/compare/2.2.0...2.3.0
