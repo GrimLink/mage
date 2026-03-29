@@ -128,3 +128,10 @@ function mage_cleanup_sample_files() {
 function get_all_composer_pkgs() {
   echo $($COMPOSER_CLI show --name-only --direct | grep -E "$@")
 }
+
+function get_composer_pkg_name_from_file() {
+  local file_path="$1"
+  if [[ -f "$file_path" ]]; then
+    grep -E '"name"[[:space:]]*:' "$file_path" | head -n 1 | sed -E 's/.*"name"[[:space:]]*:[[:space:]]*"([^"]+)".*/\1/'
+  fi
+}

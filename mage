@@ -3,7 +3,7 @@
 # Mage is a collection of easy commands and aliases for bin/magento
 # For those who hate typing long shell commands
 
-MAGE_VERSION="2.5.1"
+MAGE_VERSION="2.6.0"
 
 # Check if this is the Magento 2 root
 if [[ ! -d app/etc ]]; then
@@ -67,9 +67,7 @@ fi
 
 # Valet Env
 if command -v valet &>/dev/null; then
-  if [[ $(valet -V | cut -f1,2 -d ' ') == "Laravel Valet" ]]; then
-    VALET=1
-  fi
+  VALET=1
 fi
 
 # Warden Env
@@ -220,10 +218,17 @@ function get_all_composer_pkgs() {
   echo $($COMPOSER_CLI show --name-only --direct | grep -E "$@")
 }
 
-function mage_add_hyva() {
-  local use_hyva_production=$1
+function get_composer_pkg_name_from_file() {
+  local file_path="$1"
+  if [[ -f "$file_path" ]]; then
+    grep -E '"name"[[:space:]]*:' "$file_path" | head -n 1 | sed -E 's/.*"name"[[:space:]]*:[[:space:]]*"([^"]+)".*/\1/'
+  fi
+}
 
-  if [[ $use_hyva_production =~ ^[yY]|[yY][eE][sS]$ ]]; then
+function mage_add_hyva() {
+  read -p "Is this a production setup (use license)? [Y/n] "
+  echo ""
+  if [[ ! $REPLY =~ ^[nN]|[nN][oO]$ ]]; then
     if [ ! -f "auth.json" ] && [ ! -f "$HOME/.composer/auth.json" ]; then
       read -e -p "No license found, add license? [Y/n] "
       echo ""
@@ -232,11 +237,15 @@ function mage_add_hyva() {
         $COMPOSER_CLI config --auth http-basic.hyva-themes.repo.packagist.com token $hyva_key
       fi
     fi
+
     read -e -p "Packagist domain (e.g. acme): " hyva_url && echo ""
     if [[ -z $hyva_url ]]; then hyva_url="hyva-themes"; fi
-    $COMPOSER_CLI config repositories.private-packagist composer https://hyva-themes.repo.packagist.com/$hyva_url/
+
+    if [ ! -f "composer.json" ] || ! grep -q "https://hyva-themes.repo.packagist.com/$hyva_url/" composer.json; then
+      $COMPOSER_CLI config repositories.private-packagist composer https://hyva-themes.repo.packagist.com/$hyva_url/
+    fi
   else
-    mage_setup_dev
+    mage_setup_hyva_dev
   fi
 
   echo "Installing Hyva theme..."
@@ -245,9 +254,7 @@ function mage_add_hyva() {
   $MAGENTO_CLI config:set customer/captcha/enable 0 &> /dev/null
 }
 
-function mage_setup_dev() {
-  echo "Adding repositories..."
-
+function mage_setup_hyva_dev() {
   local repo="repositories.hyva-themes"
   local git_url="git@gitlab.hyva.io"
   local hyva_themes=(
@@ -264,42 +271,57 @@ function mage_setup_dev() {
     magento2-theme-module
   )
 
-  # Core Theme Deps
   for pkg in "${hyva_themes[@]}"; do
-    $COMPOSER_CLI config --append ${repo}/${pkg} git ${git_url}:hyva-themes/${pkg}.git
+    if [ ! -f "composer.json" ] || ! grep -q "hyva-themes/${pkg}\.git" composer.json; then
+      $COMPOSER_CLI config --append ${repo}/${pkg} git ${git_url}:hyva-themes/${pkg}.git
+    fi
   done
 
-  $COMPOSER_CLI config --append ${repo}/magento2-mollie-theme-bundle git ${git_url}:hyva-themes/hyva-compat/magento2-mollie-theme-bundle.git
-
-  # Checkout Deps
-  $COMPOSER_CLI config --append ${repo}/hyva-checkout git ${git_url}:hyva-checkout/checkout.git
-
-  # Commerce Deps
-  $COMPOSER_CLI config --append ${repo}/commerce git ${git_url}:hyva-commerce/metapackage-commerce.git
-  $COMPOSER_CLI config --append ${repo}/commerce-module-commerce git ${git_url}:hyva-commerce/module-commerce.git
-  $COMPOSER_CLI config --append ${repo}/commerce-module-cms git ${git_url}:hyva-commerce/module-cms.git
-  $COMPOSER_CLI config --append ${repo}/commerce-module-image-editor git ${git_url}:hyva-commerce/module-image-editor.git
-  $COMPOSER_CLI config --append ${repo}/commerce-module-admin-theme git ${git_url}:hyva-commerce/module-admin-theme.git
-  $COMPOSER_CLI config --append ${repo}/commerce-theme-adminhtml git ${git_url}:hyva-commerce/theme-adminhtml.git
-  $COMPOSER_CLI config --append ${repo}/commerce-module-admin-dashboard git ${git_url}:hyva-commerce/module-admin-dashboard.git
-
-  # Dev Deps
-  $COMPOSER_CLI config --append ${repo}/commerce-module-admin-dashboard-google-crux-history-widget git ${git_url}:hyva-commerce/module-admin-dashboard-google-crux-history-widget.git
-  $COMPOSER_CLI config --append ${repo}/commerce-module-media-optimization git ${git_url}:hyva-commerce/module-media-optimization.git
+  if [ ! -f "composer.json" ] || ! grep -q "hyva-themes/hyva-compat/magento2-mollie-theme-bundle\.git" composer.json; then
+    $COMPOSER_CLI config --append ${repo}/magento2-mollie-theme-bundle git ${git_url}:hyva-themes/hyva-compat/magento2-mollie-theme-bundle.git
+  fi
 }
 
 function mage_add_hyva_checkout() {
   echo "Installing Hyva Checkout..."
+
+  if [ -f "composer.json" ] && grep -q -E "hyva-themes/magento2-default-theme(-csp)?\.git" composer.json; then
+    local repo="repositories.hyva-themes"
+    local git_url="git@gitlab.hyva.io"
+    if ! grep -q "hyva-checkout/checkout\.git" composer.json; then
+      $COMPOSER_CLI config --append ${repo}/hyva-checkout git ${git_url}:hyva-checkout/checkout.git
+    fi
+  fi
+
   $COMPOSER_CLI require hyva-themes/magento2-hyva-checkout
 }
 
 function mage_add_hyva_commerce() {
-  local use_hyva_production=$1
-
   echo "Installing Hyva Commerce..."
-  if [[ $use_hyva_production =~ ^[yY]|[yY][eE][sS]$ ]]; then
+
+  if [ ! -f "composer.json" ] || ! grep -q -E "hyva-themes/magento2-default-theme(-csp)?\.git" composer.json; then
     $COMPOSER_CLI require hyva-themes/commerce
   else
+    local repo="repositories.hyva-themes"
+    local git_url="git@gitlab.hyva.io"
+    local hyva_commerce_packages=(
+      metapackage-commerce
+      module-commerce
+      module-cms
+      module-image-editor
+      module-admin-theme
+      theme-adminhtml
+      module-admin-dashboard
+      module-admin-dashboard-google-crux-history-widget
+      module-media-optimization
+    )
+
+    for pkg in "${hyva_commerce_packages[@]}"; do
+      if [ ! -f "composer.json" ] || ! grep -q "hyva-commerce/${pkg}\.git" composer.json; then
+        $COMPOSER_CLI config --append ${repo}/${pkg} git ${git_url}:hyva-commerce/${pkg}.git
+      fi
+    done
+
     $COMPOSER_CLI require hyva-themes/commerce-module-cms
     $COMPOSER_CLI require hyva-themes/commerce-module-image-editor
     $COMPOSER_CLI require hyva-themes/commerce-theme-adminhtml
@@ -315,7 +337,7 @@ function mage_build_hyva() {
   fi
 
   if [ -d $path ]; then
-      if [ ! -d ${path}/web/tailwind/node_modules ]; then
+    if [ ! -d ${path}/web/tailwind/node_modules ]; then
       $NPM_CLI --prefix ${path}/web/tailwind i;
     fi
     $NPM_CLI --prefix ${path}/web/tailwind run build;
@@ -356,6 +378,7 @@ function mage_help() {
   mage_help_cmd "browser-sync [STOREVIEW]"    "Run browser-sync on a store view, default if empty"
   mage_help_cmd "reindex"                     "Reindex all indexes and clear cache"
   mage_help_cmd "purge"                       "Purge all static assets"
+  mage_help_cmd "nuke"                        "Permanently delete the Magento project (DB, Env, Files)"
   mage_help_cmd "log [FILE:debug]"            "watch the log (default: debug)"
   mage_help_cmd "log clear"                   "clear all logs"
   mage_help_cmd "log show"                    "show all logs"
@@ -364,6 +387,7 @@ function mage_help() {
   mage_help_sub_header "Generators"
   mage_help_cmd "new admin"                   "Create new admin user"
   mage_help_cmd "new customer"                "Create new customer"
+  mage_help_cmd "new store [URL|PREFIX]"      "Create new store view"
   mage_help_cmd "new theme"                   "Create new theme"
   mage_help_cmd "new module"                  "Create new module"
   mage_help_cmd "new patch"                   "Create new patch"
@@ -373,9 +397,9 @@ function mage_help() {
   mage_help_cmd "add patch"                   "Add patch"
   mage_help_cmd "add sample"                  "Add sample data"
   mage_help_cmd "add hyva"                    "Add Hyva Theme"
-  mage_help_cmd "add checkout"                "Add Hyva Checkout"
-  mage_help_cmd "add baldr"                   "Add Siteation Baldr"
-  mage_help_cmd "add [PKG]"                   "Add composer package"
+  mage_help_cmd "add hyva checkout"           "Add Hyva Checkout"
+  mage_help_cmd "add hyva commerce"           "Add Hyva Commerce"
+  mage_help_cmd "add [PKG|GIT_URL]"           "Add composer package or git repository"
   mage_help_cmd "upd/update [PKG]"            "Update composer package(s)"
   mage_help_cmd "del/remove [PKG]"            "Remove composer package(s)"
   mage_help_cmd "enable [PKG]"                "Enable module(s)"
@@ -642,6 +666,58 @@ function mage_new_module() {
   mage_make_file $dest_path/etc/module.xml "${file_xml}"
 }
 
+function mage_nuke() {
+  local MAGE_ROOT
+  MAGE_ROOT=$(pwd)
+  local DIR_NAME
+  DIR_NAME=$(basename "$MAGE_ROOT")
+
+  if [[ "$MAGE_ROOT" == "/" ]] || [[ "$DIR_NAME" == "/" ]] || [[ -z "$DIR_NAME" ]]; then
+    echo "Error: Cannot nuke the system directory."
+    return 1
+  fi
+
+  echo "WARNING: You are about to permanently delete the Magento environment in $MAGE_ROOT"
+  read -p "Are you sure you want to proceed? [y/N] "
+  echo ""
+
+  if [[ ! $REPLY =~ ^[yY]|[yY][eE][sS]$ ]]; then
+    echo "Aborting nuke operation."
+    return 0
+  fi
+
+  if [[ $VALET == 1 ]]; then
+    echo "Detected Valet environment."
+    echo "Dropping database: $DIR_NAME"
+    mysql -uroot -proot -e "DROP DATABASE IF EXISTS \`$DIR_NAME\`;"
+
+    echo "Unsecuring valet site..."
+    valet unsecure
+
+    if [ -f ".valet-env.php" ]; then
+      local stores
+      stores=$(php -r "if(file_exists('.valet-env.php')){ \$arr = include '.valet-env.php'; if(is_array(\$arr)){ foreach(array_keys(\$arr) as \$k) echo \$k . PHP_EOL; } }")
+      for store in $stores; do
+        if [[ "$store" != "$DIR_NAME" ]]; then
+          echo "Unlinking and unsecuring extra store: $store"
+          valet unsecure "$store"
+          valet unlink "$store"
+        fi
+      done
+    fi
+  elif [[ $WARDEN == 1 ]]; then
+    echo "Detected Warden environment."
+    echo "Bringing down and destroying Warden environment..."
+    warden env down -v
+  fi
+
+  echo "Removing directory: $MAGE_ROOT"
+  cd ..
+  rm -rf "$DIR_NAME"
+
+  echo "Nuke complete."
+}
+
 function mage_open() {
   local store=$1
   local store_url=$(get_mage_store_uri ${store:-1})
@@ -693,6 +769,54 @@ function mage_open_gitclient() {
     elif command -v gittower &>/dev/null; then
       echo "Opening Gittower.."; gittower;
     fi
+  fi
+}
+
+function mage_add_package() {
+  local REQUIRE_ARGS=("${@}")
+
+  if [[ "$1" == *".git" ]]; then
+    local GIT_URL="$1"
+    local TMP_DIR="package-source/tmp_clone_$$"
+
+    echo "Cloning $GIT_URL..."
+    git clone "$GIT_URL" "$TMP_DIR"
+
+    local PACKAGE_NAME=""
+    if [[ -f "$TMP_DIR/composer.json" ]]; then
+      PACKAGE_NAME=$(get_composer_pkg_name_from_file "$TMP_DIR/composer.json")
+    fi
+
+    if [[ -z "$PACKAGE_NAME" ]]; then
+      if [[ ! -f "$TMP_DIR/composer.json" ]]; then
+        echo "Error: No composer.json found in the repository."
+      else
+        echo "Error: Could not parse package name from composer.json."
+      fi
+      REQUIRE_ARGS=()
+    else
+      local TARGET_DIR="package-source/$PACKAGE_NAME"
+
+      if [[ -d "$TARGET_DIR" ]]; then
+        echo "Warning: Directory $TARGET_DIR already exists."
+        REQUIRE_ARGS=()
+      else
+        mkdir -p "$(dirname "$TARGET_DIR")"
+        mv "$TMP_DIR" "$TARGET_DIR"
+
+        echo "Requiring package $PACKAGE_NAME..."
+        REQUIRE_ARGS=("$PACKAGE_NAME:@dev" "${@:2}")
+      fi
+    fi
+
+    if [[ -d "$TMP_DIR" ]]; then
+      echo "Removing temporary clone."
+      rm -rf "$TMP_DIR"
+    fi
+  fi
+
+  if [[ ${#REQUIRE_ARGS[@]} -gt 0 ]]; then
+    $COMPOSER_CLI require "${REQUIRE_ARGS[@]}"
   fi
 }
 
@@ -871,9 +995,6 @@ function mage_add_sample() {
   touch README.md
   php -f $HOME/.magento-sampledata/$mversion/dev/tools/build-sample-data.php -- --ce-source="$PWD"
 
-  # Unset default styles from sample data
-  $MAGENTO_CLI config:set design/head/includes "" &> /dev/null
-
   $MAGENTO_CLI setup:upgrade
 
   # Set theme to Hyva if present
@@ -882,6 +1003,9 @@ function mage_add_sample() {
       $MAGENTO_CLI theme:change Hyva/default
     fi
   fi
+
+  # Unset default styles from sample data
+  $MAGENTO_CLI config:set design/head/includes "" &> /dev/null
 
   $MAGENTO_CLI indexer:reindex
   $MAGENTO_CLI cache:flush
@@ -1026,6 +1150,144 @@ function mage_getting_started() {
   echo -e "Open your Magento project, using ${BLUE}mage open${RESET} or ${BLUE}mage open admin${RESET}"
 }
 
+function mage_valet_create_store_view() {
+  local new_url=$1
+  local store_code=$2
+  local name=$3
+
+  if [[ $VALET == 1 ]]; then
+    echo "Configuring Valet for ${new_url}..."
+    if [ ! -f .valet-env.php ]; then
+      {
+        echo -e '<?php declare(strict_types=1);\n\nreturn ['
+        mage_add_valet_store "$name" "default"
+        mage_add_valet_store "$new_url" "$store_code"
+        echo '];'
+      } > .valet-env.php
+    else
+      if grep -q "'${new_url}' *=>" .valet-env.php; then
+        echo "Valet mapping for ${new_url} already exists in .valet-env.php. Skipping..."
+      else
+        awk '/\];/ {next} {print}' .valet-env.php > .valet-env.tmp
+        mage_add_valet_store "$new_url" "$store_code" >> .valet-env.tmp
+        echo '];' >> .valet-env.tmp
+        mv .valet-env.tmp .valet-env.php
+      fi
+    fi
+
+    valet link "$new_url"
+    valet secure "$new_url"
+  fi
+}
+
+function mage_warden_create_store_view() {
+  local domain=$1
+
+  if [[ $WARDEN == 1 ]]; then
+    echo "Configuring Warden for ${domain}..."
+    warden sign-certificate "${domain}"
+
+    echo -e "\n${YELLOW}Warden setup requires manual Traefik configuration!${RESET}"
+    echo -e "Please update your ${BOLD}.warden/warden-env.yml${RESET} to route ${domain}"
+    echo -e "See documentation: ${BLUE}https://docs.warden.dev/environments/mutigen.html#routing-additional-domains${RESET}\n"
+  fi
+}
+
+function mage_magento_create_store_view() {
+  local store_code=$1
+  echo "Adding Magento 2 Store View: ${store_code}"
+  $PHP_CLI -r "
+    use Magento\Framework\App\Bootstrap;
+    require 'app/bootstrap.php';
+    \$bootstrap = Bootstrap::create(BP, \$_SERVER);
+    \$obj = \$bootstrap->getObjectManager();
+
+    \$storeManager = \$obj->get(\Magento\Store\Model\StoreManagerInterface::class);
+    \$store = \$obj->create(\Magento\Store\Model\Store::class);
+    \$store->load('${store_code}', 'code');
+    if (!\$store->getId()) {
+        \$group = \$storeManager->getWebsite()->getDefaultGroup();
+        \$store->setCode('${store_code}')
+            ->setWebsiteId(\$group->getWebsiteId())
+            ->setGroupId(\$group->getId())
+            ->setName('${store_code}')
+            ->setIsActive(1)
+            ->save();
+
+        try {
+            \$designConfigFactory = \$obj->get(\Magento\Theme\Api\Data\DesignConfigInterfaceFactory::class);
+            \$designConfigRepository = \$obj->get(\Magento\Theme\Api\DesignConfigRepositoryInterface::class);
+            \$designConfig = \$designConfigFactory->create();
+            \$designConfig->setScope('stores');
+            \$designConfig->setScopeId(\$store->getId());
+            \$designConfigRepository->save(\$designConfig);
+        } catch (\Exception \$e) {
+            // Ignore error
+        }
+
+        echo 'Store view created successfully.';
+    } else {
+        echo 'Store view already exists.';
+    }
+  " 2>/dev/null
+  echo ""
+}
+
+function mage_magento_set_store_view_url() {
+  local store_code=$1
+  local full_url=$2
+  echo "Setting base URL for ${store_code}..."
+  $MAGENTO_CLI config:set --scope=stores --scope-code="${store_code}" web/unsecure/base_url "${full_url}"
+  $MAGENTO_CLI config:set --scope=stores --scope-code="${store_code}" web/secure/base_url "${full_url}"
+}
+
+function mage_create_store_view() {
+  local url=$1
+  if [[ -z "$url" ]]; then
+    echo "Please provide a store prefix or domain (e.g. luma or luma.example.test)"
+    return 1
+  fi
+
+  local base_uri=$(get_mage_base_uri)
+
+  if [[ -z "$base_uri" ]]; then
+    echo "Could not determine the base URI from Magento configuration."
+    return 1
+  fi
+
+  # Extract domain from base_uri (e.g., https://example.test/ -> example.test)
+  local base_domain=$(echo "$base_uri" | sed -E 's/^\s*.*:\/\///g' | sed -E 's/\/?$//g')
+
+  # Determine protocol (e.g., https://)
+  local protocol=$(echo "$base_uri" | grep -o '^[a-zA-Z]*://')
+  if [[ -z "$protocol" ]]; then
+      protocol="https://"
+  fi
+
+  local name=$(basename "$(pwd)")
+  local domain
+  local store_code
+
+  if [[ "$url" == *.* ]]; then
+    domain="$url"
+    store_code="${url%%.*}"
+  else
+    domain="${url}.${base_domain}"
+    store_code="${url}"
+  fi
+
+  local full_url="${protocol}${domain}/"
+
+  mage_valet_create_store_view "$domain" "$store_code" "$name"
+  mage_warden_create_store_view "$domain"
+  mage_magento_create_store_view "$store_code"
+  mage_magento_set_store_view_url "$store_code" "$full_url"
+
+  $MAGENTO_CLI indexer:reindex design_config_grid
+  $MAGENTO_CLI cache:flush
+  echo -e "\nStore view ${store_code} created and configured to use ${full_url}"
+}
+
 case "${@}" in
 "version")
   mage_version
@@ -1094,6 +1356,10 @@ case "${@}" in
   mage_open
   ;;
 
+"open")
+  mage_open;
+  ;;
+
 "open "*)
   mage_open $2;
   ;;
@@ -1134,6 +1400,10 @@ case "${@}" in
   mage_purge
   ;;
 
+"nuke" | "destroy")
+  mage_nuke
+  ;;
+
 "new admin")
   read -e -p "Email (${GITEMAIL}) or: " useremail
   read -e -p "Firstname (${GITNAME}) or: " userfirst
@@ -1152,6 +1422,10 @@ case "${@}" in
 "new customer")
   check_has_magerun
   $MAGERUN_CLI customer:create
+  ;;
+
+"new store"*)
+  mage_create_store_view $3
   ;;
 
 "new theme")
@@ -1196,24 +1470,21 @@ case "${@}" in
   ;;
 
 "add hyva")
-  read -p "Is this a production setup (use license)? [Y/n]" HYVA_PRODUCTION && echo ""
-  read -p "Add Checkout? [Y/n]" HYVA_ADD_CHECKOUT && echo ""
-  read -p "Add Commerce? [Y/n]" HYVA_ADD_COMMERCE && echo ""
+  mage_add_hyva
 
-  if [[ -z "$HYVA_PRODUCTION" ]]; then HYVA_PRODUCTION="Yes"; fi
-  if [[ -z "$HYVA_ADD_CHECKOUT" ]]; then HYVA_ADD_CHECKOUT="Yes"; fi
-  if [[ -z "$HYVA_ADD_COMMERCE" ]]; then HYVA_ADD_COMMERCE="Yes"; fi
+  read -p "Add Checkout? [N/y]" HYVA_ADD_CHECKOUT && echo ""
+  read -p "Add Commerce? [N/y]" HYVA_ADD_COMMERCE && echo ""
+  if [[ -z "$HYVA_ADD_CHECKOUT" ]]; then HYVA_ADD_CHECKOUT="No"; fi
+  if [[ -z "$HYVA_ADD_COMMERCE" ]]; then HYVA_ADD_COMMERCE="No"; fi
 
-  mage_add_hyva $HYVA_PRODUCTION
-
-  if [[ ! $HYVA_ADD_CHECKOUT =~ ^[nN]|[nN][oO]$ ]]; then
+  if [[ $HYVA_ADD_CHECKOUT =~ ^[yY]|[yY][eE][sS]$ ]]; then
     echo ""
     mage_add_hyva_checkout
   fi
 
-  if [[ ! $HYVA_ADD_COMMERCE =~ ^[nN]|[nN][oO]$ ]]; then
+  if [[ $HYVA_ADD_COMMERCE =~ ^[yY]|[yY][eE][sS]$ ]]; then
     echo ""
-    mage_add_hyva_commerce $HYVA_PRODUCTION
+    mage_add_hyva_commerce
   fi
 
   $MAGENTO_CLI s:up
@@ -1236,13 +1507,8 @@ case "${@}" in
   mage_add_hyva_commerce
   ;;
 
-"add baldr")
-  $COMPOSER_CLI config repositories.siteation/magento2-theme-baldr git git@github.com:Siteation/magento2-theme-baldr.git
-  $COMPOSER_CLI require siteation/magento2-theme-baldr
-  ;;
-
 "add "*)
-  $COMPOSER_CLI require "${@:2}"
+  mage_add_package "${@:2}"
   ;;
 
 "set mage-os")

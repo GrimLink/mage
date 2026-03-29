@@ -66,6 +66,10 @@ case "${@}" in
   mage_open
   ;;
 
+"open")
+  mage_open;
+  ;;
+
 "open "*)
   mage_open $2;
   ;;
@@ -106,6 +110,10 @@ case "${@}" in
   mage_purge
   ;;
 
+"nuke" | "destroy")
+  mage_nuke
+  ;;
+
 "new admin")
   read -e -p "Email (${GITEMAIL}) or: " useremail
   read -e -p "Firstname (${GITNAME}) or: " userfirst
@@ -124,6 +132,10 @@ case "${@}" in
 "new customer")
   check_has_magerun
   $MAGERUN_CLI customer:create
+  ;;
+
+"new store"*)
+  mage_create_store_view $3
   ;;
 
 "new theme")
@@ -168,24 +180,21 @@ case "${@}" in
   ;;
 
 "add hyva")
-  read -p "Is this a production setup (use license)? [Y/n]" HYVA_PRODUCTION && echo ""
-  read -p "Add Checkout? [Y/n]" HYVA_ADD_CHECKOUT && echo ""
-  read -p "Add Commerce? [Y/n]" HYVA_ADD_COMMERCE && echo ""
+  mage_add_hyva
 
-  if [[ -z "$HYVA_PRODUCTION" ]]; then HYVA_PRODUCTION="Yes"; fi
-  if [[ -z "$HYVA_ADD_CHECKOUT" ]]; then HYVA_ADD_CHECKOUT="Yes"; fi
-  if [[ -z "$HYVA_ADD_COMMERCE" ]]; then HYVA_ADD_COMMERCE="Yes"; fi
+  read -p "Add Checkout? [N/y]" HYVA_ADD_CHECKOUT && echo ""
+  read -p "Add Commerce? [N/y]" HYVA_ADD_COMMERCE && echo ""
+  if [[ -z "$HYVA_ADD_CHECKOUT" ]]; then HYVA_ADD_CHECKOUT="No"; fi
+  if [[ -z "$HYVA_ADD_COMMERCE" ]]; then HYVA_ADD_COMMERCE="No"; fi
 
-  mage_add_hyva $HYVA_PRODUCTION
-
-  if [[ ! $HYVA_ADD_CHECKOUT =~ ^[nN]|[nN][oO]$ ]]; then
+  if [[ $HYVA_ADD_CHECKOUT =~ ^[yY]|[yY][eE][sS]$ ]]; then
     echo ""
     mage_add_hyva_checkout
   fi
 
-  if [[ ! $HYVA_ADD_COMMERCE =~ ^[nN]|[nN][oO]$ ]]; then
+  if [[ $HYVA_ADD_COMMERCE =~ ^[yY]|[yY][eE][sS]$ ]]; then
     echo ""
-    mage_add_hyva_commerce $HYVA_PRODUCTION
+    mage_add_hyva_commerce
   fi
 
   $MAGENTO_CLI s:up
@@ -208,13 +217,8 @@ case "${@}" in
   mage_add_hyva_commerce
   ;;
 
-"add baldr")
-  $COMPOSER_CLI config repositories.siteation/magento2-theme-baldr git git@github.com:Siteation/magento2-theme-baldr.git
-  $COMPOSER_CLI require siteation/magento2-theme-baldr
-  ;;
-
 "add "*)
-  $COMPOSER_CLI require "${@:2}"
+  mage_add_package "${@:2}"
   ;;
 
 "set mage-os")

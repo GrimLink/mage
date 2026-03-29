@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.6.0] - 2026-03-08
+
+### Added
+- **`mage new store [url|prefix]` command:** Programmatically creates a new store view and configures its base URLs, Valet routing, and Warden routing.
+- **`mage nuke` (alias `mage destroy`) command:** Permanently deletes the Magento project (DB, Env, Files).
+- **`mage add [PKG|GIT_URL]` command:** Added support for providing raw Git repository URLs, which will be cloned to `package-source/` and required locally.
+- Helper function `get_composer_pkg_name_from_file` to reliably extract package names from local `composer.json` files.
+
+### Changed
+- Improved `mage add hyva` logic by splitting checkout/commerce functions and adding robust checks for production/development modes.
+- Improved `mage add hyva` logic to ensure duplicate repositories are not added to `composer.json`.
+- Cleaned up redundant logic in Valet initialization checks.
+
+### Removed
+- `mage add baldr` command alias (now superseded by the improved `add` options).
+
+## [2.5.2] - 2026-02-02
+
+### Fixed
+
+- `mage open` without arguments.
+
 ## [2.5.1] - 2026-01-10
 
 ### Fixed
@@ -339,7 +361,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Initial Release 🎉
 
-[unreleased]: https://github.com/GrimLink/mage/compare/2.3.2...HEAD
+[unreleased]: https://github.com/GrimLink/mage/compare/2.6.0...HEAD
+[2.6.0]: https://github.com/GrimLink/mage/compare/2.5.2...2.6.0
+[2.5.2]: https://github.com/GrimLink/mage/compare/2.5.1...2.5.2
+[2.5.1]: https://github.com/GrimLink/mage/compare/2.5.0...2.5.1
+[2.5.0]: https://github.com/GrimLink/mage/compare/2.4.1...2.5.0
+[2.4.1]: https://github.com/GrimLink/mage/compare/2.4.0...2.4.1
+[2.4.0]: https://github.com/GrimLink/mage/compare/2.3.4...2.4.0
+[2.3.4]: https://github.com/GrimLink/mage/compare/2.3.3...2.3.4
+[2.3.3]: https://github.com/GrimLink/mage/compare/2.3.2...2.3.3
 [2.3.2]: https://github.com/GrimLink/mage/compare/2.3.1...2.3.2
 [2.3.1]: https://github.com/GrimLink/mage/compare/2.3.0...2.3.1
 [2.3.0]: https://github.com/GrimLink/mage/compare/2.2.0...2.3.0

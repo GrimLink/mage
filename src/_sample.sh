@@ -30,9 +30,6 @@ function mage_add_sample() {
   touch README.md
   php -f $HOME/.magento-sampledata/$mversion/dev/tools/build-sample-data.php -- --ce-source="$PWD"
 
-  # Unset default styles from sample data
-  $MAGENTO_CLI config:set design/head/includes "" &> /dev/null
-
   $MAGENTO_CLI setup:upgrade
 
   # Set theme to Hyva if present
@@ -41,6 +38,9 @@ function mage_add_sample() {
       $MAGENTO_CLI theme:change Hyva/default
     fi
   fi
+
+  # Unset default styles from sample data
+  $MAGENTO_CLI config:set design/head/includes "" &> /dev/null
 
   $MAGENTO_CLI indexer:reindex
   $MAGENTO_CLI cache:flush
