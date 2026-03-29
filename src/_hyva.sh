@@ -42,6 +42,7 @@ function mage_setup_hyva_dev() {
     magento2-reset-theme
     magento2-theme-fallback
     magento2-theme-module
+    magento2-cms-tailwind-jit
   )
 
   for pkg in "${hyva_themes[@]}"; do
