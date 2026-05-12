@@ -43,6 +43,7 @@ function mage_setup_hyva_dev() {
     magento2-theme-fallback
     magento2-theme-module
     magento2-cms-tailwind-jit
+    i18n-nl-nl
   )
 
   for pkg in "${hyva_themes[@]}"; do

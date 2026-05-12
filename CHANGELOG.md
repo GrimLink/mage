@@ -8,7 +8,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- **Re-added custom sample data version support:** The `mage add sample` command now accepts an optional version argument (e.g., `mage add sample 2.4.8-p4`).
+- **`mage add sample [version]`:** Re-added support for an optional version argument (e.g., `mage add sample 2.4.8-p4`).
+- **`mage cleanup [TYPE]`:** Added as a selective alias for the `purge` command.
+    It allows targeted clearing of `redis` and `varnish`,
+    plus additional options for `opensearch` indices and `sample` files (which are not included in the default `purge` command).
+
+### Changed
+- **Default Store Configuration:** New installations now default to Euro (**EUR**) currency (with **GBP** allowed),
+    set the default country to the **Netherlands** (NL), and restrict allowed countries to European nations (including the **UK**).
+- **Enhanced `mage nuke`:** Automatically clears all OpenSearch indices associated with the project before deletion.
+
+### Fixed
+- **OpenSearch Index Isolation:** Fixed the `setup:install` to use a unique index prefix (same as the db name) to prevent collisions between projects.
 
 ## [2.6.0] - 2026-03-08
 

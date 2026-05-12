@@ -106,8 +106,8 @@ case "${@}" in
   $MAGENTO_CLI indexer:reindex && $MAGENTO_CLI cache:flush
   ;;
 
-"purge")
-  mage_purge
+"purge" | "purge "* | "cleanup "*)
+  mage_purge $2
   ;;
 
 "nuke" | "destroy")

@@ -81,7 +81,7 @@ function mage_setup() {
     --search-engine=opensearch \
     --opensearch-host="${search_host}" \
     --opensearch-port=9200 \
-    --opensearch-index-prefix=magento2 \
+    --opensearch-index-prefix="${db_name}" \
     --opensearch-enable-auth=0 \
     --opensearch-timeout=15 \
     --session-save=redis \
@@ -102,6 +102,11 @@ function mage_setup() {
 
   echo "Setting default values for Store config"
   $MAGENTO_CLI config:set general/store_information/name $name &> /dev/null
+  $MAGENTO_CLI config:set currency/options/base EUR &> /dev/null
+  $MAGENTO_CLI config:set currency/options/default EUR &> /dev/null
+  $MAGENTO_CLI config:set currency/options/allow EUR,GBP &> /dev/null
+  $MAGENTO_CLI config:set general/country/default NL &> /dev/null
+  $MAGENTO_CLI config:set general/country/allow AT,BE,BG,HR,CY,CZ,DK,EE,FI,FR,DE,GR,HU,IE,IT,LV,LT,LU,MT,NL,PL,PT,RO,SK,SI,ES,SE,CH,NO,IS,LI,GB &> /dev/null
   $MAGENTO_CLI config:set admin/usage/enabled 0 &> /dev/null
   $MAGENTO_CLI config:set admin/security/session_lifetime 86400 &> /dev/null
   $MAGENTO_CLI config:set admin/security/password_lifetime "" &> /dev/null
@@ -135,4 +140,5 @@ function mage_getting_started() {
   echo -e "$name is ready!"
   echo -e "Enter your Magento project directory using ${BLUE}cd ./${name}${RESET}"
   echo -e "Open your Magento project, using ${BLUE}mage open${RESET} or ${BLUE}mage open admin${RESET}"
+  echo -e "\n${YELLOW}Note: Don't forget to configure your currency rates in the admin panel to enable multi-pricing (e.g. for Pounds)!${RESET}"
 }

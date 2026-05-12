@@ -43,6 +43,9 @@ function mage_nuke() {
     warden env down -v
   fi
 
+  echo "Clearing OpenSearch indices..."
+  mage_clear_opensearch
+
   echo "Removing directory: $MAGE_ROOT"
   cd ..
   rm -rf "$DIR_NAME"

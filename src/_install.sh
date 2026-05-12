@@ -78,7 +78,7 @@ function mage_install() {
   $COMPOSER_CLI config repositories.local-packages path "package-source/*/*"
 
   echo "Setting up default plugins"
-  $COMPOSER_CLI require --no-update mage-os/theme-adminhtml-m137 cweagans/composer-patches yireo/magento2-theme-commands community-engineering/language-nl_nl
+  $COMPOSER_CLI require --no-update mage-os/theme-adminhtml-m137 cweagans/composer-patches yireo/magento2-theme-commands swissup/module-ignition community-engineering/language-nl_nl
   $COMPOSER_CLI require --no-update --dev avstudnitz/scopehint2 spatie/ray
 
   echo "Running installation.. Enjoy a cup of coffee in the meantime"
