@@ -3,7 +3,7 @@
 # Mage is a collection of easy commands and aliases for bin/magento
 # For those who hate typing long shell commands
 
-MAGE_VERSION="2.6.0"
+MAGE_VERSION="2.7.0"
 
 # Check if this is the Magento 2 root
 if [[ ! -d app/etc ]]; then
@@ -269,6 +269,8 @@ function mage_setup_hyva_dev() {
     magento2-reset-theme
     magento2-theme-fallback
     magento2-theme-module
+    magento2-cms-tailwind-jit
+    i18n-nl-nl
   )
 
   for pkg in "${hyva_themes[@]}"; do
@@ -377,7 +379,8 @@ function mage_help() {
   mage_help_cmd "watch"                       "Run cache-clean.js"
   mage_help_cmd "browser-sync [STOREVIEW]"    "Run browser-sync on a store view, default if empty"
   mage_help_cmd "reindex"                     "Reindex all indexes and clear cache"
-  mage_help_cmd "purge"                       "Purge all static assets"
+  mage_help_cmd "purge"                       "Purge all static assets and caches"
+  mage_help_cmd "cleanup [TYPE]"              "Purge assets or caches (types: redis, varnish, opensearch, sample)"
   mage_help_cmd "nuke"                        "Permanently delete the Magento project (DB, Env, Files)"
   mage_help_cmd "log [FILE:debug]"            "watch the log (default: debug)"
   mage_help_cmd "log clear"                   "clear all logs"
@@ -545,7 +548,7 @@ function mage_install() {
   $COMPOSER_CLI config repositories.local-packages path "package-source/*/*"
 
   echo "Setting up default plugins"
-  $COMPOSER_CLI require --no-update mage-os/theme-adminhtml-m137 cweagans/composer-patches yireo/magento2-theme-commands community-engineering/language-nl_nl
+  $COMPOSER_CLI require --no-update mage-os/theme-adminhtml-m137 cweagans/composer-patches yireo/magento2-theme-commands swissup/module-ignition community-engineering/language-nl_nl
   $COMPOSER_CLI require --no-update --dev avstudnitz/scopehint2 spatie/ray
 
   echo "Running installation.. Enjoy a cup of coffee in the meantime"
@@ -710,6 +713,9 @@ function mage_nuke() {
     echo "Bringing down and destroying Warden environment..."
     warden env down -v
   fi
+
+  echo "Clearing OpenSearch indices..."
+  mage_clear_opensearch
 
   echo "Removing directory: $MAGE_ROOT"
   cd ..
@@ -937,6 +943,25 @@ function mage_new_patch() {
 }
 
 function mage_purge() {
+  case "$1" in
+    "opensearch")
+      mage_clear_opensearch
+      return
+      ;;
+    "redis")
+      mage_clear_redis
+      return
+      ;;
+    "varnish")
+      mage_clear_varnish
+      return
+      ;;
+    "sample")
+      mage_cleanup_sample_files
+      return
+      ;;
+  esac
+
   local cleantasks=(
     'generated/metadata/*'
     'generated/code/*'
@@ -952,34 +977,68 @@ function mage_purge() {
     echo -e " [${GREEN}✓${RESET}] ${i}"
   done
 
+  mage_clear_redis
+  mage_clear_varnish
+}
+
+function mage_clear_redis() {
   if command -v $REDIS_CLI >/dev/null 2>&1; then
     $REDIS_CLI flushall > /dev/null 2>&1
     echo -e " [${GREEN}✓${RESET}] Redis caches flushed"
   fi
+}
 
+function mage_clear_varnish() {
   if command -v $VARNISH_CLI >/dev/null 2>&1; then
     $VARNISH_CLI 'ban req.url ~ .' > /dev/null 2>&1
     echo -e " [${GREEN}✓${RESET}] Varnish caches flushed"
   fi
 }
 
-function mage_add_sample() {
-  local pkg_name=""
-  if grep -q 'magento/product-community-edition' composer.json; then
-    pkg_name='magento/product-community-edition'
-  elif grep -q 'magento/product-enterprise-edition' composer.json; then
-    pkg_name='magento/product-enterprise-edition'
-  elif grep -q 'mage-os/project-community-edition' composer.json; then
-    pkg_name='mage-os/project-community-edition'
-  else
-    echo "Could not determine Magento version from composer.json."
-    exit 1
+function mage_clear_opensearch() {
+  local host=$($MAGENTO_CLI config:show catalog/search/opensearch_server_hostname)
+  local port=$($MAGENTO_CLI config:show catalog/search/opensearch_server_port)
+  local prefix=$($MAGENTO_CLI config:show catalog/search/opensearch_index_prefix)
+
+  # Fallback to defaults if config is empty
+  host=${host:-localhost}
+  port=${port:-9200}
+
+  if [[ -z "$prefix" ]]; then
+    echo -e " [${RED}✗${RESET}] Could not determine OpenSearch index prefix"
+    return 1
   fi
 
-  local mversion=$(get_composer_pkg_version $pkg_name)
+  if [[ $WARDEN == 1 ]]; then
+    warden env exec -T opensearch curl -s -X DELETE "localhost:9200/${prefix}_*" > /dev/null
+  else
+    curl -s -X DELETE "${host}:${port}/${prefix}_*" > /dev/null
+  fi
+
+  echo -e " [${GREEN}✓${RESET}] OpenSearch indices with prefix '${prefix}_' cleared"
+}
+
+function mage_add_sample() {
+  local mversion="$1"
+
   if [[ -z "$mversion" ]]; then
-    echo "Could not determine Magento version from composer."
-    exit 1
+    local pkg_name=""
+    if grep -q 'magento/product-community-edition' composer.json; then
+      pkg_name='magento/product-community-edition'
+    elif grep -q 'magento/product-enterprise-edition' composer.json; then
+      pkg_name='magento/product-enterprise-edition'
+    elif grep -q 'mage-os/project-community-edition' composer.json; then
+      pkg_name='mage-os/project-community-edition'
+    else
+      echo "Could not determine Magento version from composer.json."
+      exit 1
+    fi
+
+    mversion=$(get_composer_pkg_version $pkg_name)
+    if [[ -z "$mversion" ]]; then
+      echo "Could not determine Magento version from composer."
+      exit 1
+    fi
   fi
 
   if [[ ! -d "$HOME/.magento-sampledata/$mversion" ]]; then
@@ -998,10 +1057,8 @@ function mage_add_sample() {
   $MAGENTO_CLI setup:upgrade
 
   # Set theme to Hyva if present
-  if is_hyva_installed; then
-    if is_theme_cli_installed; then
-      $MAGENTO_CLI theme:change Hyva/default
-    fi
+  if is_hyva_installed && is_theme_cli_installed; then
+    $MAGENTO_CLI theme:change Hyva/default
   fi
 
   # Unset default styles from sample data
@@ -1094,7 +1151,7 @@ function mage_setup() {
     --search-engine=opensearch \
     --opensearch-host="${search_host}" \
     --opensearch-port=9200 \
-    --opensearch-index-prefix=magento2 \
+    --opensearch-index-prefix="${db_name}" \
     --opensearch-enable-auth=0 \
     --opensearch-timeout=15 \
     --session-save=redis \
@@ -1115,6 +1172,11 @@ function mage_setup() {
 
   echo "Setting default values for Store config"
   $MAGENTO_CLI config:set general/store_information/name $name &> /dev/null
+  $MAGENTO_CLI config:set currency/options/base EUR &> /dev/null
+  $MAGENTO_CLI config:set currency/options/default EUR &> /dev/null
+  $MAGENTO_CLI config:set currency/options/allow EUR,GBP &> /dev/null
+  $MAGENTO_CLI config:set general/country/default NL &> /dev/null
+  $MAGENTO_CLI config:set general/country/allow AT,BE,BG,HR,CY,CZ,DK,EE,FI,FR,DE,GR,HU,IE,IT,LV,LT,LU,MT,NL,PL,PT,RO,SK,SI,ES,SE,CH,NO,IS,LI,GB &> /dev/null
   $MAGENTO_CLI config:set admin/usage/enabled 0 &> /dev/null
   $MAGENTO_CLI config:set admin/security/session_lifetime 86400 &> /dev/null
   $MAGENTO_CLI config:set admin/security/password_lifetime "" &> /dev/null
@@ -1148,6 +1210,7 @@ function mage_getting_started() {
   echo -e "$name is ready!"
   echo -e "Enter your Magento project directory using ${BLUE}cd ./${name}${RESET}"
   echo -e "Open your Magento project, using ${BLUE}mage open${RESET} or ${BLUE}mage open admin${RESET}"
+  echo -e "\n${YELLOW}Note: Don't forget to configure your currency rates in the admin panel to enable multi-pricing (e.g. for Pounds)!${RESET}"
 }
 
 function mage_valet_create_store_view() {
@@ -1396,8 +1459,8 @@ case "${@}" in
   $MAGENTO_CLI indexer:reindex && $MAGENTO_CLI cache:flush
   ;;
 
-"purge")
-  mage_purge
+"purge" | "purge "* | "cleanup "*)
+  mage_purge $2
   ;;
 
 "nuke" | "destroy")
@@ -1465,8 +1528,8 @@ case "${@}" in
   mage_add_patch ${@:3}
   ;;
 
-"add sample")
-  mage_add_sample
+"add sample" | "add sample "*)
+  mage_add_sample "${3:-}"
   ;;
 
 "add hyva")

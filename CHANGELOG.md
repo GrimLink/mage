@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.7.0] - 2026-05-12
+
 ### Added
 - **`mage add sample [version]`:** Re-added support for an optional version argument (e.g., `mage add sample 2.4.8-p4`).
 - **`mage cleanup [TYPE]`:** Added as a selective alias for the `purge` command.
@@ -375,7 +377,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Initial Release 🎉
 
-[unreleased]: https://github.com/GrimLink/mage/compare/2.6.0...HEAD
+[unreleased]: https://github.com/GrimLink/mage/compare/2.7.0...HEAD
+[2.6.0]: https://github.com/GrimLink/mage/compare/2.6.0...2.7.0
 [2.6.0]: https://github.com/GrimLink/mage/compare/2.5.2...2.6.0
 [2.5.2]: https://github.com/GrimLink/mage/compare/2.5.1...2.5.2
 [2.5.1]: https://github.com/GrimLink/mage/compare/2.5.0...2.5.1
