@@ -1,20 +1,24 @@
 function mage_add_sample() {
-  local pkg_name=""
-  if grep -q 'magento/product-community-edition' composer.json; then
-    pkg_name='magento/product-community-edition'
-  elif grep -q 'magento/product-enterprise-edition' composer.json; then
-    pkg_name='magento/product-enterprise-edition'
-  elif grep -q 'mage-os/project-community-edition' composer.json; then
-    pkg_name='mage-os/project-community-edition'
-  else
-    echo "Could not determine Magento version from composer.json."
-    exit 1
-  fi
+  local mversion="$1"
 
-  local mversion=$(get_composer_pkg_version $pkg_name)
   if [[ -z "$mversion" ]]; then
-    echo "Could not determine Magento version from composer."
-    exit 1
+    local pkg_name=""
+    if grep -q 'magento/product-community-edition' composer.json; then
+      pkg_name='magento/product-community-edition'
+    elif grep -q 'magento/product-enterprise-edition' composer.json; then
+      pkg_name='magento/product-enterprise-edition'
+    elif grep -q 'mage-os/project-community-edition' composer.json; then
+      pkg_name='mage-os/project-community-edition'
+    else
+      echo "Could not determine Magento version from composer.json."
+      exit 1
+    fi
+
+    mversion=$(get_composer_pkg_version $pkg_name)
+    if [[ -z "$mversion" ]]; then
+      echo "Could not determine Magento version from composer."
+      exit 1
+    fi
   fi
 
   if [[ ! -d "$HOME/.magento-sampledata/$mversion" ]]; then
@@ -33,10 +37,8 @@ function mage_add_sample() {
   $MAGENTO_CLI setup:upgrade
 
   # Set theme to Hyva if present
-  if is_hyva_installed; then
-    if is_theme_cli_installed; then
-      $MAGENTO_CLI theme:change Hyva/default
-    fi
+  if is_hyva_installed && is_theme_cli_installed; then
+    $MAGENTO_CLI theme:change Hyva/default
   fi
 
   # Unset default styles from sample data

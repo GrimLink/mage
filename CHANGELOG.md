@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Re-added custom sample data version support:** The `mage add sample` command now accepts an optional version argument (e.g., `mage add sample 2.4.8-p4`).
+
 ## [2.6.0] - 2026-03-08
 
 ### Added

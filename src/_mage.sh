@@ -175,8 +175,8 @@ case "${@}" in
   mage_add_patch ${@:3}
   ;;
 
-"add sample")
-  mage_add_sample
+"add sample" | "add sample "*)
+  mage_add_sample "${3:-}"
   ;;
 
 "add hyva")
