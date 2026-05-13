@@ -28,12 +28,17 @@ case "${@}" in
   ;;
 
 "create "*)
+  read -p "Add BFCache compatibility patches? [Y/n] " ADD_BFCACHE_PATCHES && echo ""
+  read -p "Add sample data? [Y/n] " ADD_SAMPLE_DATA && echo ""
+
   mage_install $2
   mage_setup
 
-  read -p "Add sample data? [y/N] "
-  echo ""
-  if [[ $REPLY =~ ^[yY]|[yY][eE][sS]$ ]]; then
+  if [[ ! $ADD_BFCACHE_PATCHES =~ ^[nN]|[nN][oO]$ ]]; then
+    mage_add_patch "${BFCACHE_PATCH_REPO}"
+  fi
+
+  if [[ ! $ADD_SAMPLE_DATA =~ ^[nN]|[nN][oO]$ ]]; then
     mage_add_sample
   fi
 
@@ -171,6 +176,10 @@ case "${@}" in
   rm $src/i18n/temp.csv
   ;;
 
+"add bfcache")
+  mage_add_patch "${BFCACHE_PATCH_REPO}"
+  ;;
+
 "add patch"*)
   mage_add_patch ${@:3}
   ;;
@@ -215,6 +224,13 @@ case "${@}" in
 
 "add hyva commerce")
   mage_add_hyva_commerce
+  ;;
+
+"add storeinfo")
+  mage_add_package siteation/magento2-storeinfo
+  mage_add_package siteation/magento2-storeinfo-menus
+  mage_add_package siteation/magento2-storeinfo-usps
+  mage_add_package siteation/magento2-storeinfo-payments
   ;;
 
 "add "*)

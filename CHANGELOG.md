@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.0] - 2026-05-13
+
+### Added
+- **Remote Patch Repositories:** `mage add patch` now supports downloading and vendoring patches from GitHub and GitLab repositories (e.g., `mage add patch <URL>`).
+- **`mage add bfcache` command:** New command to easily add BFCache compatibility patches; this is an alias for `mage add patch https://github.com/GrimLink/magento-patch-bfcache`.
+- **`mage add storeinfo` command:** New command to easily add Siteation StoreInfo modules; this is an alias for multiple `mage add` calls to install the core, menus, USPS, and payment packages.
+
+### Changed
+- **`mage create` workflow:**
+  - Interactive prompts are now grouped at the beginning for a faster, uninterrupted setup.
+  - Now includes an option to add BFCache compatibility patches.
+  - Installation prompts now default to 'Yes' (Enter).
+- **Automatic Patching:** `mage_add_patch` now automatically runs `composer patches-relock` and `composer patches-repatch` to ensure patches are applied immediately.
+- **`mage new patch [MODULE]`:** Re-factored local vendor patching into a cleaner, automated workflow and now uses the default naming for cweagans composer-patches for creating new patches. when updating make sure to rename `composer.patches.json` to `patches.json`.
+
 ## [2.7.0] - 2026-05-12
 
 ### Added
@@ -377,7 +392,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Initial Release 🎉
 
-[unreleased]: https://github.com/GrimLink/mage/compare/2.7.0...HEAD
+[unreleased]: https://github.com/GrimLink/mage/compare/2.8.0...HEAD
+[2.8.0]: https://github.com/GrimLink/mage/compare/2.7.0...2.8.0
 [2.7.0]: https://github.com/GrimLink/mage/compare/2.6.0...2.7.0
 [2.6.0]: https://github.com/GrimLink/mage/compare/2.5.2...2.6.0
 [2.5.2]: https://github.com/GrimLink/mage/compare/2.5.1...2.5.2

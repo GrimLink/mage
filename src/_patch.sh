@@ -1,6 +1,52 @@
 
 function mage_add_patch() {
-  local vendor="${1}";
+  local vendor="${1}"
+
+  if [[ "$vendor" =~ ^https://(github|gitlab)\.com/ ]]; then
+    local repo_url="${vendor%/}"
+    local temp_dir=$(mktemp -d)
+    local archive_url=""
+
+    if [[ "$repo_url" =~ github\.com ]]; then
+      archive_url="${repo_url}/tarball/main"
+    else
+      archive_url="${repo_url}/-/archive/main.tar.gz"
+    fi
+
+    echo "Downloading patches from $repo_url..."
+    if ! curl -sL "$archive_url" | tar -xz -C "$temp_dir" --strip-components=1; then
+       echo "Error: Failed to download repository from main branch."
+       rm -rf "$temp_dir"
+       return 1
+    fi
+
+    if [[ -f "$temp_dir/patches.json" ]]; then
+       echo "Merging patches.json..."
+       php -r '
+         $l = file_exists("patches.json") ? json_decode(file_get_contents("patches.json"), true) : ["patches" => []];
+         $r = json_decode(file_get_contents($argv[1]), true);
+         foreach ($r["patches"] as $v => $ps) {
+             foreach ($ps as $n => $s) $l["patches"][$v][$n] = $s;
+         }
+         file_put_contents("patches.json", json_encode($l, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+       ' "$temp_dir/patches.json"
+    fi
+
+    mkdir -p patches
+    if [[ -d "$temp_dir/patches" ]]; then
+       cp -R "$temp_dir/patches/"* patches/
+    else
+       cp -R "$temp_dir/"* patches/
+    fi
+
+    rm -rf "$temp_dir"
+    echo "Patches successfully added and vendored."
+
+    $COMPOSER_CLI patches-relock
+    $COMPOSER_CLI patches-repatch
+    return
+  fi
+
   local patch_src=""
   local patch_name=""
 
@@ -27,53 +73,45 @@ function mage_add_patch() {
     patch_src="${patch_src%.*}.patch"
   fi
 
-  # Ensure composer.json is configured to use composer.patches.json
-  if ! grep -q '"patches-file": "composer.patches.json"' composer.json;
-  then
-    $COMPOSER_CLI config extra.patches-file composer.patches.json
-  fi
-
-  # Create composer.patches.json if it doesn't exist
-  if [[ ! -f "composer.patches.json" ]]; then
-    echo '{ "patches": {} }' > composer.patches.json
+  # Create patches.json if it doesn't exist
+  if [[ ! -f "patches.json" ]]; then
+    echo '{ "patches": {} }' > patches.json
   fi
 
   php -r '
-    $file = "composer.patches.json";
+    $file = "patches.json";
     $vendor = $argv[1];
     $patch_name = $argv[2];
     $patch_src = $argv[3];
 
     $json = json_decode(file_get_contents($file), true);
-
-    if (!isset($json["patches"])) {
-        $json["patches"] = [];
-    }
-
-    if (!isset($json["patches"][$vendor])) {
-        $json["patches"][$vendor] = [];
-    }
-
     $json["patches"][$vendor][$patch_name] = $patch_src;
-
     file_put_contents($file, json_encode($json, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
   ' -- "$vendor" "$patch_name" "$patch_src"
 
-  echo -e "Patch added to composer.patches.json"
+  echo -e "Patch added to patches.json"
+
+  $COMPOSER_CLI patches-relock
+  $COMPOSER_CLI patches-repatch
 }
 
 function mage_new_patch() {
-  local module_name=${1}
+  local module_name="${1}"
+  local module_src="vendor/${module_name}"
 
   if [[ -z "$module_name" ]]; then
     echo "The module you want to patch, Example: magento/module-theme"
     read -e -p "Module Name: " module_name && echo ""
+    module_src="vendor/${module_name}"
   fi
-
-  local module_src="vendor/${module_name}"
 
   if [[ ! -d "$module_src" ]]; then
     echo "Can not find $module_src make sure this is the right path" && exit 1;
+  fi
+
+  if [[ -d "${module_src}/.git" ]]; then
+    echo "Error: ${module_src} already contains a .git folder. Aborting to prevent data loss."
+    exit 1
   fi
 
   cd $module_src
@@ -83,33 +121,25 @@ function mage_new_patch() {
   read -rsn1 -p "Make your changes in $module_src when ready, press any key to continue";
   echo "";
 
-  local patch_name
-  read -e -p "Patch Name (e.g., my-custom-patch): " patch_name
-  if [[ -z "$patch_name" ]]; then
-    echo "Patch name cannot be empty."
-    return 1
-  fi
-  local patch_file_path="patches/${module_name}/${patch_name}"
+  local module_filename=$(echo "$module_name" | tr '/' '-')
+  local patch_filename="LOCAL-${module_filename}.patch"
+  local patch_path="patches/${module_name}/${patch_filename}"
 
-  local patch_file_dir=$(dirname "../../../$patch_file_path")
+  # Move back to root for file operations
+  cd - &> /dev/null
 
-  mkdir -p "$patch_file_dir"
-  touch "../../../${patch_file_path}.patch"
-  git diff > "../../../${patch_file_path}.patch"
+  mkdir -p "patches/${module_name}"
+  git -C "$module_src" diff > "$patch_path"
 
   # Cleanup
-  git checkout . &> /dev/null
-  rm -rf .git
-  cd - &> /dev/null
+  rm -rf "${module_src}/.git"
+
+  echo -e "Patch created in ${patch_path}".
 
   # Add composer patch setting
   read -p "Add patch to composer.json? [Y/n] "
   echo ""
   if [[ ! $REPLY =~ ^[nN]|[nN][oO]$ ]]; then
-    # Vendor Folder / Patch Name / Patch Source
-    mage_add_patch $module_name "Patch: ${patch_name}" "${patch_file_path}"
+    mage_add_patch "$module_name" "Local: ${module_filename}" "$patch_path"
   fi
-
-  echo -e "Patch created in ${patch_file_path}.patch".
-  echo "Make sure the patch and settings in composer.json are correct before running composer install"
 }

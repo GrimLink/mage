@@ -9,7 +9,8 @@
 * **Custom functions:** Mage offers helper commands like `reindex` and `purge` for specific tasks.
 * **Open stores quickly:** Open your default store or specific store views with `mage open`.
 * **Efficient development:** The `watch` command automates cache cleaning on file changes, improving your workflow.
-* **Easier patch creation**: create patches only with a few arguments.
+* **Easier patch creation**: Create patches with only a few arguments.
+* **BFCache compatibility**: Easily add [BFCache compatibility patches] to your project.
 
 ## Installation
 
@@ -40,6 +41,7 @@ Here are some highlights of what Mage can do:
 ### Store & Theme Development
 * **`mage new store [url|prefix]`:** Programmatically create a new store view and configure its base URLs and routing (e.g., `mage new store luma` or `mage new store b2b.example.test`).
 * **`mage new patch`:** Create a composer patch with ease.
+* **`mage add bfcache`:** Automatically fetch and vendor [BFCache compatibility patches] for your project.
 * **`mage set mage-os`:** Easily replace the standard Magento 2 distro with the Mage-OS distro.
 
 ### Daily Workflow
@@ -79,3 +81,4 @@ Mage is licensed under the MIT License. See the LICENSE file for details.
 [Laravel Valet]: https://laravel.com/docs/valet
 [Warden]: https://github.com/wardenenv/warden
 [Siteation]: https://siteation.dev/
+[BFCache compatibility patches]: https://github.com/GrimLink/magento-patch-bfcache

@@ -1,4 +1,4 @@
-MAGE_VERSION="2.7.0"
+MAGE_VERSION="2.8.0"
 
 # Check if this is the Magento 2 root
 if [[ ! -d app/etc ]]; then
@@ -26,6 +26,8 @@ GITEMAIL="$(git config --global --get user.email)"
 ADMINNAME="$(echo "$GITNAME" | tr '[:upper:]' '[:lower:]')"
 ADMINEMAIL="${GITEMAIL}"
 ADMINPASS="magento_123$"
+
+BFCACHE_PATCH_REPO="https://github.com/GrimLink/magento-patch-bfcache"
 
 # Load NVM if available, so the node version is the one used by the system
 [ -s "$HOME/.nvm/nvm.sh" ] && \. "$HOME/.nvm/nvm.sh"
