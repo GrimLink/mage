@@ -111,6 +111,8 @@ function mage_setup() {
   $MAGENTO_CLI config:set admin/security/session_lifetime 86400 &> /dev/null
   $MAGENTO_CLI config:set admin/security/password_lifetime "" &> /dev/null
   $MAGENTO_CLI config:set admin/security/password_is_forced 0 &> /dev/null
+  $MAGENTO_CLI config:set catalog/seo/category_canonical_tag 1 &> /dev/null
+  $MAGENTO_CLI config:set catalog/seo/product_canonical_tag 1 &> /dev/null
 
   $MAGENTO_CLI deploy:mode:set developer
 
