@@ -43,7 +43,7 @@ function mage_setup_hyva_dev() {
     magento2-theme-fallback
     magento2-theme-module
     magento2-cms-tailwind-jit
-    i18n-nl-nl
+    magento2-cms-tailwind-compiler
   )
 
   for pkg in "${hyva_themes[@]}"; do
@@ -82,13 +82,17 @@ function mage_add_hyva_commerce() {
     local hyva_commerce_packages=(
       metapackage-commerce
       module-commerce
-      module-cms
-      module-image-editor
-      module-admin-theme
-      theme-adminhtml
       module-admin-dashboard
+      module-admin-dashboard-cms-widgets
       module-admin-dashboard-google-crux-history-widget
+      module-cms
+      module-cms-ai-translations
+      module-cms-google-maps
+      module-image-editor
       module-media-optimization
+      module-menu-builder
+      theme-adminhtml
+      module-admin-theme
     )
 
     for pkg in "${hyva_commerce_packages[@]}"; do
@@ -97,8 +101,18 @@ function mage_add_hyva_commerce() {
       fi
     done
 
+    if [ ! -f "composer.json" ] || ! grep -q "hyva-themes/commerce-module-admin-dashboard-api\.git" composer.json; then
+      $COMPOSER_CLI config --append ${repo}/commerce-module-admin-dashboard-api git ${git_url}:hyva-themes/commerce-module-admin-dashboard-api.git
+    fi
+
+    if [ ! -f "composer.json" ] || ! grep -q "hyva-commerce/commerce-module-cms-tailwind-jit-bridge\.git" composer.json; then
+      $COMPOSER_CLI config --append ${repo}/commerce-module-cms-tailwind-jit-bridge git ${git_url}:hyva-commerce/commerce-module-cms-tailwind-jit-bridge.git
+    fi
+
     $COMPOSER_CLI require hyva-themes/commerce-module-cms
+    $COMPOSER_CLI require hyva-themes/commerce-module-menu-builder
     $COMPOSER_CLI require hyva-themes/commerce-module-image-editor
+    $COMPOSER_CLI require hyva-themes/commerce-module-media-optimization
     $COMPOSER_CLI require hyva-themes/commerce-theme-adminhtml
     $COMPOSER_CLI require hyva-themes/commerce-module-admin-dashboard
   fi

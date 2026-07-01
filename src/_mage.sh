@@ -30,6 +30,7 @@ case "${@}" in
 "create "*)
   read -p "Add BFCache compatibility patches? [Y/n] " ADD_BFCACHE_PATCHES && echo ""
   read -p "Add sample data? [Y/n] " ADD_SAMPLE_DATA && echo ""
+  read -p "Add Hyva Theme? [Y/n] " ADD_HYVA_DATA && echo ""
 
   mage_install $2
   mage_setup
@@ -38,8 +39,16 @@ case "${@}" in
     mage_add_patch "${BFCACHE_PATCH_REPO}"
   fi
 
+  if [[ ! $ADD_HYVA_DATA =~ ^[nN]|[nN][oO]$ ]]; then
+    mage_add_hyva
+  fi
+
   if [[ ! $ADD_SAMPLE_DATA =~ ^[nN]|[nN][oO]$ ]]; then
     mage_add_sample
+  fi
+
+  if [[ ! $ADD_BFCACHE_PATCHES =~ ^[nN]|[nN][oO]$ ]] || [[ ! $ADD_HYVA_DATA =~ ^[nN]|[nN][oO]$ ]]; then
+    $MAGENTO_CLI setup:upgrade
   fi
 
   mage_getting_started $2

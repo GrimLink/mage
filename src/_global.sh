@@ -1,4 +1,4 @@
-MAGE_VERSION="2.8.0"
+MAGE_VERSION="2.8.1"
 
 # Check if this is the Magento 2 root
 if [[ ! -d app/etc ]]; then

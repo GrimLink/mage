@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.1] - 2026-07-02
+
+### Added
+- **`mage create` workflow:** New prompt to optionally add the Hyva Theme during setup; this is an alias for `mage add hyva`.
+- **SEO Defaults:** `mage setup` now enables `catalog/seo/category_canonical_tag` and `catalog/seo/product_canonical_tag` by default.
+
+### Changed
+- **Hyva Commerce packages:** `mage add hyva commerce` now installs additional modules (`module-admin-dashboard-cms-widgets`, `module-cms-ai-translations`, `module-cms-google-maps`, `module-menu-builder`, `module-media-optimization`) and registers the required composer repositories automatically.
+- **`mage create` workflow:** Now runs `setup:upgrade` automatically when BFCache patches or the Hyva Theme are added.
+
 ## [2.8.0] - 2026-05-13
 
 ### Added

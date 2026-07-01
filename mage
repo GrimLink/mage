@@ -3,7 +3,7 @@
 # Mage is a collection of easy commands and aliases for bin/magento
 # For those who hate typing long shell commands
 
-MAGE_VERSION="2.8.0"
+MAGE_VERSION="2.8.1"
 
 # Check if this is the Magento 2 root
 if [[ ! -d app/etc ]]; then
@@ -272,7 +272,7 @@ function mage_setup_hyva_dev() {
     magento2-theme-fallback
     magento2-theme-module
     magento2-cms-tailwind-jit
-    i18n-nl-nl
+    magento2-cms-tailwind-compiler
   )
 
   for pkg in "${hyva_themes[@]}"; do
@@ -311,13 +311,17 @@ function mage_add_hyva_commerce() {
     local hyva_commerce_packages=(
       metapackage-commerce
       module-commerce
-      module-cms
-      module-image-editor
-      module-admin-theme
-      theme-adminhtml
       module-admin-dashboard
+      module-admin-dashboard-cms-widgets
       module-admin-dashboard-google-crux-history-widget
+      module-cms
+      module-cms-ai-translations
+      module-cms-google-maps
+      module-image-editor
       module-media-optimization
+      module-menu-builder
+      theme-adminhtml
+      module-admin-theme
     )
 
     for pkg in "${hyva_commerce_packages[@]}"; do
@@ -326,8 +330,18 @@ function mage_add_hyva_commerce() {
       fi
     done
 
+    if [ ! -f "composer.json" ] || ! grep -q "hyva-themes/commerce-module-admin-dashboard-api\.git" composer.json; then
+      $COMPOSER_CLI config --append ${repo}/commerce-module-admin-dashboard-api git ${git_url}:hyva-themes/commerce-module-admin-dashboard-api.git
+    fi
+
+    if [ ! -f "composer.json" ] || ! grep -q "hyva-commerce/commerce-module-cms-tailwind-jit-bridge\.git" composer.json; then
+      $COMPOSER_CLI config --append ${repo}/commerce-module-cms-tailwind-jit-bridge git ${git_url}:hyva-commerce/commerce-module-cms-tailwind-jit-bridge.git
+    fi
+
     $COMPOSER_CLI require hyva-themes/commerce-module-cms
+    $COMPOSER_CLI require hyva-themes/commerce-module-menu-builder
     $COMPOSER_CLI require hyva-themes/commerce-module-image-editor
+    $COMPOSER_CLI require hyva-themes/commerce-module-media-optimization
     $COMPOSER_CLI require hyva-themes/commerce-theme-adminhtml
     $COMPOSER_CLI require hyva-themes/commerce-module-admin-dashboard
   fi
@@ -1215,6 +1229,8 @@ function mage_setup() {
   $MAGENTO_CLI config:set admin/security/session_lifetime 86400 &> /dev/null
   $MAGENTO_CLI config:set admin/security/password_lifetime "" &> /dev/null
   $MAGENTO_CLI config:set admin/security/password_is_forced 0 &> /dev/null
+  $MAGENTO_CLI config:set catalog/seo/category_canonical_tag 1 &> /dev/null
+  $MAGENTO_CLI config:set catalog/seo/product_canonical_tag 1 &> /dev/null
 
   $MAGENTO_CLI deploy:mode:set developer
 
@@ -1417,6 +1433,7 @@ case "${@}" in
 "create "*)
   read -p "Add BFCache compatibility patches? [Y/n] " ADD_BFCACHE_PATCHES && echo ""
   read -p "Add sample data? [Y/n] " ADD_SAMPLE_DATA && echo ""
+  read -p "Add Hyva Theme? [Y/n] " ADD_HYVA_DATA && echo ""
 
   mage_install $2
   mage_setup
@@ -1425,8 +1442,16 @@ case "${@}" in
     mage_add_patch "${BFCACHE_PATCH_REPO}"
   fi
 
+  if [[ ! $ADD_HYVA_DATA =~ ^[nN]|[nN][oO]$ ]]; then
+    mage_add_hyva
+  fi
+
   if [[ ! $ADD_SAMPLE_DATA =~ ^[nN]|[nN][oO]$ ]]; then
     mage_add_sample
+  fi
+
+  if [[ ! $ADD_BFCACHE_PATCHES =~ ^[nN]|[nN][oO]$ ]] || [[ ! $ADD_HYVA_DATA =~ ^[nN]|[nN][oO]$ ]]; then
+    $MAGENTO_CLI setup:upgrade
   fi
 
   mage_getting_started $2
