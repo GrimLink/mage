@@ -31,6 +31,7 @@ case "${@}" in
   read -p "Add BFCache compatibility patches? [Y/n] " ADD_BFCACHE_PATCHES && echo ""
   read -p "Add sample data? [Y/n] " ADD_SAMPLE_DATA && echo ""
   read -p "Add Hyva Theme? [Y/n] " ADD_HYVA_DATA && echo ""
+  read -p "Setup for AI assisted development? [y/N] " ADD_AI_SETUP && echo ""
 
   mage_install $2
   mage_setup
@@ -51,6 +52,10 @@ case "${@}" in
     $MAGENTO_CLI setup:upgrade
   fi
 
+  if [[ $ADD_AI_SETUP =~ ^[yY]|[yY][eE][sS]$ ]]; then
+    mage_ai_setup
+  fi
+
   mage_getting_started $2
   ;;
 
@@ -66,6 +71,10 @@ case "${@}" in
 "setup "*)
   mage_setup $2
   mage_getting_started $2
+  ;;
+
+"ai")
+  mage_ai_setup
   ;;
 
 "stores")

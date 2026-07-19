@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **`mage ai` command:** New command that prepares a project for AI assisted development. It initializes a local only git repository with a Magento aware `.gitignore`, writes a `CLAUDE.md` describing the deploy mode and the selected code stack, ensures the `package-source/*/*` composer path repository exists, and registers the [magento2-lsp](https://github.com/mage-os-lab/magento2-lsp) MCP server at user scope. The command asks which frontend stack (`luma`, `hyva`, or none) applies, defaulting to whatever is already installed. Every step is idempotent, so it is safe to run on an existing project.
+- **`mage create` workflow:** New optional prompt to run the AI setup after the install finishes.
+
 ## [2.8.1] - 2026-07-02
 
 ### Added
