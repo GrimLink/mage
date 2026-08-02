@@ -1,0 +1,80 @@
+# Magento, installed by composer
+/bin
+/dev
+/docs
+/generated
+/lib
+/phpserver
+/pub
+/setup
+/update
+/var
+/vendor*
+/.github/*
+/index.php
+/COPYING.txt
+/CHANGELOG.md
+/SECURITY.md
+/*.sample
+/.htaccess
+/*/.htaccess
+/.user.ini
+/.php_cs.dist
+/.travis.yml
+/composer-outdated.json
+
+# Magento config, only the shared config is tracked
+/app/etc/*
+/app/*.php
+!/app/etc/config.php
+!/app/etc/n98-magerun2.yaml
+!/app/etc/stores-loader.php
+!/app/etc/hyva-themes.json
+
+# Local environment
+.env
+.valet-env.php
+docker-compose.yml
+
+# Development
+node_modules
+.cache
+.idea
+.vscode
+.php_cs.cache
+
+# AI assistant skills and context
+.claude
+.codex
+.magento2-lsp-cache.json
+.magento2-lsp-symbols-cache.json
+
+# Logs and databases
+*.log
+*.sql
+*.sqlite
+
+# Archives and compiled files
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+*.class
+*.com
+*.dll
+*.exe
+*.o
+*.so
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+desktop.ini
+Thumbs.db

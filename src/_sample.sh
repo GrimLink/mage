@@ -21,8 +21,15 @@ function mage_add_sample() {
     fi
   fi
 
-  if [[ ! -d "$HOME/.magento-sampledata/$mversion" ]]; then
-    git clone -b $mversion git@github.com:magento/magento2-sample-data.git $HOME/.magento-sampledata/$mversion
+  local sample_dir="$(mage_config_dir)/sampledata"
+
+  # Keep the clones made before the sample data moved to the mage config folder
+  if [[ -d "$HOME/.magento-sampledata" && ! -d "$sample_dir" ]]; then
+    mv "$HOME/.magento-sampledata" "$sample_dir"
+  fi
+
+  if [[ ! -d "$sample_dir/$mversion" ]]; then
+    git clone -b $mversion git@github.com:magento/magento2-sample-data.git $sample_dir/$mversion
   fi
 
   echo -e "Installing $mversion sample data"
@@ -32,7 +39,7 @@ function mage_add_sample() {
   mkdir -p pub/media/downloadable/files
   mkdir -p pub/media/wysiwyg
   touch README.md
-  php -f $HOME/.magento-sampledata/$mversion/dev/tools/build-sample-data.php -- --ce-source="$PWD"
+  php -f $sample_dir/$mversion/dev/tools/build-sample-data.php -- --ce-source="$PWD"
 
   $MAGENTO_CLI setup:upgrade
 

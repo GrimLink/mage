@@ -28,6 +28,7 @@ ADMINEMAIL="${GITEMAIL}"
 ADMINPASS="magento_123$"
 
 BFCACHE_PATCH_REPO="https://github.com/GrimLink/magento-patch-bfcache"
+GITIGNORE_TEMPLATE_URL="https://raw.githubusercontent.com/GrimLink/mage/main/templates/magento.gitignore"
 
 # Load NVM if available, so the node version is the one used by the system
 [ -s "$HOME/.nvm/nvm.sh" ] && \. "$HOME/.nvm/nvm.sh"

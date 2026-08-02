@@ -1,3 +1,51 @@
+# Echo the mage config folder, and create it when missing
+function mage_config_dir() {
+  local config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/mage"
+  mkdir -p "$config_dir"
+  echo "$config_dir"
+}
+
+# Download a url to a given path, using curl or wget
+function mage_download_file() {
+  local url="$1"
+  local target="$2"
+  local temp="${target}.part"
+
+  if command -v curl &> /dev/null; then
+    curl -fsL "$url" -o "$temp"
+  elif command -v wget &> /dev/null; then
+    wget -qO "$temp" "$url"
+  else
+    echo "Neither curl nor wget is available"
+    return 1
+  fi
+
+  if [[ ! -s "$temp" ]]; then
+    rm -f "$temp"
+    return 1
+  fi
+
+  mv "$temp" "$target"
+}
+
+# Echo the path to a file cached in the mage config folder.
+# The copy is refreshed when older than 30 days,
+# but a failed refresh keeps the existing copy usable.
+function mage_cached_file() {
+  local url="$1"
+  local file="$(mage_config_dir)/$2"
+
+  if [[ ! -f "$file" ]] || [[ -n "$(find "$file" -mtime +30)" ]]; then
+    mage_download_file "$url" "$file"
+  fi
+
+  if [[ ! -f "$file" ]]; then
+    return 1
+  fi
+
+  echo "$file"
+}
+
 # Creates a file/folder and echo the contents in one command
 function mage_make_file() {
   touch $1
