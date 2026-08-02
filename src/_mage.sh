@@ -164,6 +164,10 @@ case "${@}" in
   mage_new_patch ${@:3}
   ;;
 
+"new gitignore")
+  mage_add_gitignore
+  ;;
+
 "new i18n"* | "new translate"*)
   src=${3:-.}
 

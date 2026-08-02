@@ -135,6 +135,25 @@ function mage_setup() {
 
   # Cleanup root sample files
   mage_cleanup_sample_files
+
+  mage_add_gitignore
+}
+
+function mage_add_gitignore() {
+  if [ -e ".gitignore" ]; then
+    echo "A .gitignore is already present, skipping"
+    return
+  fi
+
+  local template=$(mage_cached_file "$GITIGNORE_TEMPLATE_URL" "magento.gitignore")
+
+  if [[ -z "$template" ]]; then
+    echo "Could not get the gitignore from ${GITIGNORE_TEMPLATE_URL}"
+    return 1
+  fi
+
+  cp "$template" .gitignore
+  echo "Added .gitignore for Magento"
 }
 
 function mage_getting_started() {

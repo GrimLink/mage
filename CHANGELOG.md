@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **`mage new gitignore` command:** New command that adds a Magento aware `.gitignore` to the project. The template is downloaded on first use and cached in `~/.config/mage`, so it stays available offline and refreshes itself after 30 days.
+- **`mage setup`:** Now adds the same `.gitignore`, existing files are left untouched.
+
+### Changed
+- **Sample data cache:** The sample data clones now live in `~/.config/mage/sampledata`. An existing `~/.magento-sampledata` folder is moved there on the next `mage add sample`, so nothing has to be cloned again.
+
 ## [2.8.1] - 2026-07-02
 
 ### Added
