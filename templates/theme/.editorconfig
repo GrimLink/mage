@@ -16,6 +16,10 @@ indent_size = 4
 trim_trailing_whitespace = false
 max_line_length = 80
 
-# Templates are copied into Magento projects, so they follow the Magento standard
-[templates/**.{php,phtml,xml,css,js}]
+[*.{css,js,cjs}]
 indent_size = 4
+max_line_length = 80
+
+[*.{xml,html,phtml,php}]
+indent_size = 4
+max_line_length = 120

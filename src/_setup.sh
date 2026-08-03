@@ -145,10 +145,10 @@ function mage_add_gitignore() {
     return
   fi
 
-  local template=$(mage_cached_file "$GITIGNORE_TEMPLATE_URL" "magento.gitignore")
+  local template=$(mage_template_file "magento.gitignore")
 
   if [[ -z "$template" ]]; then
-    echo "Could not get the gitignore from ${GITIGNORE_TEMPLATE_URL}"
+    echo "Could not get the gitignore from ${MAGE_TEMPLATES_ARCHIVE}"
     return 1
   fi
 

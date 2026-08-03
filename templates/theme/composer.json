@@ -1,0 +1,18 @@
+{
+  "name": "{{VENDOR_PKG}}/magento2-theme-{{NAME_PKG}}",
+  "description": "",
+  "license": "MIT",
+  "type": "magento2-theme",
+  "readme": "README.md",
+  "keywords": [
+    "magento2",
+    "magento2-theme"
+  ],
+  "authors": [],
+  "require": {},
+  "autoload": {
+    "files": [
+      "registration.php"
+    ]
+  }
+}
