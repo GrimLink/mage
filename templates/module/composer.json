@@ -1,0 +1,21 @@
+{
+  "name": "{{VENDOR_PKG}}/magento2-{{MODULE_PKG}}",
+  "description": "",
+  "license": "MIT",
+  "type": "magento2-module",
+  "readme": "README.md",
+  "keywords": [
+    "magento2",
+    "magento2-module"
+  ],
+  "authors": [],
+  "require": {},
+  "autoload": {
+    "files": [
+      "registration.php"
+    ],
+    "psr-4": {
+      "{{VENDOR}}\\{{MODULE}}\\": ""
+    }
+  }
+}

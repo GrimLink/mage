@@ -8,11 +8,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- **`mage new gitignore` command:** New command that adds a Magento aware `.gitignore` to the project. The template is downloaded on first use and cached in `~/.config/mage`, so it stays available offline and refreshes itself after 30 days.
+- **`mage new gitignore` command:** New command that adds a Magento aware `.gitignore` to the project. The templates are synced on first use to `~/.config/mage/templates`, so they stay available offline and refresh themselves after 30 days.
 - **`mage setup`:** Now adds the same `.gitignore`, existing files are left untouched.
 
 ### Changed
+- **`mage new theme` and `mage new module`:** The generated files now come from the `templates/theme` and `templates/module` folders instead of being built as strings in the script, so files can be added or removed without a rebuild. Both now also get a `composer.json`, a `README.md`, a `CHANGELOG.md`, a `SECURITY.md`, an `.editorconfig` and a `.gitignore`, and the generated `theme.xml` starts with an XML declaration.
+- **`mage new module`:** The module template now follows the [hyva-module-template](https://github.com/GrimLink/hyva-module-template). It asks whether this is a Hyvä module, defaulting to what the project has installed. A Hyvä module additionally gets the config observer, its `events.xml` and the tailwind sources, and sequences `Hyva_Theme` instead of `Magento_Theme`.
+- **`mage new theme` and `mage new module` prompts:** Both now share the vendor and name question, and yes/no questions go through one helper, so the answer options and the handling of an empty answer are the same everywhere.
+
 - **Sample data cache:** The sample data clones now live in `~/.config/mage/sampledata`. An existing `~/.magento-sampledata` folder is moved there on the next `mage add sample`, so nothing has to be cloned again.
+
+### Fixed
+- **`mage new theme` and `mage new module` paths:** The blank line printed after the package-source question ended up in the captured folder name, which put a newline in front of the generated path.
 
 ## [2.8.1] - 2026-07-02
 
