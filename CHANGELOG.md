@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`mage new gitignore` command:** New command that adds a Magento aware `.gitignore` to the project. The templates are synced on first use to `~/.config/mage/templates`, so they stay available offline and refresh themselves after 30 days.
 - **`mage setup`:** Now adds the same `.gitignore`, existing files are left untouched.
 
+### Fixed
+- **Cloning a project created by `mage`:** `package-source` now gets a `.gitkeep`, so the folder survives a clone. Without it `composer install` aborts with "the url supplied for the path (package-source/*/*) repository does not exist".
+
 ### Changed
 - **`mage new theme` and `mage new module`:** The generated files now come from the `templates/theme` and `templates/module` folders instead of being built as strings in the script, so files can be added or removed without a rebuild. Both now also get a `composer.json`, a `README.md`, a `CHANGELOG.md`, a `SECURITY.md`, an `.editorconfig` and a `.gitignore`, and the generated `theme.xml` starts with an XML declaration.
 - **`mage new module`:** The module template now follows the [hyva-module-template](https://github.com/GrimLink/hyva-module-template). It asks whether this is a Hyvä module, defaulting to what the project has installed. A Hyvä module additionally gets the config observer, its `events.xml` and the tailwind sources, and sequences `Hyva_Theme` instead of `Magento_Theme`.

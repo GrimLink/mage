@@ -75,6 +75,9 @@ function mage_install() {
 
   echo "Setting up local composer folder"
   mkdir -p package-source
+  # Git cannot track an empty directory, so without a marker a fresh clone has
+  # no package-source and composer install aborts on the path repository.
+  touch package-source/.gitkeep
   $COMPOSER_CLI config repositories.local-packages path "package-source/*/*"
 
   echo "Setting up default plugins"
