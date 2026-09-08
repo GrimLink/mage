@@ -11,6 +11,7 @@
 * **Efficient development:** The `watch` command automates cache cleaning on file changes, improving your workflow.
 * **Easier patch creation**: Create patches with only a few arguments.
 * **BFCache compatibility**: Easily add [BFCache compatibility patches] to your project.
+* **Isolated services**: Every project gets its own Redis instance and OpenSearch index prefix, so one `cache:flush` or reindex cannot reach another project.
 
 ## Installation
 
@@ -37,6 +38,21 @@ Here are some highlights of what Mage can do:
 * **`mage nuke`**: Permanently delete the local Magento project (Database, Environment, Files).
 * **`mage add [PKG|GIT_URL]`**: An enhanced `composer require` that also accepts raw git repository URLs.
 * **`mage outdated`**: Easily view all direct outdated composer dependencies.
+
+### Service Isolation
+
+By default a Magento project uses Redis db 0, 1 and 2 on port 6379, and falls back to the `magento2` OpenSearch index prefix. Run more than one project on a machine and they share all of it: a `cache:flush` clears the cache of every project at once, a reindex overwrites the indices of another project, and importing a production database drags its index prefix along with it.
+
+* **`mage isolate`:** Give the current project its own Redis instance and pin its search config in `app/etc/env.php`, where a database import cannot overwrite it.
+* **`mage isolate all [PATH]`:** Do the same for every Magento project below `PATH`.
+* **`mage isolate status [PATH]`:** Show the Redis instance and index prefix of every project, and flag the ones that share either.
+* **`mage isolate start|stop`:** Start or stop the Redis instance of every project.
+* **`mage isolate agent`:** Install a launchd or systemd unit that starts those instances at login.
+* **`mage isolate prune [PATH]`:** Delete the OpenSearch indices that no project claims.
+
+New projects are isolated by `mage setup` already. The port of each project is kept in `~/.config/mage/redis-ports.tsv`.
+
+**Note:** Warden gives every project its own containers, so isolation is skipped there. Set `MAGE_ISOLATE=0` to opt out everywhere else.
 
 ### Store & Theme Development
 * **`mage new store [url|prefix]`:** Programmatically create a new store view and configure its base URLs and routing (e.g., `mage new store luma` or `mage new store b2b.example.test`).

@@ -37,11 +37,38 @@ function mage_purge() {
   mage_clear_varnish
 }
 
+# Flush only the Redis databases this project uses.
+# A 'flushall' would clear every database on the server, which on a shared
+# Redis takes the cache and the sessions of every other project with it.
 function mage_clear_redis() {
-  if command -v $REDIS_CLI >/dev/null 2>&1; then
+  if ! command -v $REDIS_CLI >/dev/null 2>&1; then
+    return
+  fi
+
+  if [[ $WARDEN == 1 ]]; then
+    # The Redis container belongs to this project alone
     $REDIS_CLI flushall > /dev/null 2>&1
     echo -e " [${GREEN}✓${RESET}] Redis caches flushed"
+    return
   fi
+
+  local config="$(get_mage_redis_config)"
+
+  if [[ -z "$config" ]]; then
+    echo -e " [${YELLOW}-${RESET}] Redis is not used for cache or sessions, skipping"
+    return
+  fi
+
+  local host port cache_db page_db session_db
+  read -r host port cache_db page_db session_db <<< "$config"
+
+  local db
+  for db in "$cache_db" "$page_db" "$session_db"; do
+    [[ "$db" == "-" ]] && continue
+    $REDIS_CLI -h "$host" -p "$port" -n "$db" flushdb > /dev/null 2>&1
+  done
+
+  echo -e " [${GREEN}✓${RESET}] Redis caches flushed on ${host}:${port}"
 }
 
 function mage_clear_varnish() {

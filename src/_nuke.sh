@@ -46,6 +46,11 @@ function mage_nuke() {
   echo "Clearing OpenSearch indices..."
   mage_clear_opensearch
 
+  if [[ $MAGE_ISOLATE == 1 ]]; then
+    echo "Stopping the Redis instance of this project..."
+    mage_redis_stop "$DIR_NAME"
+  fi
+
   echo "Removing directory: $MAGE_ROOT"
   cd ..
   rm -rf "$DIR_NAME"

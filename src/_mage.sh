@@ -128,6 +128,34 @@ case "${@}" in
   mage_nuke
   ;;
 
+"isolate")
+  mage_isolate
+  ;;
+
+"isolate all" | "isolate all "*)
+  mage_isolate_all "${3:-$(pwd)}"
+  ;;
+
+"isolate status" | "isolate status "*)
+  mage_isolate_status "${3:-$(pwd)}"
+  ;;
+
+"isolate start")
+  mage_redis_start_all
+  ;;
+
+"isolate stop")
+  mage_redis_stop_all
+  ;;
+
+"isolate agent")
+  mage_isolate_agent
+  ;;
+
+"isolate prune" | "isolate prune "*)
+  mage_isolate_prune "${3:-$(pwd)}"
+  ;;
+
 "new admin")
   read -e -p "Email (${GITEMAIL}) or: " useremail
   read -e -p "Firstname (${GITNAME}) or: " userfirst

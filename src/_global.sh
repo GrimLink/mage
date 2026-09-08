@@ -30,6 +30,12 @@ ADMINPASS="magento_123$"
 BFCACHE_PATCH_REPO="https://github.com/GrimLink/magento-patch-bfcache"
 MAGE_TEMPLATES_ARCHIVE="https://github.com/GrimLink/mage/tarball/main"
 
+# Isolation of Redis and OpenSearch per project, set MAGE_ISOLATE=0 to opt out
+MAGE_ISOLATE="${MAGE_ISOLATE:-1}"
+MAGE_REDIS_PORT_BASE="${MAGE_REDIS_PORT_BASE:-6380}"
+MAGE_REDIS_MAXMEMORY="${MAGE_REDIS_MAXMEMORY:-256mb}"
+MAGE_SCAN_DEPTH="${MAGE_SCAN_DEPTH:-6}"
+
 # Load NVM if available, so the node version is the one used by the system
 [ -s "$HOME/.nvm/nvm.sh" ] && \. "$HOME/.nvm/nvm.sh"
 
@@ -83,4 +89,6 @@ if [ -f .env ] && grep -q "WARDEN_ENV_NAME" .env && [[ ! "$PATH" == /var/www/htm
   # Run removal within environment, so that changes are in effect immediately.
   # Changes will get synced back to the host
   PURGE_CLI="warden env exec -T php-fpm rm -rf"
+  # Every Warden project has its own Redis and OpenSearch container
+  MAGE_ISOLATE=0
 fi

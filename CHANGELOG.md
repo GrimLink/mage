@@ -8,10 +8,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **`mage isolate` command:** New command group that gives every project its own Redis instance and its own OpenSearch index prefix. `mage isolate` does the current project, `mage isolate all [PATH]` every project below a path, and `mage isolate status [PATH]` reports which projects still share a Redis instance or an index prefix. `mage isolate start`, `stop` and `agent` manage the Redis instances, where `agent` installs a launchd or systemd unit that starts them at login. `mage isolate prune [PATH]` deletes the OpenSearch indices that no project claims, which is what clears out what a shared prefix left behind.
+- **Redis port registry:** The port of each project is kept in `~/.config/mage/redis-ports.tsv`, so it is stable, readable and cannot collide the way a hash of the project path can. Ports are handed out from 6380 upwards, skipping anything already in use.
+- **`mage info`:** Now also shows the Redis instance and database numbers of the project, and the OpenSearch index prefix next to the search engine.
 - **`mage new gitignore` command:** New command that adds a Magento aware `.gitignore` to the project. The templates are synced on first use to `~/.config/mage/templates`, so they stay available offline and refresh themselves after 30 days.
 - **`mage setup`:** Now adds the same `.gitignore`, existing files are left untouched.
 
 ### Changed
+- **`mage setup`:** Now starts a Redis instance for the new project and points the cache, page cache and sessions at it, instead of sharing db 0, 1 and 2 on port 6379 with every other project on the machine. The cache id prefixes are set to the project name, where Magento would otherwise derive them from a three character hash of the install path, which collides once you have a handful of projects in the same folder. Set `MAGE_ISOLATE=0` to keep the old shared setup, and `MAGE_REDIS_PORT_BASE` or `MAGE_REDIS_MAXMEMORY` to change the port range or the memory ceiling.
+- **`mage setup`:** The search engine config is now also written to `app/etc/env.php`. `setup:install` only writes it to `core_config_data`, where importing a production database overwrites it, which is how projects end up sharing the default `magento2` index prefix and reindexing over each other.
+- **`mage nuke`:** Now also stops the Redis instance of the project it removes.
 - **`mage new theme` and `mage new module`:** The generated files now come from the `templates/theme` and `templates/module` folders instead of being built as strings in the script, so files can be added or removed without a rebuild. Both now also get a `composer.json`, a `README.md`, a `CHANGELOG.md`, a `SECURITY.md`, an `.editorconfig` and a `.gitignore`, and the generated `theme.xml` starts with an XML declaration.
 - **`mage new module`:** The module template now follows the [hyva-module-template](https://github.com/GrimLink/hyva-module-template). It asks whether this is a Hyvä module, defaulting to what the project has installed. A Hyvä module additionally gets the config observer, its `events.xml` and the tailwind sources, and sequences `Hyva_Theme` instead of `Magento_Theme`.
 - **`mage new theme` and `mage new module` prompts:** Both now share the vendor and name question, and yes/no questions go through one helper, so the answer options and the handling of an empty answer are the same everywhere.
@@ -19,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Sample data cache:** The sample data clones now live in `~/.config/mage/sampledata`. An existing `~/.magento-sampledata` folder is moved there on the next `mage add sample`, so nothing has to be cloned again.
 
 ### Fixed
+- **`mage purge` and `mage cleanup redis`:** Both ran `redis-cli flushall`, which empties every database on the Redis server. On a shared Redis that also cleared the cache and the sessions of every other project on the machine. Only the databases this project uses are flushed now, read from `app/etc/env.php`. Warden keeps using `flushall`, since its Redis container belongs to a single project.
 - **`mage new theme` and `mage new module` paths:** The blank line printed after the package-source question ended up in the captured folder name, which put a newline in front of the generated path.
 
 ## [2.8.1] - 2026-07-02

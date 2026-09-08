@@ -39,6 +39,15 @@ function mage_help() {
   mage_help_cmd "log show"                    "show all logs"
   mage_help_cmd "build"                       "Run setup:static-content:deploy with common defaults"
 
+  mage_help_sub_header "Isolation"
+  mage_help_cmd "isolate"                     "Give this project its own Redis instance and search prefix"
+  mage_help_cmd "isolate all [PATH]"          "Isolate every Magento project below PATH"
+  mage_help_cmd "isolate status [PATH]"       "Show the Redis instance and search prefix of every project"
+  mage_help_cmd "isolate start"               "Start the Redis instance of every project"
+  mage_help_cmd "isolate stop"                "Stop the Redis instance of every project"
+  mage_help_cmd "isolate agent"               "Start those Redis instances at login"
+  mage_help_cmd "isolate prune [PATH]"        "Delete OpenSearch indices no project claims"
+
   mage_help_sub_header "Generators"
   mage_help_cmd "new admin"                   "Create new admin user"
   mage_help_cmd "new customer"                "Create new customer"
@@ -109,7 +118,12 @@ function mage_info() {
   echo -e "- Database name: $(grep dbname app/etc/env.php | tail -1 | cut -d ">" -f2 | cut -d "'" -f2 | cut -d '"' -f2)"
 
   if [[ -n "$mage_search" ]]; then
-    echo -e "- Search Engine: $mage_search"
+    echo -e "- Search Engine: $mage_search ($(get_mage_search_prefix)_*)"
+  fi
+
+  local mage_redis="$(get_mage_redis_config)"
+  if [[ -n "$mage_redis" ]]; then
+    echo -e "- Redis: $(echo "$mage_redis" | awk '{ print $1 ":" $2 " (db " $3 ", " $4 ", " $5 ")" }')"
   fi
 
   echo -e "- PHP version: ${GREEN}$($PHP_CLI --version | grep ^PHP | cut -d' ' -f2)${RESET}"

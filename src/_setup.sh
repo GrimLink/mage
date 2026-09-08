@@ -32,6 +32,7 @@ function mage_setup() {
   local session_redis_host="localhost"
   local backend_redis_server="127.0.0.1"
   local page_redis_server="127.0.0.1"
+  local redis_port="6379"
 
   if [[ $WARDEN == 1 ]]; then
     local db_host="db"
@@ -43,6 +44,14 @@ function mage_setup() {
     local session_redis_host="redis"
     local backend_redis_server="redis"
     local page_redis_server="redis"
+  fi
+
+  # Give this project its own Redis instance, so that a 'cache:flush' here
+  # cannot clear the cache and sessions of every other project on this machine
+  if [[ $MAGE_ISOLATE == 1 ]]; then
+    redis_port="$(mage_redis_port "$name")"
+    echo "Starting Redis for ${name} on port ${redis_port}..."
+    mage_redis_start "$name" "$redis_port" || exit 1
   fi
 
   # Setup db, if not using warden
@@ -86,19 +95,31 @@ function mage_setup() {
     --opensearch-timeout=15 \
     --session-save=redis \
     --session-save-redis-host="${session_redis_host}" \
+    --session-save-redis-port="${redis_port}" \
     --session-save-redis-db=2 \
     --session-save-redis-max-concurrency=20 \
     --cache-backend=redis \
     --cache-backend-redis-server="${backend_redis_server}" \
+    --cache-backend-redis-port="${redis_port}" \
     --cache-backend-redis-db=0 \
+    --cache-id-prefix="${name}_" \
     --page-cache=redis \
     --page-cache-redis-server="${page_redis_server}" \
+    --page-cache-redis-port="${redis_port}" \
     --page-cache-redis-db=1 \
+    --page-cache-id-prefix="${name}_" \
     --admin-firstname="${ADMINNAME}" \
     --admin-lastname="admin" \
     --admin-email="${ADMINEMAIL}" \
     --admin-user="${ADMINNAME}" \
     --admin-password="${ADMINPASS}"
+
+  # setup:install writes the search config to core_config_data, where a later
+  # database import overwrites it. Pinning it in app/etc/env.php keeps this
+  # project on its own index prefix.
+  if [[ $MAGE_ISOLATE == 1 ]]; then
+    mage_lock_search_config "$db_name" "$search_host" 9200
+  fi
 
   echo "Setting default values for Store config"
   $MAGENTO_CLI config:set general/store_information/name $name &> /dev/null
