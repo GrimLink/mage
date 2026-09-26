@@ -128,6 +128,7 @@ Without arguments it errors with its own help page, listing the composer and git
 * `{{NAME}}` placeholders (uppercase, digits, underscores) are asked, with `MAGE_VAR_<NAME>` from the config as the default. Placeholders inside `auth` are secrets, their input is hidden. Answers are escaped for json.
 * Requires `jq`, with a clear error when it is missing.
 * Anything that is not composer, such as `setup:upgrade`, belongs to the future `import` command.
+* `templates/composer-hyva.json` is the bundled example: the Hyvä license auth, the private packagist repository and the theme packages. It asks for `HYVA_LICENSE_KEY` and `HYVA_PROJECT`.
 
 ### `add theme [Vendor/Name] [--parent=THEME] [--admin]`
 
