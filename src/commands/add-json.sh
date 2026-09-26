@@ -5,10 +5,7 @@ MAGE_ADD_JSON_KEYS="description repositories config auth require require-dev"
 # Apply a composer fragment, in the order auth, repositories, config and packages,
 # so the packages can use the repositories and credentials they need
 function mage_add_json() {
-  if ! command -v jq &> /dev/null; then
-    mage_error "Adding from a json file requires jq, install it with 'brew install jq' or your package manager"
-    exit 1
-  fi
+  mage_require_jq "Adding from a json file"
 
   local file
   file="$(mage_resolve_path "$1")"

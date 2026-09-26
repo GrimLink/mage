@@ -26,10 +26,7 @@ function mage_cmd_remove() {
     esac
   done
 
-  if ! command -v jq &> /dev/null; then
-    mage_error "Removing by term requires jq, install it with 'brew install jq' or your package manager"
-    exit 1
-  fi
+  mage_require_jq "Removing by term"
 
   local require=()
   local require_dev=()
@@ -37,11 +34,11 @@ function mage_cmd_remove() {
 
   while IFS= read -r package; do
     require+=("$package")
-  done < <(mage_remove_matches require "${terms[@]}")
+  done < <(mage_composer_matches require "${terms[@]}")
 
   while IFS= read -r package; do
     require_dev+=("$package")
-  done < <(mage_remove_matches require-dev "${terms[@]}")
+  done < <(mage_composer_matches require-dev "${terms[@]}")
 
   if [[ ${#require[@]} -eq 0 ]] && [[ ${#require_dev[@]} -eq 0 ]]; then
     mage_error "No direct dependency matches: ${terms[*]}"
@@ -67,21 +64,4 @@ function mage_cmd_remove() {
   if [[ ${#require_dev[@]} -gt 0 ]]; then
     $COMPOSER_CLI remove --dev "${require_dev[@]}" || exit 1
   fi
-}
-
-# Echo the packages in the composer.json key that contain any of the terms,
-# case-insensitive and as plain text. Platform entries like php and ext-* have no slash.
-function mage_remove_matches() {
-  local key="$1"
-  shift
-
-  local patterns=()
-  local term
-
-  for term in "$@"; do
-    patterns+=(-e "$term")
-  done
-
-  jq -r --arg key "$key" '.[$key] // {} | keys[] | select(contains("/"))' composer.json |
-    grep -i -F "${patterns[@]}"
 }

@@ -133,3 +133,28 @@ function mage_ask_vendor_name() {
 function mage_is_hyva_installed() {
   [[ -d vendor/hyva-themes/magento2-theme-module ]]
 }
+
+# Echo the packages in the composer.json key that contain any of the terms,
+# case-insensitive and as plain text. Platform entries like php and ext-* have no slash.
+function mage_composer_matches() {
+  local key="$1"
+  shift
+
+  local patterns=()
+  local term
+
+  for term in "$@"; do
+    patterns+=(-e "$term")
+  done
+
+  jq -r --arg key "$key" '.[$key] // {} | keys[] | select(contains("/"))' composer.json |
+    grep -i -F "${patterns[@]}"
+}
+
+# Exit when jq is missing, the argument describes what needs it
+function mage_require_jq() {
+  if ! command -v jq &> /dev/null; then
+    mage_error "$1 requires jq, install it with 'brew install jq' or your package manager"
+    exit 1
+  fi
+}
