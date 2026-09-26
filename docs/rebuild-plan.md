@@ -179,6 +179,12 @@ Without arguments it errors with its own help page, listing the composer and git
 * `add i18n [PATH]`: the path is resolved from the calling folder, collects the phrases into a sorted and quoted `i18n/en_US.csv`, without the macOS only `sed -i`.
 * `new gitignore` is not ported, `setup` adds the gitignore and anything after that is up to the user.
 
+### `open [STORE|admin]`
+
+* One php bootstrap asks Magento for the url, instead of magerun or several `config:show` calls: store view and website scope, custom admin path and admin url all count. A store view matches its exact code, an unknown one lists the codes.
+* Always prints the url, and opens it when the open command exists.
+* The old `start` (editor, git client, store and admin) is not ported.
+
 ### Setting a theme
 
 * `mage_set_theme <theme>` in `core/helpers.sh` is the one place that activates a theme, so every script calls it, even while it can not always set the theme.
