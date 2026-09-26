@@ -67,10 +67,6 @@ if ! bash -n "$temp"; then
   exit 1
 fi
 
-if command -v shellcheck &> /dev/null; then
-  shellcheck -s bash "$temp" || echo "shellcheck reported issues, see above" >&2
-fi
-
 mv "$temp" "$output"
 chmod 755 "$output"
 echo "Built mage ${version} to ${output}"

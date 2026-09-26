@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC2086 # The *_CLI vars hold a command with arguments, and are split on purpose
 
 # Mage is a collection of easy commands and aliases for bin/magento
 # For those who hate typing long shell commands

@@ -102,12 +102,18 @@ Kept as they are.
 * `src/build.sh` recursively inlines every `source` line from `src/mage.sh` into `./mage`. The build order is therefore defined once, in the entrypoint.
 * `src/mage.sh` also runs unbuilt during development, so a rebuild is not needed for every change.
 * The version comes from the first `## [x.y.z]` heading in `CHANGELOG.md`.
-* The output is checked with `bash -n`, and with `shellcheck` when it is installed.
+* The output is checked with `bash -n`, a failed check leaves the existing `mage` untouched.
 * `src/build.sh [OUTPUT]` can write elsewhere, which the tests use.
 
 ## Tests
 
 A minimal bats suite covering root detection, env selection (with a fake `.env` and stub binaries on `PATH`) and the build output.
+
+## CI
+
+* `.github/workflows/ci.yml` runs on every push and pull request to main. Locally, running ShellCheck and the tests is up to the author.
+* ShellCheck runs on the built `mage` and `src/build.sh`, with the settings from `.shellcheckrc`.
+* The bats suite runs on Ubuntu and on macOS, where it uses the bash 3.2 that macOS ships.
 
 ## Later
 

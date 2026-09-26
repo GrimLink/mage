@@ -1,0 +1,4 @@
+shell=bash
+
+# The *_CLI vars hold a command with arguments, and are split on purpose
+disable=SC2086
