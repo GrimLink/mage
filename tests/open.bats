@@ -40,3 +40,18 @@ function setup() {
   [ "$status" -eq 0 ]
   [ "$output" = "Opening https://luma.shop.test/" ]
 }
+
+@test "opens the mail catcher of the environment" {
+  MAGE_MAIL_URL="http://localhost:8025"
+  run mage_cmd_open mail
+  [ "$output" = "Opening http://localhost:8025" ]
+
+  mage_env_use warden
+  run mage_cmd_open mail
+  [ "$output" = "Opening https://webmail.warden.test/" ]
+
+  function ddev() { echo "ddev $*"; }
+  mage_env_use ddev
+  run mage_cmd_open mail
+  [ "$output" = "ddev launch -m" ]
+}

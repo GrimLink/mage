@@ -22,6 +22,9 @@ MAGE_EDITION="mage-os"
 # Stores are served as https://<project>.<MAGE_DOMAIN>/
 MAGE_DOMAIN="test"
 
+# The mail catcher 'mage open mail' opens on your machine, Mailpit by default
+MAGE_MAIL_URL="http://localhost:8025"
+
 # An empty MAGE_DB_NAME uses the project folder name
 MAGE_DB_HOST="localhost"
 MAGE_DB_NAME=""

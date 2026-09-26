@@ -94,3 +94,7 @@ function env_local_clean_redis() {
 function env_local_add_store() {
   mage_notice "Point ${1} to this project in your web server, and set MAGE_RUN_CODE=${2} with MAGE_RUN_TYPE=store for it"
 }
+
+function env_local_open_mail() {
+  mage_open_browser "$MAGE_MAIL_URL"
+}

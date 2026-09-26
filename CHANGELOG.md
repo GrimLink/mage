@@ -19,6 +19,7 @@ Version 3 is a rebuild of mage. The commands of version 2 return step by step, u
 - **`mage add theme` command:** Replaces `mage new theme`. The vendor, name and parent can be given as options, the parent defaults to Hyvä when it is installed, and a theme created in `package-source` is required right away.
 - **`mage add module` command:** Replaces `mage new module`. The vendor, name and Hyvä choice can be given as options, and a module created in `package-source` is required right away.
 - **`mage show [OPTION]` command:** Shows information about the project, built from handlers like `mage add` and `mage clean`. The options are `stores`, `themes`, which lists the themes of your direct dependencies and `app/design` with their parent, and `modules`, which now only lists the modules of your direct dependencies and `app/code`, with where each comes from and whether it is disabled.
+- **`mage open mail`:** Opens the mail catcher of the environment: the Warden Mailpit, the DDEV one, or `MAGE_MAIL_URL` on your machine.
 - **`mage nuke --keep-files`:** Removes the database and environment, but keeps the project files.
 - **Config file:** The defaults, such as the admin user, database credentials, store config and default composer packages, can be overridden in `~/.config/mage/config`.
 - **DDEV support:** Projects with a `.ddev/config.yaml` run their commands through DDEV. `mage create` can set up a new DDEV project, with the OpenSearch and Redis add-ons, and `mage nuke` removes it with `ddev delete`.

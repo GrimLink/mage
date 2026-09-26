@@ -66,3 +66,8 @@ function env_warden_add_store() {
   warden sign-certificate "$1"
   mage_notice "Route ${1} in .warden/warden-env.yml and map it to store ${2} in app/etc/stores.php, see https://docs.warden.dev/configuration/multipledomains.html"
 }
+
+# Mailpit is a global Warden service, shared by all environments
+function env_warden_open_mail() {
+  mage_open_browser "https://webmail.warden.test/"
+}

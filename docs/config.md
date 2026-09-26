@@ -37,6 +37,7 @@ Used by `mage create` and `mage setup` to create the admin user, and as the defa
 |---|---|---|
 | `MAGE_EDITION` | `mage-os` | The edition `mage create` suggests: `mage-os`, `community` or `enterprise` |
 | `MAGE_DOMAIN` | `test` | Stores are served as `https://<project>.<MAGE_DOMAIN>/` |
+| `MAGE_MAIL_URL` | `http://localhost:8025` | The mail catcher `mage open mail` opens, locally and with Valet |
 | `MAGE_PACKAGES` | See below | Packages `mage create` requires in every new project |
 | `MAGE_DEV_PACKAGES` | `avstudnitz/scopehint2`, `spatie/ray` | Dev packages `mage create` requires in every new project |
 | `MAGE_STORE_CONFIG` | See below | Store config `mage setup` sets after the install |

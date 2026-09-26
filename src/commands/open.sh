@@ -1,6 +1,12 @@
-# Open the default store view, a store view by its code, or with 'admin' the admin
+# Open the default store view, a store view by its code, the admin, or the mail catcher
 function mage_cmd_open() {
   local target="$1"
+
+  if [[ "$target" == "mail" ]]; then
+    env_call open_mail
+    return
+  fi
+
   local result
   result="$(mage_open_url "$target")"
 
@@ -20,10 +26,15 @@ function mage_cmd_open() {
     exit 1
   fi
 
-  mage_info "Opening ${url}"
+  mage_open_browser "$url"
+}
+
+# Show the url, and open it when there is an open command, so over ssh the url is still there
+function mage_open_browser() {
+  mage_info "Opening $1"
 
   if command -v "${OPEN_CLI%% *}" &> /dev/null; then
-    $OPEN_CLI "$url" &> /dev/null
+    $OPEN_CLI "$1" &> /dev/null
   fi
 }
 
