@@ -24,7 +24,7 @@ When Hyvä is installed, it switches back to `Hyva/default` where possible, see 
 ## hyva
 
 Runs `bin/magento hyva:sampledata:deploy`, then `setup:upgrade`, see the [Hyvä sample data docs](https://docs.hyva.io/hyva-themes/getting-started/sample-data.html).
-It needs the Hyvä Theme (`Hyva_Theme` 1.4.7 or later), and adds `magento/module-sample-data` when it is missing.
+It needs the Hyvä Theme, `Hyva_Theme` 1.4.7 or later.
 
 The Koti packages come with a Hyvä license, through the `https://hyva-themes.repo.packagist.com/` repository in `composer.json`.
 Without that repository, such as for Hyvä from the Hyvä GitLab ([`mage add hyva --dev`](add-hyva.md)) or from `package-source`, mage first adds the Koti repositories of the GitLab from the bundled `composer-hyva-sample-dev.json`, read over ssh.

@@ -16,7 +16,7 @@ function setup() {
 }
 
 @test "asks which set, defaulting to hyva when Hyva is installed" {
-  mkdir -p vendor/hyva-themes/magento2-theme-module vendor/magento/module-sample-data
+  mkdir -p vendor/hyva-themes/magento2-theme-module
 
   run mage_cmd_add sample <<< ""
   [[ "$output" == *"magento hyva:sampledata:deploy"* ]]
@@ -39,16 +39,8 @@ function setup() {
   [[ "$output" == *"mage add hyva"* ]]
 }
 
-@test "the Hyva set requires the sample data module when missing" {
-  mkdir -p vendor/hyva-themes/magento2-theme-module
-  echo '{ "repositories": { "private-packagist": { "type": "composer", "url": "https://hyva-themes.repo.packagist.com/acme/" } } }' > composer.json
-
-  run mage_cmd_add sample hyva
-  [[ "${lines[0]}" == "composer require magento/module-sample-data" ]]
-}
-
 @test "the Hyva set adds the Koti GitLab repositories without a Hyva license" {
-  mkdir -p vendor/hyva-themes/magento2-theme-module vendor/magento/module-sample-data
+  mkdir -p vendor/hyva-themes/magento2-theme-module
   MAGE_ROOT="$BATS_TEST_TMPDIR"
   MAGE_CALL_DIR="$BATS_TEST_TMPDIR"
 
@@ -64,7 +56,7 @@ function setup() {
 }
 
 @test "the Hyva set keeps or replaces Luma sample data as answered" {
-  mkdir -p vendor/hyva-themes/magento2-theme-module vendor/magento/module-sample-data vendor/magento/module-catalog-sample-data
+  mkdir -p vendor/hyva-themes/magento2-theme-module vendor/magento/module-catalog-sample-data
   echo '{ "repositories": { "private-packagist": { "type": "composer", "url": "https://hyva-themes.repo.packagist.com/acme/" } } }' > composer.json
 
   run mage_cmd_add sample hyva <<< "n"

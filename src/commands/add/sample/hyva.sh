@@ -20,10 +20,6 @@ function mage_sample_hyva() {
     mage_add_json "$file" || return 1
   fi
 
-  if [[ ! -d vendor/magento/module-sample-data ]]; then
-    $COMPOSER_CLI require magento/module-sample-data || return 1
-  fi
-
   local args=("$@")
 
   # Next to the Luma sample data, Koti needs to know whether to keep or replace it
