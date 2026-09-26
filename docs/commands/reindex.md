@@ -1,10 +1,9 @@
 # mage reindex
 
-Reindex, then flush the cache so the result shows.
+Reindex everything, then flush the cache so the result shows.
 
 ```bash
 mage reindex
-mage reindex catalogsearch_fulltext cataloginventory_stock
 ```
 
-Without arguments it reindexes everything. Index names go to `bin/magento indexer:reindex`, see `mage indexer:info` for the names. The cache is only flushed when the reindex succeeds.
+It is a shortcut for `bin/magento indexer:reindex` followed by `bin/magento cache:flush`, the cache is only flushed when the reindex succeeds. Arguments are ignored, use `mage indexer:reindex` to reindex specific indexes.

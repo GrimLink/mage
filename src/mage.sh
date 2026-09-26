@@ -109,7 +109,7 @@ function mage_main() {
       mage_cmd_watch
       ;;
     "reindex")
-      mage_cmd_reindex "${@:2}"
+      mage_cmd_reindex
       ;;
     "run")
       mage_cmd_run "${@:2}"

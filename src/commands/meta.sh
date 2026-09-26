@@ -40,7 +40,7 @@ function mage_cmd_help() {
   mage_help_cmd "show [OPTION]"               "Show project information, see 'mage show help' for all options"
   mage_help_cmd "run [ARGS]"                  "Run n98-magerun2"
   mage_help_cmd "watch"                       "Clean only the caches a file change affects, with cache-clean"
-  mage_help_cmd "reindex [INDEX...]"          "Reindex all or the given indexes, then flush the cache"
+  mage_help_cmd "reindex"                     "Reindex everything, then flush the cache"
   mage_help_cmd "clean/purge [OPTION]"        "Clean caches and files, see 'mage clean help' for all options"
 
   mage_info ""
