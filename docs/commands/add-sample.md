@@ -10,7 +10,10 @@ mage add sample hyva      # the Koti sample data of Hyvä
 
 Without a set it asks, defaulting to `hyva` when Hyvä is installed, otherwise `magento`.
 Further arguments go to the deploy command of the set.
-Afterwards it reindexes and cleans the cache.
+
+Both sets add their styles to the page head, which any other theme would load too.
+So afterwards it asks to clear `design/head/includes`, yes by default.
+Then it reindexes and cleans the cache.
 
 ## magento
 
@@ -18,7 +21,6 @@ Runs `bin/magento sampledata:deploy`, which adds the sample data packages of the
 This works for every edition, and inside a Warden or DDEV container.
 Magento Open Source and Adobe Commerce need your marketplace keys in the composer auth.
 
-The sample data adds the Luma styles to the head of every page, so mage clears `design/head/includes` again.
 When Hyvä is installed, it switches back to `Hyva/default` where possible, see [`mage add hyva`](add-hyva.md).
 
 ## hyva

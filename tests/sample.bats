@@ -12,7 +12,13 @@ function setup() {
   [ "$status" -eq 0 ]
   [ "${lines[0]}" = "magento sampledata:deploy" ]
   [ "${lines[1]}" = "magento setup:upgrade" ]
-  [[ "$output" == *"magento indexer:reindex"*"magento cache:clean"* ]]
+  [[ "$output" == *"Cleared design/head/includes"*"magento indexer:reindex"*"magento cache:clean"* ]]
+}
+
+@test "keeps the head styles when asked" {
+  run mage_cmd_add sample magento <<< "n"
+  [ "$status" -eq 0 ]
+  [[ "$output" != *"Cleared design/head/includes"* ]]
 }
 
 @test "asks which set, defaulting to hyva when Hyva is installed" {

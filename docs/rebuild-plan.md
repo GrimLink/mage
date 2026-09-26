@@ -225,10 +225,10 @@ Without arguments it errors with its own help page, listing the composer and git
 ### `add sample [magento|hyva]`
 
 - One set at a time, from a registry like the handlers: `MAGE_SAMPLE_SETS`, `mage_sample_<name>`, one file per set in `commands/add/sample/`. Without a set it asks, `hyva` by default when Hyvä is installed.
-- `magento` uses `sampledata:deploy`, which fits the installed version and edition and works inside containers, where the old git clone did not. Then clears `design/head/includes` and sets Hyvä as theme when installed.
+- `magento` uses `sampledata:deploy`, which fits the installed version and edition and works inside containers, where the old git clone did not. Then sets Hyvä as theme when installed.
 - `hyva` uses `hyva:sampledata:deploy` (Koti), needs Hyvä, and asks to keep or replace Luma sample data when present.
   When `composer.json` has no repository with a `https://hyva-themes.repo.packagist.com/` url (no license, such as Hyvä from the GitLab or from package-source), it first applies `composer-hyva-sample-dev.json` with the 19 Koti repositories, generated from the GitLab group `hyva-themes/sample-data/koti`.
-- Further arguments go to the deploy command, then it reindexes and cleans the cache.
+- Further arguments go to the deploy command. Then, for either set, it asks to clear `design/head/includes` (both add their styles there, yes by default), reindexes and cleans the cache.
 
 ### `add admin` and `add customer`
 
