@@ -67,6 +67,7 @@ function make_git_package() {
   [ "$status" -eq 0 ]
   [ -f package-source/vendor/example/composer.json ]
   [[ "$output" == *"composer config repositories.local-packages path package-source/*/*"* ]]
+  [ -f package-source/.gitkeep ]
   [[ "$output" == *"composer require vendor/example:dev-main as 1.2.0 --dev"* ]]
 }
 
@@ -95,4 +96,5 @@ function make_git_package() {
 
   run mage_cmd_add "$url"
   [[ "$output" != *"composer config"* ]]
+  [ -f package-source/.gitkeep ]
 }

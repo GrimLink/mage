@@ -24,6 +24,7 @@ The name is a folder name, and must not exist yet.
    Warden and DDEV first set up and start their containers.
 2. Configures composer for development: `minimum-stability` dev with `prefer-stable`, and allows the composer patches plugin.
 3. Registers the `package-source` folder as a composer path repository, for your local packages.
+   It gets a `.gitkeep`, so the folder survives a clone, which `composer install` needs.
 4. Requires the default packages from `MAGE_PACKAGES` and `MAGE_DEV_PACKAGES`, see [configuration](../config.md), and runs `composer install`.
 5. Runs the setup below.
 

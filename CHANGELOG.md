@@ -65,6 +65,7 @@ Anything mage does not know still runs `bin/magento`.
 - **`mage cleanup [TYPE]`:** Use `mage clean [OPTION]`, where `sample` is now `sample-files`.
 
 ### Fixed
+- **Cloning a project created by mage:** `package-source` now gets a `.gitkeep`, so the folder survives a clone. Without it `composer install` aborted with "the url supplied for the path (package-source/*/*) repository does not exist". Thanks to [@allrude](https://github.com/allrude), see [#52](https://github.com/GrimLink/mage/pull/52).
 - **Stale static files with Valet:** Valet serves static files without `Cache-Control`, so browsers kept old JS and CSS in developer mode until a hard reload. `mage setup` now adds a `LocalValetDriver.php` that makes them revalidate, and the gitignore template ignores it. See [#55](https://github.com/GrimLink/mage/issues/55).
 - **`mage add store` with Valet:** The store is linked and added to `.valet-env.php` by its site name, instead of the full domain, which Valet served with a second tld.
 - **Module location:** A module in `app/code` is now created as `Vendor/MyModule`, the path Magento autoloads it from, instead of `Vendor/my-module`.

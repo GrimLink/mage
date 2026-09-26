@@ -135,8 +135,13 @@ function mage_add_require_local() {
   $COMPOSER_CLI require "${1}:@dev"
 }
 
-# Register the package source folder as a composer path repository, once
+# Register the package source folder as a composer path repository, once.
+# Git cannot track an empty folder, so without the .gitkeep a fresh clone
+# has no package-source, and composer install aborts on the path repository.
 function mage_add_path_repository() {
+  mkdir -p "$MAGE_PACKAGE_SOURCE"
+  touch "${MAGE_PACKAGE_SOURCE}/.gitkeep"
+
   if [[ -f composer.json ]] && grep -q '"local-packages"' composer.json; then
     return
   fi
