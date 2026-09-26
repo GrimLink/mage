@@ -27,6 +27,7 @@ source "${MAGE_SRC}/commands/meta.sh"
 source "${MAGE_SRC}/commands/create.sh"
 source "${MAGE_SRC}/commands/setup.sh"
 source "${MAGE_SRC}/commands/nuke.sh"
+source "${MAGE_SRC}/commands/run.sh"
 source "${MAGE_SRC}/commands/add.sh"
 source "${MAGE_SRC}/commands/add-json.sh"
 source "${MAGE_SRC}/commands/add/theme.sh"
@@ -71,6 +72,9 @@ function mage_main() {
       ;;
     "add")
       mage_cmd_add "${@:2}"
+      ;;
+    "run")
+      mage_cmd_run "${@:2}"
       ;;
     "clean" | "purge")
       mage_cmd_clean "${@:2}"
