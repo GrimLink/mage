@@ -56,6 +56,7 @@ Run `mage help` for the full list. Anything mage does not know runs `bin/magento
 | [`del`](docs/commands/remove.md) | Remove packages by name or term |
 | [`upd`](docs/commands/update.md) | Update packages by name or term |
 | [`outdated`](docs/commands/outdated.md) | List the direct dependencies with a newer version |
+| [`watch`](docs/commands/watch.md) | Clean only the caches a file change affects |
 | [`clean`](docs/commands/clean.md) | Clean caches and generated files (alias: `purge`) |
 | [`open`](docs/commands/open.md) | Open a store view or the admin in your browser |
 | [`show`](docs/commands/show.md) | Show project information, such as the stores |

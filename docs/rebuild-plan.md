@@ -53,7 +53,7 @@ tests/             bats suite
 ## Environments
 
 * Each `env/<name>.sh` defines `env_<name>_available` (the tool is installed), `env_<name>_detect` (the current folder uses it) and optionally `env_<name>_apply` (overrides the CLI vars such as `MAGENTO_CLI`, `COMPOSER_CLI`, `PURGE_CLI`, and the `MAGE_DB_*` settings).
-* Other hooks: `create_project`, `setup_prepare`, `setup_finish`, `clean_redis`, `add_store`, `open_mail` and `nuke`. `env_call <hook>` runs the hook of the current env, falls back to the local one, and does nothing when neither defines it.
+* Other hooks: `create_project`, `setup_prepare`, `setup_finish`, `clean_redis`, `add_store`, `open_mail`, `watch_global` and `nuke`. `env_call <hook>` runs the hook of the current env, falls back to the local one, and does nothing when neither defines it.
 * The CLI defaults live in `core/tools.sh`, `local.sh` holds the local hooks. The first env that matches wins, and its name ends up in `MAGE_ENV`.
 * Priority: warden, then ddev, then valet, then local. Valet is an environment, not a separate tool flag.
 * Commands call hooks through `env_call` instead of checking env flags themselves.
@@ -186,6 +186,10 @@ Without arguments it errors with its own help page, listing the composer and git
 * `open mail` goes through the `open_mail` env hook: the global Warden Mailpit, `ddev launch -m`, or `MAGE_MAIL_URL` (default Mailpit on `localhost:8025`) locally and with Valet.
 * Store urls stay with Magento, not the env configs (`valet open`, Warden `.env`, `ddev describe`): those only know the primary url, not store views, website scopes or the admin path. A url cache is not worth it, a warm Magento boots once in about half a second.
 * The old `start` (editor, git client, store and admin) is not ported.
+
+### `watch`
+
+* Runs `vendor/bin/cache-clean.js --watch` through `NODE_CLI`, so in the container with Warden and DDEV. Without it the `watch_global` env hook tries a global one: `cache-clean.js` in the `PATH`, the global composer folder of the Warden container, none for DDEV. The hook returns 127 when there is none, so a stopped watcher is not reported as missing.
 
 ### Setting a theme
 

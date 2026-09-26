@@ -21,6 +21,7 @@ Everything runs on your machine: `bin/magento`, composer, and the services MySQL
 * **Nuke:** clears the OpenSearch indices and Redis keys of the project, and drops its database.
 * **Add store:** tells you to point the new domain to the project yourself.
 * **Open mail:** opens `MAGE_MAIL_URL`, Mailpit on `http://localhost:8025` by default.
+* **Watch:** without cache-clean in the project, uses `cache-clean.js` from your `PATH`.
 * **Redis:** projects share one Redis, so every project gets its own cache prefix and only its own keys are cleaned.
 
 ## Valet
@@ -40,6 +41,7 @@ Works like local, and adds:
 * **Nuke:** `warden env down -v`, removing the containers and their volumes with the database and indices.
 * **Add store:** signs the certificate, and tells you how to route the domain.
 * **Open mail:** opens the global Mailpit at `https://webmail.warden.test/`.
+* **Watch:** without cache-clean in the project, uses the one in the global composer folder of the container.
 
 ## DDEV
 
@@ -50,5 +52,6 @@ Works like local, and adds:
 * **Nuke:** `ddev delete --omit-snapshot --yes`.
 * **Add store:** tells you how to add the domain to DDEV.
 * **Open mail:** `ddev launch -m`.
+* **Watch:** needs cache-clean in the project.
 
 Note that `mage run` uses the magerun on your machine for DDEV, which cannot reach the DDEV database.

@@ -70,3 +70,7 @@ function env_ddev_add_store() {
 function env_ddev_open_mail() {
   ddev launch -m
 }
+
+function env_ddev_watch_global() {
+  return 127
+}

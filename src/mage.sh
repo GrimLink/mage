@@ -29,6 +29,7 @@ source "${MAGE_SRC}/commands/setup.sh"
 source "${MAGE_SRC}/commands/nuke.sh"
 source "${MAGE_SRC}/commands/run.sh"
 source "${MAGE_SRC}/commands/open.sh"
+source "${MAGE_SRC}/commands/watch.sh"
 source "${MAGE_SRC}/commands/add.sh"
 source "${MAGE_SRC}/commands/add-json.sh"
 source "${MAGE_SRC}/commands/remove.sh"
@@ -102,6 +103,9 @@ function mage_main() {
       ;;
     "open")
       mage_cmd_open "${@:2}"
+      ;;
+    "watch")
+      mage_cmd_watch "${@:2}"
       ;;
     "run")
       mage_cmd_run "${@:2}"

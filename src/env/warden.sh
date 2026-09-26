@@ -71,3 +71,14 @@ function env_warden_add_store() {
 function env_warden_open_mail() {
   mage_open_browser "https://webmail.warden.test/"
 }
+
+# The global composer folder of the container is always in the same place
+function env_warden_watch_global() {
+  local cache_clean="/home/www-data/.composer/vendor/bin/cache-clean.js"
+
+  if ! warden env exec -T php-fpm test -f "$cache_clean"; then
+    return 127
+  fi
+
+  warden env exec php-fpm "$cache_clean" --watch "$@"
+}

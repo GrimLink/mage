@@ -98,3 +98,12 @@ function env_local_add_store() {
 function env_local_open_mail() {
   mage_open_browser "$MAGE_MAIL_URL"
 }
+
+# A global cache-clean, from 'composer global require mage-os/magento-cache-clean'
+function env_local_watch_global() {
+  if ! command -v cache-clean.js &> /dev/null; then
+    return 127
+  fi
+
+  cache-clean.js --watch "$@"
+}
