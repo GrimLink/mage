@@ -53,7 +53,7 @@ tests/             bats suite
 ## Environments
 
 * Each `env/<name>.sh` defines `env_<name>_available` (the tool is installed), `env_<name>_detect` (the current folder uses it) and optionally `env_<name>_apply` (overrides the CLI vars such as `MAGENTO_CLI`, `COMPOSER_CLI`, `PURGE_CLI`, and the `MAGE_DB_*` settings).
-* Other hooks: `create_project`, `setup_prepare`, `setup_finish`, `clean_redis`, `add_store`, `open_mail`, `watch_global` and `nuke`. `env_call <hook>` runs the hook of the current env, falls back to the local one, and does nothing when neither defines it.
+* Other hooks: `create_project`, `setup_prepare`, `setup_finish`, `clean_redis`, `add_store`, `open_mail`, `watch_cli` and `nuke`. `env_call <hook>` runs the hook of the current env, falls back to the local one, and does nothing when neither defines it.
 * The CLI defaults live in `core/tools.sh`, `local.sh` holds the local hooks. The first env that matches wins, and its name ends up in `MAGE_ENV`.
 * Priority: warden, then ddev, then valet, then local. Valet is an environment, not a separate tool flag.
 * Commands call hooks through `env_call` instead of checking env flags themselves.
@@ -189,7 +189,7 @@ Without arguments it errors with its own help page, listing the composer and git
 
 ### `watch`
 
-* Runs `vendor/bin/cache-clean.js --watch` through `NODE_CLI`, so in the container with Warden and DDEV. Without it the `watch_global` env hook tries a global one: `cache-clean.js` in the `PATH`, the global composer folder of the Warden container, none for DDEV. The hook returns 127 when there is none, so a stopped watcher is not reported as missing.
+* Picks the command first, then runs it: `vendor/bin/cache-clean.js` through `NODE_CLI`, so in the container with Warden and DDEV, or else the global one the `watch_cli` env hook echoes (`cache-clean.js` in the `PATH`, the global composer folder of the Warden container, none for DDEV). No command is an error, the status of the watcher itself is never checked.
 
 ### Setting a theme
 

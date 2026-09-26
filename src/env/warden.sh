@@ -73,12 +73,10 @@ function env_warden_open_mail() {
 }
 
 # The global composer folder of the container is always in the same place
-function env_warden_watch_global() {
+function env_warden_watch_cli() {
   local cache_clean="/home/www-data/.composer/vendor/bin/cache-clean.js"
 
-  if ! warden env exec -T php-fpm test -f "$cache_clean"; then
-    return 127
+  if warden env exec -T php-fpm test -f "$cache_clean"; then
+    echo "warden env exec php-fpm ${cache_clean}"
   fi
-
-  warden env exec php-fpm "$cache_clean" --watch "$@"
 }

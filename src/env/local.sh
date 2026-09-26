@@ -99,11 +99,9 @@ function env_local_open_mail() {
   mage_open_browser "$MAGE_MAIL_URL"
 }
 
-# A global cache-clean, from 'composer global require mage-os/magento-cache-clean'
-function env_local_watch_global() {
-  if ! command -v cache-clean.js &> /dev/null; then
-    return 127
+# Echo the command of a global cache-clean, from 'composer global require mage-os/magento-cache-clean'
+function env_local_watch_cli() {
+  if command -v cache-clean.js &> /dev/null; then
+    echo "cache-clean.js"
   fi
-
-  cache-clean.js --watch "$@"
 }

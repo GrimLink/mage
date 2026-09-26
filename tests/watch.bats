@@ -23,13 +23,6 @@ function setup() {
   [ "$output" = "global --watch" ]
 }
 
-@test "does not report a stopped watcher as missing" {
-  function env_local_watch_global() { return 130; }
-
-  run mage_cmd_watch
-  [[ "$output" != *"not found"* ]]
-}
-
 @test "errors without any cache-clean" {
   use_stub_bins
 

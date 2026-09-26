@@ -71,6 +71,7 @@ function env_ddev_open_mail() {
   ddev launch -m
 }
 
-function env_ddev_watch_global() {
-  return 127
+# DDEV has no global cache-clean, the project needs its own
+function env_ddev_watch_cli() {
+  return 0
 }
