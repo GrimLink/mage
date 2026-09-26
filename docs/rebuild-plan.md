@@ -189,7 +189,7 @@ Without arguments it errors with its own help page, listing the composer and git
 
 ### `watch`
 
-* Picks the command first, then runs it: `vendor/bin/cache-clean.js` through `NODE_CLI`, so in the container with Warden and DDEV, or else the global one the `watch_cli` env hook echoes (`cache-clean.js` in the `PATH`, the global composer folder of the Warden container, none for DDEV). No command is an error, the status of the watcher itself is never checked. Arguments replace the default `--watch`, so it also runs cache-clean for anything else.
+* Picks the command first, then runs it: `vendor/bin/cache-clean.js` through `NODE_CLI`, so in the container with Warden and DDEV, or else the global one the `watch_cli` env hook echoes (`cache-clean.js` in the `PATH`, the global composer folder of the Warden container, none for DDEV). No command is an error, the status of the watcher itself is never checked. It takes no arguments, cache-clean has little to offer beyond `--watch`.
 
 ### Setting a theme
 

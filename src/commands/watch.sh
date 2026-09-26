@@ -1,6 +1,10 @@
-# Clean only the caches affected by file changes, with the cache-clean of the
-# project, or a global one. Arguments replace --watch, to run cache-clean as you need.
+# Clean only the caches affected by file changes, with the cache-clean of the project, or a global one
 function mage_cmd_watch() {
+  if [[ $# -gt 0 ]]; then
+    mage_error "No arguments are expected for 'watch'"
+    exit 1
+  fi
+
   local cache_clean=""
 
   if [[ -f vendor/bin/cache-clean.js ]]; then
@@ -14,9 +18,5 @@ function mage_cmd_watch() {
     exit 1
   fi
 
-  if [[ $# -eq 0 ]]; then
-    set -- --watch
-  fi
-
-  $cache_clean "$@"
+  $cache_clean --watch
 }
