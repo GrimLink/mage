@@ -110,7 +110,7 @@ function mage_add_patch_create() {
   git -C "$package_dir" init --quiet &&
     git -C "$package_dir" add -A &&
     git -C "$package_dir" -c user.name=mage -c user.email=mage@localhost -c commit.gpgsign=false \
-      commit --quiet --no-verify -m "Baseline" || return 1
+      commit --quiet --no-verify --allow-empty -m "Baseline" || return 1
 
   mage_patch_wait_for_changes "$package_dir"
 
