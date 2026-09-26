@@ -56,11 +56,9 @@ function mage_add_store() {
   mage_check 0 "Store view ${code} uses ${store_url}"
 }
 
-# Magento has no command to create a store view, so this boots Magento with php
+# Magento has no command to create a store view
 function mage_add_store_view() {
-  $PHP_CLI -r '
-    require "app/bootstrap.php";
-    $objectManager = \Magento\Framework\App\Bootstrap::create(BP, $_SERVER)->getObjectManager();
+  mage_php '
     $code = $argv[1];
 
     $store = $objectManager->create(\Magento\Store\Model\Store::class)->load($code, "code");
@@ -87,5 +85,5 @@ function mage_add_store_view() {
     }
 
     echo "Created store view $code" . PHP_EOL;
-  ' -- "$1"
+  ' "$1"
 }

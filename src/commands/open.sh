@@ -41,20 +41,13 @@ function mage_open_browser() {
 # Ask Magento for the url, so the store and website scopes and the custom admin
 # path and url all count. The markers keep the result apart from any php notices.
 function mage_open_url() {
-  $PHP_CLI -r '
-    require "app/bootstrap.php";
-    $objectManager = \Magento\Framework\App\Bootstrap::create(BP, $_SERVER)->getObjectManager();
+  mage_php '
     $storeManager = $objectManager->get(\Magento\Store\Model\StoreManagerInterface::class);
     $target = $argv[1] ?? "";
     $web = \Magento\Framework\UrlInterface::URL_TYPE_WEB;
 
     if ($target === "admin") {
-        $config = $objectManager->get(\Magento\Framework\App\Config\ScopeConfigInterface::class);
-        $base = $config->isSetFlag("admin/url/use_custom")
-            ? $config->getValue("admin/url/custom")
-            : $storeManager->getStore(0)->getBaseUrl($web, true);
-        $frontName = $objectManager->get(\Magento\Backend\App\Area\FrontNameResolver::class)->getFrontName();
-        echo "URL:" . rtrim($base, "/") . "/" . $frontName . "/" . PHP_EOL;
+        echo "URL:" . mageAdminUrl($objectManager) . PHP_EOL;
         return;
     }
 
@@ -69,5 +62,5 @@ function mage_open_url() {
     }
 
     echo "URL:" . $store->getBaseUrl($web, true) . PHP_EOL;
-  ' -- "$1" 2> /dev/null
+  ' "$1" 2> /dev/null
 }

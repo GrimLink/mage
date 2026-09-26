@@ -18,6 +18,7 @@ src/
     helpers.sh     questions, env.php reader, downloads, composer helpers
     handlers.sh    the handler registry shared by add, clean, set and show
     templates.sh   template sync and copy
+    php.sh         mage_php, runs php code with Magento booted
   env/             one file per environment
   commands/        one file per command
     add/           one file per add handler

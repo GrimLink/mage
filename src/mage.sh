@@ -17,6 +17,7 @@ source "${MAGE_SRC}/core/root.sh"
 source "${MAGE_SRC}/core/helpers.sh"
 source "${MAGE_SRC}/core/handlers.sh"
 source "${MAGE_SRC}/core/templates.sh"
+source "${MAGE_SRC}/core/php.sh"
 
 source "${MAGE_SRC}/env/local.sh"
 source "${MAGE_SRC}/env/valet.sh"
@@ -29,6 +30,7 @@ source "${MAGE_SRC}/commands/setup.sh"
 source "${MAGE_SRC}/commands/nuke.sh"
 source "${MAGE_SRC}/commands/run.sh"
 source "${MAGE_SRC}/commands/open.sh"
+source "${MAGE_SRC}/commands/info.sh"
 source "${MAGE_SRC}/commands/watch.sh"
 source "${MAGE_SRC}/commands/reindex.sh"
 source "${MAGE_SRC}/commands/log.sh"
@@ -115,6 +117,9 @@ function mage_main() {
       ;;
     "show")
       mage_cmd_show "${@:2}"
+      ;;
+    "info")
+      mage_cmd_info
       ;;
     "open")
       mage_cmd_open "${@:2}"

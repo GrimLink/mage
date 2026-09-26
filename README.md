@@ -63,6 +63,7 @@ Anything mage does not know runs `bin/magento`, so `mage cache:flush` works as e
 | [`log`](docs/commands/log.md)                                  | Follow a log in `var/log`                                          |
 | [`reindex`](docs/commands/reindex.md)                          | Reindex, then flush the cache                                      |
 | [`clean`](docs/commands/clean.md)                              | Clean caches and generated files (alias: `purge`)                  |
+| [`info`](docs/commands/info.md)                                | Show the version, mode, urls and more of the project              |
 | [`open`](docs/commands/open.md)                                | Open a store view, the admin or the mail catcher in your browser  |
 | [`set`](docs/commands/set.md)                                  | Change a setting, such as the CSP or full page cache               |
 | [`show`](docs/commands/show.md)                                | Show project information, such as the stores                       |

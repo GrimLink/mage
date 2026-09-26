@@ -32,6 +32,7 @@ src/
     helpers.sh     ask, confirm, env.php reader, download, templates
     handlers.sh    shared handler registry logic for add and clean
     templates.sh   template sync and copy with {{NAME}} replacements
+    php.sh         mage_php: php code with Magento booted, shared by open, info and add store
   env/
     local.sh       fallback for every hook
     warden.sh
@@ -261,6 +262,11 @@ Without arguments it errors with its own help page, listing the composer and git
 - Follows `var/log/<FILE>.log` with `tail -f`, `debug` by default, the name with or without `.log`.
   A missing log lists the ones there are.
 - The old `log show` is `show logs` (names and sizes), `log clear` is `clean logs` (not in `MAGE_CLEAN_ALL`).
+
+### `info`
+
+- One php bootstrap returns `INFO:key=value` lines, instead of about eight Magento boots and a `composer show`: product and version, Hyvä version (Composer's installed data), mode, maintenance, base and admin url (`mageAdminUrl`, shared with `open`), database, search engine, the PHP version that runs Magento, and the enabled modules outside Magento.
+- Node comes from `NODE_CLI`. The module count is yellow above 25 and red above 50.
 
 ### Setting a theme
 
