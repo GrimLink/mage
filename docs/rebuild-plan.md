@@ -32,6 +32,8 @@ src/
     create.sh
     setup.sh
     nuke.sh
+    add.sh         dispatcher for mage add, git clones
+    add/           one file per add handler
     meta.sh        help, version, self-update
   build.sh
 tests/             bats suite
@@ -93,6 +95,16 @@ tests/             bats suite
 * Drops the database for local and Valet, and clears the OpenSearch indices.
 * Removes the project folder, unless `--keep-files` is passed.
 
+### `add`
+
+Resolved in this order, never mixed:
+
+1. **Handler:** a name registered in `MAGE_ADD_HANDLERS` as `name|description`, implemented as `mage_add_<name>` (dashes become underscores) in its own file in `commands/add/`. It gets the remaining arguments. The old `new …` commands (theme, module, store, patch …) return as handlers.
+2. **Git url:** anything ending in `.git` (ssh urls). It is cloned into `package-source/<vendor>/<name>`, using the name from its `composer.json`, and required as `<name>:dev-<branch> as <latest tag>` (a leading `v` stripped), or `<name>:@dev` without a tag. An existing clone with the same origin is reused. The `local-packages` path repository is registered when missing. Further arguments go to composer.
+3. **Anything else:** passed as is to `composer require`, so composer handles the errors.
+
+Without arguments it errors with its own help page, listing the composer and git forms and every registered handler. `mage add help` shows the same page.
+
 ### `help`, `version`, `self-update`
 
 Kept as they are.
@@ -120,3 +132,6 @@ A minimal bats suite covering root detection, env selection (with a fake `.env` 
 * Aliases and the remaining old commands.
 * DDEV environment.
 * The `create` extras (BFCache, Hyvä, sample data).
+* `add` handlers, one per commit: patch and bfcache, sample, hyva, and the old `new` commands.
+* Aliases for `add` from a JSON file with default entries, instead of hardcoded ones like `storeinfo`.
+* Global packages shared between projects (the old `add dev` and `upd dev`), in a more optimized form.

@@ -24,6 +24,7 @@ source "${MAGE_SRC}/commands/meta.sh"
 source "${MAGE_SRC}/commands/create.sh"
 source "${MAGE_SRC}/commands/setup.sh"
 source "${MAGE_SRC}/commands/nuke.sh"
+source "${MAGE_SRC}/commands/add.sh"
 
 # Run the given command, where anything unknown goes to bin/magento
 function mage_main() {
@@ -51,6 +52,9 @@ function mage_main() {
       case "$1" in
         "nuke" | "destroy")
           mage_cmd_nuke "${@:2}"
+          ;;
+        "add")
+          mage_cmd_add "${@:2}"
           ;;
         *)
           mage_passthrough "$@"

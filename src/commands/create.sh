@@ -116,9 +116,8 @@ function mage_create_composer_setup() {
   $COMPOSER_CLI config prefer-stable true
   $COMPOSER_CLI config allow-plugins.cweagans/composer-patches true
 
-  mage_info "Setting up local composer folder"
-  mkdir -p package-source
-  $COMPOSER_CLI config repositories.local-packages path "package-source/*/*"
+  mkdir -p "$MAGE_PACKAGE_SOURCE"
+  mage_add_path_repository
 
   if [[ ${#MAGE_PACKAGES[@]} -gt 0 ]]; then
     mage_info "Adding default packages"

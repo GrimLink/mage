@@ -27,6 +27,9 @@ function mage_cmd_help() {
   mage_help_cmd "nuke"                        "Permanently delete the project (database, environment, files)"
   mage_help_cmd "  --keep-files"              "Keep the project files"
 
+  mage_help_header "Packages"
+  mage_help_cmd "add [PKG|GIT_URL|HANDLER]"   "Add to the project, see 'mage add help' for all options"
+
   mage_info ""
   mage_info "${ITALIC}Anything else will run ${GREEN}bin/magento${RESET}"
   mage_info "${ITALIC}From a nested folder, mage runs from the Magento root${RESET}"

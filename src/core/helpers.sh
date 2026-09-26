@@ -127,3 +127,10 @@ function mage_template_file() {
 
   echo "$file"
 }
+
+# Echo the package name from a composer.json
+function mage_composer_name() {
+  if [[ -f "$1" ]]; then
+    grep -E '"name"[[:space:]]*:' "$1" | head -n 1 | sed -E 's/.*"name"[[:space:]]*:[[:space:]]*"([^"]+)".*/\1/'
+  fi
+}
