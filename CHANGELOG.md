@@ -25,6 +25,7 @@ Version 3 is a rebuild of mage. The commands of version 2 return step by step, u
 - **`mage setup`:** Asks for confirmation before reinstalling a project that is already installed, and now cleans the database as part of the install, so reinstalling also works in Warden and DDEV.
 - **`mage nuke`:** Asks to type the folder name to confirm. The database name and credentials are read from `app/etc/env.php`, and the local environment now also drops its database, not only Valet.
 - **`mage add [GIT_URL]`:** A cloned repository is now required as `dev-<branch> as <latest tag>`, so packages that depend on a version of it still resolve. Without tags it falls back to `@dev`. An existing clone is reused, and the `package-source` path repository is registered when a project does not have it yet.
+- **Redis per project:** `mage setup` gives the cache and page cache a readable prefix (`<db_name>_`), like the OpenSearch indices already had. `mage nuke` now only deletes the Redis keys of that project, so other projects on the same Redis keep their cache.
 - **Output:** Errors go to stderr, and colors are left out when `NO_COLOR` is set or the output is not a terminal.
 
 ### Removed

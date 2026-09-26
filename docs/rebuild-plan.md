@@ -89,14 +89,16 @@ tests/             bats suite
 * Runs the Magento install in an existing checkout, so a project can be reinstalled.
 * Asks for confirmation when `app/etc/env.php` exists, as it drops the database.
 * The env hook provides hosts and database settings.
+* Every project gets its own prefixes, all based on the database name: the OpenSearch index prefix and the Redis cache and page cache id prefixes (`<db_name>_`).
 * `install` is no longer a public command, `create` is the entry point.
 
 ### `nuke [--keep-files]`
 
 * Reads the database name and credentials from `app/etc/env.php`, falling back to the folder name and the `MAGE_DB_*` settings.
 * The OpenSearch host, port and prefix come from `config:show catalog/search`, before the database is dropped.
+* The Redis prefix, host, port and database of each cache come from `app/etc/env.php`. Only keys matching `zc:*:<prefix>*` are deleted, never `flushall`, so other projects on a shared Redis keep their cache. The future `purge` should clean Redis the same way.
 * Runs the env hook (Valet unsecures and unlinks its stores, Warden runs `env down -v`).
-* Drops the database for local and Valet, and clears the OpenSearch indices.
+* Drops the database for local and Valet, and clears the OpenSearch indices and Redis cache keys of the project only.
 * Removes the project folder, unless `--keep-files` is passed.
 
 ### `add`

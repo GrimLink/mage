@@ -58,9 +58,11 @@ function mage_setup() {
     --cache-backend=redis \
     --cache-backend-redis-server="${MAGE_REDIS_HOST}" \
     --cache-backend-redis-db=0 \
+    --cache-id-prefix="${db_name}_" \
     --page-cache=redis \
     --page-cache-redis-server="${MAGE_REDIS_HOST}" \
     --page-cache-redis-db=1 \
+    --page-cache-id-prefix="${db_name}_" \
     --admin-firstname="${MAGE_ADMIN_FIRSTNAME}" \
     --admin-lastname="${MAGE_ADMIN_LASTNAME}" \
     --admin-email="${MAGE_ADMIN_EMAIL}" \

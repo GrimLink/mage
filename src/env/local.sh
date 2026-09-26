@@ -46,6 +46,7 @@ function env_local_nuke() {
   local db_name="$2"
 
   mage_clear_opensearch "$db_name"
+  mage_clear_redis
 
   if env_local_mysql -e "DROP DATABASE IF EXISTS \`${db_name}\`;"; then
     mage_check 0 "Database '${db_name}' dropped"
