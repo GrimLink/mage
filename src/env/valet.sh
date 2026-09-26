@@ -65,3 +65,27 @@ function env_valet_nuke() {
     done
   fi
 }
+
+# Valet serves a site by its name without the tld, which is also the key in .valet-env.php
+function env_valet_add_store() {
+  local domain="$1"
+  local code="$2"
+  local site="${domain%.${MAGE_DOMAIN}}"
+
+  if [[ ! -f .valet-env.php ]]; then
+    env_valet_setup_finish "$(basename "$PWD")"
+  fi
+
+  if grep -q "'${site}' *=>" .valet-env.php; then
+    mage_notice "${site} is already in .valet-env.php"
+  else
+    {
+      grep -v '^];' .valet-env.php
+      env_valet_store_entry "$site" "$code"
+      printf '];\n'
+    } > .valet-env.php.tmp && mv .valet-env.php.tmp .valet-env.php
+    mage_check 0 "Added ${site} to .valet-env.php"
+  fi
+
+  valet link "$site" && valet secure "$site"
+}

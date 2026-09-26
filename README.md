@@ -51,6 +51,8 @@ Run `mage help` for the full list. Anything mage does not know runs `bin/magento
 | [`add bfcache`](docs/commands/add-patch.md#mage-add-bfcache) | Add the BFCache compatibility patches |
 | [`add admin`](docs/commands/add-admin.md) | Create an admin user |
 | [`add customer`](docs/commands/add-admin.md#mage-add-customer) | Create a customer |
+| [`add store`](docs/commands/add-store.md) | Create a store view with its own domain |
+| [`add i18n`](docs/commands/add-i18n.md) | Collect the phrases of a module or theme |
 | [`del`](docs/commands/remove.md) | Remove packages by name or term |
 | [`upd`](docs/commands/update.md) | Update packages by name or term |
 | [`outdated`](docs/commands/outdated.md) | List the direct dependencies with a newer version |

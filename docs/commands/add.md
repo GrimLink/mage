@@ -23,6 +23,8 @@ Add something to the project. The first argument decides what, in this order:
 | [`bfcache`](add-patch.md#mage-add-bfcache) | Add the BFCache compatibility patches |
 | [`admin`](add-admin.md) | Create an admin user |
 | [`customer`](add-admin.md#mage-add-customer) | Create a customer |
+| [`store`](add-store.md) | Create a store view with its own domain |
+| [`i18n`](add-i18n.md) | Collect the phrases of a module or theme |
 
 ## Composer packages
 

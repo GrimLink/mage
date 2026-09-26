@@ -53,7 +53,7 @@ tests/             bats suite
 ## Environments
 
 * Each `env/<name>.sh` defines `env_<name>_available` (the tool is installed), `env_<name>_detect` (the current folder uses it) and optionally `env_<name>_apply` (overrides the CLI vars such as `MAGENTO_CLI`, `COMPOSER_CLI`, `PURGE_CLI`, and the `MAGE_DB_*` settings).
-* Other hooks: `create_project`, `setup_prepare`, `setup_finish`, `clean_redis` and `nuke`. `env_call <hook>` runs the hook of the current env, falls back to the local one, and does nothing when neither defines it.
+* Other hooks: `create_project`, `setup_prepare`, `setup_finish`, `clean_redis`, `add_store` and `nuke`. `env_call <hook>` runs the hook of the current env, falls back to the local one, and does nothing when neither defines it.
 * The CLI defaults live in `core/tools.sh`, `local.sh` holds the local hooks. The first env that matches wins, and its name ends up in `MAGE_ENV`.
 * Priority: warden, then ddev, then valet, then local. Valet is an environment, not a separate tool flag.
 * Commands call hooks through `env_call` instead of checking env flags themselves.
@@ -173,6 +173,12 @@ Without arguments it errors with its own help page, listing the composer and git
 * `add admin` asks for the admin user with the `MAGE_ADMIN_*` settings as defaults (password hidden), `-y` uses them without asking, then runs `admin:user:create`.
 * `add customer` runs magerun `customer:create`, Magento has no command for it, arguments go to magerun.
 
+### `add store` and `add i18n`
+
+* `add store [PREFIX|DOMAIN]`: a prefix becomes `<prefix>.<base domain>`, the code is the first part of the domain with dashes as underscores. Creates the store view in the default group with php (Magento has no command for it), sets its base urls, runs the `add_store` env hook, reindexes the design grid. Valet uses the site name without its tld, the old script used the full domain.
+* `add i18n [PATH]`: the path is resolved from the calling folder, collects the phrases into a sorted and quoted `i18n/en_US.csv`, without the macOS only `sed -i`.
+* `new gitignore` is not ported, `setup` adds the gitignore and anything after that is up to the user.
+
 ### Setting a theme
 
 * `mage_set_theme <theme>` in `core/helpers.sh` is the one place that activates a theme, so every script calls it, even while it can not always set the theme.
@@ -245,7 +251,7 @@ A minimal bats suite covering root detection, env selection (with a fake `.env` 
 
 * Aliases and the remaining old commands.
 * The `create` extras (BFCache, Hyvä, sample data).
-* `add` handlers, one per commit: sample, store, hyva checkout and commerce, and the other old `new` commands.
+* `add` handlers, one per commit: sample, hyva checkout and commerce, and the other old `new` commands.
 * `import`: run groups of actions from a json file.
 * `mage_set_theme` without `yireo/magento2-theme-commands`: look up the theme id (for example with magerun `db:query`) and set `design/theme/theme_id` with `config:set`. A `set theme` command can then call the same helper.
 * A build action for theme styles that is not locked to one theme, replacing the old `build hyva`.

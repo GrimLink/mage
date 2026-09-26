@@ -89,3 +89,8 @@ function env_local_clean_redis() {
     mage_check 0 "Redis ${cache} cache with prefix '${prefix}'"
   done
 }
+
+# The domain of a new store view is up to the web server on your machine
+function env_local_add_store() {
+  mage_notice "Point ${1} to this project in your web server, and set MAGE_RUN_CODE=${2} with MAGE_RUN_TYPE=store for it"
+}

@@ -19,6 +19,7 @@ Everything runs on your machine: `bin/magento`, composer, and the services MySQL
 
 * **Setup:** creates the database with `mysql`, named after the project folder.
 * **Nuke:** clears the OpenSearch indices and Redis keys of the project, and drops its database.
+* **Add store:** tells you to point the new domain to the project yourself.
 * **Redis:** projects share one Redis, so every project gets its own cache prefix and only its own keys are cleaned.
 
 ## Valet
@@ -27,6 +28,7 @@ Works like local, and adds:
 
 * **Setup:** secures the site with `valet secure`, and writes a `.valet-env.php` with the default store and a commented example for a second store.
 * **Nuke:** unsecures the site, and unsecures and unlinks every extra store from `.valet-env.php`.
+* **Add store:** adds the store to `.valet-env.php`, then links and secures it.
 
 ## Warden
 
@@ -35,6 +37,7 @@ Works like local, and adds:
 * **Setup:** signs the certificate with `warden sign-certificate`.
 * **Clean:** flushes the Redis of the project, which is its own.
 * **Nuke:** `warden env down -v`, removing the containers and their volumes with the database and indices.
+* **Add store:** signs the certificate, and tells you how to route the domain.
 
 ## DDEV
 
@@ -43,5 +46,6 @@ Works like local, and adds:
 * **Setup:** nothing to prepare, DDEV provides the database and certificate.
 * **Clean:** flushes the Redis of the project, which is its own.
 * **Nuke:** `ddev delete --omit-snapshot --yes`.
+* **Add store:** tells you how to add the domain to DDEV.
 
 Note that `mage run` uses the magerun on your machine for DDEV, which cannot reach the DDEV database.

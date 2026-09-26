@@ -62,3 +62,7 @@ function env_ddev_clean_redis() {
 function env_ddev_nuke() {
   ddev delete --omit-snapshot --yes
 }
+
+function env_ddev_add_store() {
+  mage_notice "Add ${1} to additional_fqdns or additional_hostnames in .ddev/config.yaml, run 'ddev restart', and set MAGE_RUN_CODE=${2} with MAGE_RUN_TYPE=store for it"
+}

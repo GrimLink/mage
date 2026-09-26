@@ -39,15 +39,18 @@ Version 3 is a rebuild of mage. The commands of version 2 return step by step, u
 - **`mage add storeinfo`:** Now reads its packages from the bundled `composer-storeinfo.json`, so the list can change without a new mage release, and runs `setup:upgrade` afterwards.
 - **`mage outdated`:** The new `--terminal` option shows the result instead of writing `composer-outdated.json`, further arguments go to composer, and the ignored packages can be set with `MAGE_OUTDATED_IGNORE`.
 - **`mage add admin`:** The defaults come from the `MAGE_ADMIN_*` settings, and `-y` creates the admin without asking. `mage add customer` passes its arguments to magerun.
+- **`mage add i18n`:** The path is resolved from the folder you run mage in, and it now also works on Linux, it used the macOS only `sed -i ''`.
+- **`mage add store`:** Also accepts a prefix with dashes, as `my-store` with the code `my_store`, and refuses an invalid store code. DDEV and a local setup get a hint on how to reach the new domain.
 - **Output:** Errors go to stderr, and colors are left out when `NO_COLOR` is set or the output is not a terminal.
 
 ### Removed
 - **`mage install`:** Use `mage create`, which installs and sets up the project in one go.
 - **`mage stores` and `mage modules`:** Use `mage show stores` and `mage show modules`.
-- **`mage new theme`, `mage new module`, `mage new patch`, `mage new admin` and `mage new customer`:** Use `mage add` with the same name.
+- **`mage new theme`, `mage new module`, `mage new patch`, `mage new admin`, `mage new customer`, `mage new store` and `mage new i18n`:** Use `mage add` with the same name. `mage new translate` is gone too, use `mage add i18n`.
 - **`mage cleanup [TYPE]`:** Use `mage clean [OPTION]`, where `sample` is now `sample-files`.
 
 ### Fixed
+- **`mage add store` with Valet:** The store is linked and added to `.valet-env.php` by its site name, instead of the full domain, which Valet served with a second tld.
 - **Module location:** A module in `app/code` is now created as `Vendor/MyModule`, the path Magento autoloads it from, instead of `Vendor/my-module`.
 - **`mage create` with Warden:** The project folder is now created before moving into it.
 
