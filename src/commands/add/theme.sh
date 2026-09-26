@@ -50,7 +50,7 @@ function mage_add_theme() {
     "NAME=${MAGE_NEW_NAME}" \
     "VENDOR_PKG=${MAGE_NEW_VENDOR_PKG}" \
     "NAME_PKG=${MAGE_NEW_NAME_PKG}" \
-    "EMAIL=${GIT_EMAIL:-security@example.com}" \
+    "EMAIL=${GIT_EMAIL}" \
     "PARENT=${parent}" || exit 1
 
   if [[ "$parent" == Hyva/* ]]; then

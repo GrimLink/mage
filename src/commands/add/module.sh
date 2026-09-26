@@ -64,7 +64,7 @@ function mage_add_module() {
     "MODULE=${MAGE_NEW_NAME}"
     "VENDOR_PKG=${MAGE_NEW_VENDOR_PKG}"
     "MODULE_PKG=${MAGE_NEW_NAME_PKG}"
-    "EMAIL=${GIT_EMAIL:-security@example.com}"
+    "EMAIL=${GIT_EMAIL}"
     "SEQUENCE=${sequence}"
   )
 
