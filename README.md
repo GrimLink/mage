@@ -4,81 +4,83 @@
 
 ## Benefits of Using Mage
 
-* **Easy Installation of Magento**: install any version and distribution.
-* **Easier commands:** Mage introduces shorter aliases for common `bin/magento` commands, saving you keystrokes.
-* **Custom functions:** Mage offers helper commands like `reindex` and `purge` for specific tasks.
-* **Open stores quickly:** Open your default store or specific store views with `mage open`.
-* **Efficient development:** The `watch` command automates cache cleaning on file changes, improving your workflow.
-* **Easier patch creation**: Create patches with only a few arguments.
-* **BFCache compatibility**: Easily add [BFCache compatibility patches] to your project.
+* **Easy installation of Magento:** create and install a Mage-OS, Magento Open Source or Adobe Commerce project in one command.
+* **Works from anywhere in a project:** run mage from any nested folder, it finds the Magento root on its own.
+* **Environment aware:** the same commands work on your machine, with [Laravel Valet], [Warden] and [DDEV].
+* **One place to add things:** composer packages, git repositories, composer fragments from a json file, and generators for themes and modules.
+* **Everything else goes to `bin/magento`:** any command mage does not know is passed on as is.
 
 ## Installation
 
 Download the script:
 
 ```bash
-wget https://raw.githubusercontent.com/GrimLink/mage/main/mage && chmod +x mage
-```
-
-Alternatively, use curl:
-
-```bash
 curl -O https://raw.githubusercontent.com/GrimLink/mage/main/mage && chmod +x mage
 ```
 
-## Available Commands
+Alternatively, use wget:
 
-For a complete list of commands, run `mage help` or view the [src/_info.sh](https://github.com/GrimLink/mage/blob/main/src/_info.sh) source. 
+```bash
+wget https://raw.githubusercontent.com/GrimLink/mage/main/mage && chmod +x mage
+```
 
-Here are some highlights of what Mage can do:
+Move it to a folder in your `PATH`, such as `~/.local/bin`. Update it later with `mage self-update`, which also updates the [templates](docs/templates.md).
 
-### Setup & Management
-* **`mage create`**: Quickly scaffold and install a new Magento 2 project.
-* **`mage nuke`**: Permanently delete the local Magento project (Database, Environment, Files).
-* **`mage add [PKG|GIT_URL]`**: An enhanced `composer require` that also accepts raw git repository URLs.
-* **`mage outdated`**: Easily view all direct outdated composer dependencies.
+### Requirements
 
-### Store & Theme Development
-* **`mage new store [url|prefix]`:** Programmatically create a new store view and configure its base URLs and routing (e.g., `mage new store luma` or `mage new store b2b.example.test`).
-* **`mage new patch`:** Create a composer patch with ease.
-* **`mage add bfcache`:** Automatically fetch and vendor [BFCache compatibility patches] for your project.
-* **`mage set mage-os`:** Easily replace the standard Magento 2 distro with the Mage-OS distro.
+* **bash** 3.2 or newer, the version macOS ships with is enough.
+* **git**, and **curl** or **wget**.
+* **[jq]** for `mage add <file>.json`, and for removing or updating packages by term.
+* **php** on your machine is optional, `mage nuke` uses it to read `app/etc/env.php`.
 
-### Daily Workflow
-* **`mage open [storeview]`:** Open your default store or a specific store based on the `storeview` name. Use `admin` instead of `storeview` to open the admin panel.
-* **`mage watch`:** A shortcut for [Mage-OS Cache Clean] that monitors Magento 2 file changes and clears only the affected cache automatically.
-* **`mage purge`:** Clears all static generated files and caches. Useful for troubleshooting or forcing a hard reload.
-* **`mage run [action]`:** Runs [n98-magerun2] commands.
+## Commands
 
-**Note:**
+Run `mage help` for the full list. Anything mage does not know runs `bin/magento`, so `mage cache:flush` works as expected.
 
-* `mage run` requires the [n98-magerun2] module
-* Commands with "hyva" require a [Hyvä license] or GitLab access
-* `mage watch` requires the [Mage-OS Cache Clean] module
-* `set theme` and `set hyva` requires the [Yireo_ThemeCommands] module
+| Command | Does |
+|---|---|
+| [`create`](docs/commands/create.md) | Create, install and set up a new project |
+| [`setup`](docs/commands/create.md#mage-setup) | Reinstall Magento in an existing project |
+| [`nuke`](docs/commands/nuke.md) | Permanently delete a project (database, environment, files) |
+| [`add`](docs/commands/add.md) | Add a package, git repository, composer fragment or generated code |
+| [`add theme`](docs/commands/add-theme.md) | Create a child theme |
+| [`add module`](docs/commands/add-module.md) | Create a module |
+| [`add hyva`](docs/commands/add-hyva.md) | Add the Hyvä Theme |
+| [`add storeinfo`](docs/commands/add-storeinfo.md) | Add the Siteation StoreInfo modules |
+| [`del`](docs/commands/remove.md) | Remove packages by name or term |
+| [`upd`](docs/commands/update.md) | Update packages by name or term |
+| [`outdated`](docs/commands/outdated.md) | List the direct dependencies with a newer version |
+| [`clean`](docs/commands/clean.md) | Clean caches and generated files (alias: `purge`) |
+| [`run`](docs/commands/run.md) | Run [n98-magerun2] |
+| `help`, `version`, `self-update` | Show help, show the version, update mage |
 
-### Supported Platforms
+### Working from a nested folder
 
-Mage works without additional configuration on:
+Mage looks for the Magento root (the folder with `bin/magento` and `app/etc/di.xml`) from the current folder upwards, and runs from there. So `mage cache:flush` works from `app/code/Vendor/Module` too. Outside a project only `create`, `setup`, `help`, `version` and `self-update` work.
 
-* **macOS**
-* **Most Linux platforms**
+## Configuration
+
+Mage runs with sensible defaults, all of which can be changed in `~/.config/mage/config`. See [configuration](docs/config.md).
+
+## Supported Platforms
+
+Mage works on **macOS** and **most Linux platforms**, and detects these environments on its own, see [environments](docs/environments.md):
+
+* **Local:** services such as MySQL and OpenSearch on your machine.
 * **[Laravel Valet]**
-* **[Warden]:** Supported with thanks to [@tdgroot](https://github.com/tdgroot)
+* **[Warden]:** supported with thanks to [@tdgroot](https://github.com/tdgroot).
+* **[DDEV]**
 
 ## Contributing
 
-We welcome contributions to Mage! Fork the repository, make your changes, and submit a pull request.
+We welcome contributions to Mage! Fork the repository, make your changes, and submit a pull request. See [development](docs/development.md) for how the source is organised, built and tested.
 
 ## License
 
 Mage is licensed under the MIT License. See the LICENSE file for details.
 
 [n98-magerun2]: https://github.com/netz98/n98-magerun2
-[Hyvä license]: https://www.hyva.io/hyva-themes-license.html
-[Yireo_ThemeCommands]: https://github.com/yireo/Yireo_ThemeCommands
-[Mage-OS Cache Clean]: https://github.com/mage-os/magento-cache-clean
+[jq]: https://jqlang.org/
 [Laravel Valet]: https://laravel.com/docs/valet
 [Warden]: https://github.com/wardenenv/warden
-[Siteation]: https://siteation.dev/
-[BFCache compatibility patches]: https://github.com/GrimLink/magento-patch-bfcache
+[DDEV]: https://ddev.com/
