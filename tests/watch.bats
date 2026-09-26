@@ -14,9 +14,13 @@ function setup() {
   [ "$output" = "node vendor/bin/cache-clean.js --watch" ]
 }
 
-@test "rejects arguments" {
-  run mage_cmd_watch full_page
-  [ "$status" -eq 1 ]
+@test "ignores arguments" {
+  make_magento_root "$BATS_TEST_TMPDIR"
+  mkdir -p vendor/bin
+  touch vendor/bin/cache-clean.js
+
+  run mage_main watch anything
+  [ "$output" = "node vendor/bin/cache-clean.js --watch" ]
 }
 
 @test "falls back to a global cache-clean" {

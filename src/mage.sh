@@ -105,7 +105,7 @@ function mage_main() {
       mage_cmd_open "${@:2}"
       ;;
     "watch")
-      mage_cmd_watch "${@:2}"
+      mage_cmd_watch
       ;;
     "run")
       mage_cmd_run "${@:2}"
