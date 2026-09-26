@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-Version 3 is a rebuild of mage. The commands of version 2 return step by step, until then anything unknown still runs `bin/magento`.
+Version 3 is a rebuild of mage.
+Most commands of version 2 are back, the ones that are not are listed under Removed.
+Anything mage does not know still runs `bin/magento`.
 
 ### Added
 - **Magento root detection:** Mage now works from any folder inside a Magento project, it moves to the root on its own.
@@ -56,6 +58,10 @@ Version 3 is a rebuild of mage. The commands of version 2 return step by step, u
 - **`mage start`:** No longer opens the editor, git client, store and admin at once.
 - **`mage stores` and `mage modules`:** Use `mage show stores` and `mage show modules`.
 - **`mage new theme`, `mage new module`, `mage new patch`, `mage new admin`, `mage new customer`, `mage new store` and `mage new i18n`:** Use `mage add` with the same name. `mage new translate` is gone too, use `mage add i18n`.
+- **`mage add hyva checkout` and `mage add hyva commerce`:** Add their repositories with `mage add <url>.git`.
+- **`mage set theme` and `mage set mage-os`:** For the theme, use `mage theme:change`.
+- **`mage build`, `mage build hyva`, `mage browser-sync` and `mage get`:** Use their `bin/magento`, npm or composer commands directly.
+- **`mage add sample`:** Not available for now, it returns in a later release with more options.
 - **`mage cleanup [TYPE]`:** Use `mage clean [OPTION]`, where `sample` is now `sample-files`.
 
 ### Fixed

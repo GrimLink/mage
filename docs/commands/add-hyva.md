@@ -16,6 +16,7 @@ mage add hyva --dev   # from the Hyvä GitLab
    New projects get that module from the default packages.
 
 Building the styles is not part of it.
+Hyvä Checkout and Hyvä Commerce are not either, add their repositories with [`mage add <url>.git`](add.md#git-repositories).
 
 ## With a license
 

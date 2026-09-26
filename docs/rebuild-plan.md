@@ -13,8 +13,7 @@ The alias commands are ported after this base is done.
 
 - Work happens on `feature/rebuild`.
   The current `mage` on main stays in place until the rebuild reaches parity, then it is released as 3.0.0.
-- `src_old/` is the reference for the old code.
-  It is deleted once `create` and `nuke` are ported.
+- The old source is removed, the git history of main still has it.
 - Everything stays compatible with bash 3.2, the version macOS ships with.
   So no associative arrays, `${var,,}` or `mapfile`.
 
@@ -288,7 +287,7 @@ Without arguments it errors with its own help page, listing the composer and git
 - Then runs `setup:upgrade` and disables the Magento captcha (not supported by the Hyvä default theme).
   Then sets `Hyva/default` through `mage_set_theme`.
 - Building styles is not part of it, that is a separate build action that works for any theme.
-- Checkout and commerce return as subcommands, such as `add hyva checkout`.
+- Checkout and commerce are not ported, their GitLab repositories are added with `mage add <url>.git`.
 
 ### `add storeinfo`
 
@@ -329,7 +328,7 @@ Without arguments it errors with its own help page, listing the composer and git
   Without an option it errors with its help page.
 - `set csp` writes the strict storefront CSP (no report only, no inline or eval scripts) with `config:set --lock-env`, instead of magerun `config:env:set` and `app:config:import`, then flushes the config cache.
 - `set fpc [builtin|varnish]` sets the full page cache application, an unknown value is refused and errors are no longer hidden.
-- To port later: `set theme` (through `mage_set_theme`) and `set mage-os`.
+- `set theme` and `set mage-os` are not ported, `mage theme:change` covers the first.
 
 ### `help`, `version`, `self-update`
 
@@ -355,13 +354,17 @@ A minimal bats suite covering root detection, env selection (with a fake `.env` 
 - ShellCheck runs on the built `mage` and `src/build.sh`, with the settings from `.shellcheckrc`.
 - The bats suite runs on Ubuntu and on macOS, where it uses the bash 3.2 that macOS ships.
 
+## Not ported
+
+- `add hyva checkout` and `add hyva commerce`: add their repositories with `mage add <url>.git`.
+- `set theme`, `set mage-os`, `build`, `build hyva`, `browser-sync` and `get`.
+- `install` (use `create`), `start`, `new gitignore` and `cleanup` (use `clean`).
+
 ## Later
 
-- Aliases and the remaining old commands.
+- `add sample`, with more options than before.
 - The `create` extras (BFCache, Hyvä, sample data).
-- `add` handlers, one per commit: sample, hyva checkout and commerce, and the other old `new` commands.
 - `import`: run groups of actions from a json file.
 - `mage_set_theme` without `yireo/magento2-theme-commands`: look up the theme id (for example with magerun `db:query`) and set `design/theme/theme_id` with `config:set`.
-  A `set theme` command can then call the same helper.
 - A build action for theme styles that is not locked to one theme, replacing the old `build hyva`.
 - Global packages shared between projects (the old `add dev` and `upd dev`), in a more optimized form.
