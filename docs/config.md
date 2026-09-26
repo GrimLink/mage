@@ -41,7 +41,7 @@ Used by `mage create` and `mage setup` to create the admin user.
 | `MAGE_DEV_PACKAGES` | `avstudnitz/scopehint2`, `spatie/ray` | Dev packages `mage create` requires in every new project |
 | `MAGE_STORE_CONFIG` | See below | Store config `mage setup` sets after the install |
 
-`MAGE_PACKAGES` defaults to `cweagans/composer-patches`, `swissup/module-ignition` and `community-engineering/language-nl_nl`. Set it to `()` to add none.
+`MAGE_PACKAGES` defaults to `cweagans/composer-patches`, `yireo/magento2-theme-commands` (used to switch themes, see [`mage add hyva`](commands/add-hyva.md)), `swissup/module-ignition` and `community-engineering/language-nl_nl`. Set it to `()` to add none.
 
 `MAGE_STORE_CONFIG` holds one `path value` entry per config value. An entry without a value sets it empty. The defaults use the Euro (with Pounds allowed), the Netherlands as the default country with the European countries allowed, turn off the admin usage tracking and forced password changes, keep the admin session for a day, and enable the canonical tags for categories and products.
 

@@ -12,7 +12,7 @@ mage add hyva --dev   # from the Hyvä GitLab
 1. Applies the bundled [composer fragment](../composer-fragments.md) `composer-hyva.json`, or `composer-hyva-dev.json` with `--dev`.
 2. Runs `setup:upgrade`.
 3. Disables the Magento captcha, which the Hyvä default theme does not support.
-4. Switches to `Hyva/default` when the project has `yireo/magento2-theme-commands`, otherwise it tells you to select the theme in the admin. Mage does not install that module itself.
+4. Switches to `Hyva/default` when the project has `yireo/magento2-theme-commands`, otherwise it tells you to select the theme in the admin. New projects get that module from the default packages.
 
 Building the styles is not part of it.
 

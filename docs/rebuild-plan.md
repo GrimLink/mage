@@ -164,7 +164,7 @@ Without arguments it errors with its own help page, listing the composer and git
 ### Setting a theme
 
 * `mage_set_theme <theme>` in `core/helpers.sh` is the one place that activates a theme, so every script calls it, even while it can not always set the theme.
-* With `yireo/magento2-theme-commands` in the project it runs `theme:change` and flushes the cache. Otherwise it points to the admin and returns 1. Mage never installs yireo itself.
+* With `yireo/magento2-theme-commands` in the project it runs `theme:change` and flushes the cache. Otherwise it points to the admin and returns 1. Yireo is one of the default packages of `mage create`, but no script requires it.
 
 ### `add module [Vendor/Name] [--hyva|--no-hyva]`
 
