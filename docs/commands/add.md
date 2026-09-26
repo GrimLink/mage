@@ -21,6 +21,8 @@ Add something to the project. The first argument decides what, in this order:
 | [`storeinfo`](add-storeinfo.md) | Add the Siteation StoreInfo modules |
 | [`patch`](add-patch.md) | Add a composer patch, or all patches of a repository |
 | [`bfcache`](add-patch.md#mage-add-bfcache) | Add the BFCache compatibility patches |
+| [`admin`](add-admin.md) | Create an admin user |
+| [`customer`](add-admin.md#mage-add-customer) | Create a customer |
 
 ## Composer packages
 

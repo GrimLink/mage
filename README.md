@@ -49,6 +49,8 @@ Run `mage help` for the full list. Anything mage does not know runs `bin/magento
 | [`add storeinfo`](docs/commands/add-storeinfo.md) | Add the Siteation StoreInfo modules |
 | [`add patch`](docs/commands/add-patch.md) | Add a composer patch, or all patches of a repository |
 | [`add bfcache`](docs/commands/add-patch.md#mage-add-bfcache) | Add the BFCache compatibility patches |
+| [`add admin`](docs/commands/add-admin.md) | Create an admin user |
+| [`add customer`](docs/commands/add-admin.md#mage-add-customer) | Create a customer |
 | [`del`](docs/commands/remove.md) | Remove packages by name or term |
 | [`upd`](docs/commands/update.md) | Update packages by name or term |
 | [`outdated`](docs/commands/outdated.md) | List the direct dependencies with a newer version |

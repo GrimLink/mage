@@ -38,12 +38,13 @@ Version 3 is a rebuild of mage. The commands of version 2 return step by step, u
 - **`mage add patch`:** Now also replaces `mage new patch`, the input decides: a package alone creates a patch from your changes, a repository url adds its patches, and a package with a name and source adds that patch. A created patch now includes new files, and a second one for the same package no longer overwrites the first. `patches.json` is edited with jq instead of php, and a missing `cweagans/composer-patches` stops with a hint.
 - **`mage add storeinfo`:** Now reads its packages from the bundled `composer-storeinfo.json`, so the list can change without a new mage release, and runs `setup:upgrade` afterwards.
 - **`mage outdated`:** The new `--terminal` option shows the result instead of writing `composer-outdated.json`, further arguments go to composer, and the ignored packages can be set with `MAGE_OUTDATED_IGNORE`.
+- **`mage add admin`:** The defaults come from the `MAGE_ADMIN_*` settings, and `-y` creates the admin without asking. `mage add customer` passes its arguments to magerun.
 - **Output:** Errors go to stderr, and colors are left out when `NO_COLOR` is set or the output is not a terminal.
 
 ### Removed
 - **`mage install`:** Use `mage create`, which installs and sets up the project in one go.
 - **`mage stores` and `mage modules`:** Use `mage show stores` and `mage show modules`.
-- **`mage new theme`, `mage new module` and `mage new patch`:** Use `mage add theme`, `mage add module` and `mage add patch`.
+- **`mage new theme`, `mage new module`, `mage new patch`, `mage new admin` and `mage new customer`:** Use `mage add` with the same name.
 - **`mage cleanup [TYPE]`:** Use `mage clean [OPTION]`, where `sample` is now `sample-files`.
 
 ### Fixed

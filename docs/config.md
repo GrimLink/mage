@@ -21,7 +21,7 @@ MAGE_VAR_HYVA_PROJECT="acme"
 
 ### Admin user
 
-Used by `mage create` and `mage setup` to create the admin user.
+Used by `mage create` and `mage setup` to create the admin user, and as the defaults of `mage add admin`.
 
 | Setting | Default |
 |---|---|

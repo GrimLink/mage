@@ -168,6 +168,11 @@ Without arguments it errors with its own help page, listing the composer and git
 * What depends on the patch tool is in `mage_patch_check_tool`, `mage_patch_register`, `mage_patch_merge` and `mage_patch_apply`, now for `cweagans/composer-patches`, so `vaimo/composer-patches` can be added as another tool. Edits `patches.json` with jq.
 * `add bfcache` is `add patch` with the BFCache patch repository.
 
+### `add admin` and `add customer`
+
+* `add admin` asks for the admin user with the `MAGE_ADMIN_*` settings as defaults (password hidden), `-y` uses them without asking, then runs `admin:user:create`.
+* `add customer` runs magerun `customer:create`, Magento has no command for it, arguments go to magerun.
+
 ### Setting a theme
 
 * `mage_set_theme <theme>` in `core/helpers.sh` is the one place that activates a theme, so every script calls it, even while it can not always set the theme.
@@ -240,7 +245,7 @@ A minimal bats suite covering root detection, env selection (with a fake `.env` 
 
 * Aliases and the remaining old commands.
 * The `create` extras (BFCache, Hyvä, sample data).
-* `add` handlers, one per commit: sample, hyva checkout and commerce, and the other old `new` commands.
+* `add` handlers, one per commit: sample, store, hyva checkout and commerce, and the other old `new` commands.
 * `import`: run groups of actions from a json file.
 * `mage_set_theme` without `yireo/magento2-theme-commands`: look up the theme id (for example with magerun `db:query`) and set `design/theme/theme_id` with `config:set`. A `set theme` command can then call the same helper.
 * A build action for theme styles that is not locked to one theme, replacing the old `build hyva`.
