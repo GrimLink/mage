@@ -1,7 +1,7 @@
 # Development
 
 The `mage` script in the root of the repository is built, never edit it directly.
-The source lives in `src`, the design decisions in the [rebuild plan](rebuild-plan.md).
+The source lives in `src`.
 
 ## Layout
 
