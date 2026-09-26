@@ -53,7 +53,9 @@ tests/             bats suite
 ## Magento root detection
 
 * The root is found by walking up from `$PWD` until a folder contains both `bin/magento` and `app/etc/di.xml`. `app/etc/env.php` is not used, as it only exists after setup.
-* In a nested folder, mage changes to the root automatically and prints a notice. Relative path arguments are resolved before that change.
+* In a nested folder, mage changes to the root automatically and prints a notice.
+* Commands that take a path resolve it with `mage_resolve_path`, relative to the root. The `bin/magento` fallback passes its arguments unchanged.
+* `mage_main` checks `MAGE_ROOTLESS_COMMANDS` first, then runs one flat `case`. Every other command enters the root and detects the environment before it runs.
 * Outside a Magento project, only `help`, `version`, `self-update` and `create` work. Other commands abort, as before.
 * `nuke` always shows the resolved root and requires typing the folder name to confirm.
 

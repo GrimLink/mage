@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Version 3 is a rebuild of mage. The commands of version 2 return step by step, until then anything unknown still runs `bin/magento`.
 
 ### Added
-- **Magento root detection:** Mage now works from any folder inside a Magento project, it moves to the root on its own. Relative paths like `./app/code/Vendor` are resolved from the folder you called it in.
+- **Magento root detection:** Mage now works from any folder inside a Magento project, it moves to the root on its own.
 - **`mage create` options:** `--edition`, `--version` and `--env` skip their questions, and `-y` uses the defaults for anything not given.
 - **`mage add` handlers:** `mage add` is now the central command for adding to a project, with handlers such as the upcoming theme and module generators. Without arguments it shows its own help page with every option.
 - **`mage nuke --keep-files`:** Removes the database and environment, but keeps the project files.

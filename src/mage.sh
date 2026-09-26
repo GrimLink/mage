@@ -26,8 +26,16 @@ source "${MAGE_SRC}/commands/setup.sh"
 source "${MAGE_SRC}/commands/nuke.sh"
 source "${MAGE_SRC}/commands/add.sh"
 
+# Commands that run outside a Magento project, setup finds the root itself
+MAGE_ROOTLESS_COMMANDS="help version self-update create setup"
+
 # Run the given command, where anything unknown goes to bin/magento
 function mage_main() {
+  if [[ " $MAGE_ROOTLESS_COMMANDS " != *" $1 "* ]]; then
+    mage_root_enter || exit 1
+    mage_env_init
+  fi
+
   case "$1" in
     "help")
       mage_cmd_version
@@ -45,21 +53,14 @@ function mage_main() {
     "setup")
       mage_cmd_setup "${@:2}"
       ;;
+    "nuke" | "destroy")
+      mage_cmd_nuke "${@:2}"
+      ;;
+    "add")
+      mage_cmd_add "${@:2}"
+      ;;
     *)
-      mage_root_enter || exit 1
-      mage_env_init
-
-      case "$1" in
-        "nuke" | "destroy")
-          mage_cmd_nuke "${@:2}"
-          ;;
-        "add")
-          mage_cmd_add "${@:2}"
-          ;;
-        *)
-          mage_passthrough "$@"
-          ;;
-      esac
+      $MAGENTO_CLI "$@"
       ;;
   esac
 }

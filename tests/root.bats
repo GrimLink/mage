@@ -56,12 +56,3 @@ function setup() {
   MAGE_CALL_DIR="$ROOT"
   [ "$(mage_resolve_path ./Vendor)" = "./Vendor" ]
 }
-
-@test "passes relative path arguments through resolved" {
-  MAGE_ROOT="$ROOT"
-  MAGE_CALL_DIR="${ROOT}/app/code"
-  MAGENTO_CLI="echo"
-
-  run mage_passthrough i18n:collect-phrases ./Vendor --output=x.csv
-  [ "$output" = "i18n:collect-phrases app/code/./Vendor --output=x.csv" ]
-}

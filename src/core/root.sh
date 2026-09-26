@@ -35,8 +35,9 @@ function mage_root_enter() {
   fi
 }
 
-# Echo a path given from the calling folder, relative to the Magento root.
-# Relative to the root, it works the same on the host and inside a container.
+# Echo a path given from the calling folder, relative to the Magento root,
+# for commands that take a path. Relative to the root, it works the same
+# on the host and inside a container.
 function mage_resolve_path() {
   local path="$1"
 
@@ -47,24 +48,4 @@ function mage_resolve_path() {
   else
     echo "${MAGE_CALL_DIR}/${path}"
   fi
-}
-
-# Run bin/magento, where arguments starting with ./ or ../ are
-# resolved from the calling folder
-function mage_passthrough() {
-  local args=()
-  local arg
-
-  for arg in "$@"; do
-    case "$arg" in
-      "." | ".." | ./* | ../*)
-        args+=("$(mage_resolve_path "$arg")")
-        ;;
-      *)
-        args+=("$arg")
-        ;;
-    esac
-  done
-
-  $MAGENTO_CLI "${args[@]}"
 }
