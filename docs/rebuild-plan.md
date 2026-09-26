@@ -20,12 +20,12 @@ src/
   core/
     output.sh      colors (respects NO_COLOR), mage_info, mage_warn, mage_error
     config.sh      MAGE_* defaults, then sources ~/.config/mage/config
-    tools.sh       generic CLI vars (php, composer, node, open, get, lazy magerun)
+    tools.sh       CLI vars (magento, php, composer, node, mysql, open, lazy magerun)
     env.sh         environment registry: detect loop, MAGE_ENV, env_call <hook>
     root.sh        Magento root detection, path argument resolving, cd
-    helpers.sh     confirm, download, templates, case conversion
+    helpers.sh     ask, confirm, env.php reader, download, templates
   env/
-    local.sh       defaults
+    local.sh       fallback for every hook
     warden.sh
     valet.sh
   commands/
@@ -39,12 +39,13 @@ tests/             bats suite
 
 ## Environments
 
-* Each `env/<name>.sh` defines `env_<name>_detect` (returns 0 or 1) and `env_<name>_apply` (overrides the CLI vars such as `MAGENTO_CLI`, `COMPOSER_CLI`, `PURGE_CLI`). It can add hooks like `env_<name>_setup` and `env_<name>_nuke`.
-* `local.sh` sets the defaults. The first env that matches wins, and its name ends up in `MAGE_ENV`.
+* Each `env/<name>.sh` defines `env_<name>_available` (the tool is installed), `env_<name>_detect` (the current folder uses it) and optionally `env_<name>_apply` (overrides the CLI vars such as `MAGENTO_CLI`, `COMPOSER_CLI`, `PURGE_CLI`, and the `MAGE_DB_*` settings).
+* Other hooks: `create_project`, `setup_prepare`, `setup_finish` and `nuke`. `env_call <hook>` runs the hook of the current env, falls back to the local one, and does nothing when neither defines it.
+* The CLI defaults live in `core/tools.sh`, `local.sh` holds the local hooks. The first env that matches wins, and its name ends up in `MAGE_ENV`.
 * Priority: warden, then valet, then local. Valet is an environment, not a separate tool flag.
 * Commands call hooks through `env_call` instead of checking env flags themselves.
-* Warden is detected by `WARDEN_ENV_NAME` in `.env`, but only when `$PWD` is outside the container (the old code wrongly checked `$PATH`).
-* Generic tools (php, composer, node, magerun, open, get) stay global vars that an env may override. Magerun is detected on first use, since the check is slow.
+* Warden is detected by `WARDEN_ENV_NAME` in `.env`, and only when the `warden` binary is installed. Inside the container it is not, so mage runs there as local (the old code wrongly checked `$PATH` for this).
+* Generic tools (php, composer, node, magerun, open) stay global vars that an env may override. Magerun is detected on first use, since the check is slow.
 * DDEV is the next env to add. Others only on request.
 
 ## Magento root detection
@@ -57,6 +58,7 @@ tests/             bats suite
 ## Behaviour
 
 * Unknown commands pass through to `bin/magento`, until the aliases are ported.
+* Command functions are named `mage_cmd_<name>`, so they never collide with helpers.
 * `set -o pipefail`, but not `set -e`, as that breaks interactive flows and passthrough exit codes.
 * Errors go to stderr.
 
@@ -79,12 +81,14 @@ tests/             bats suite
 ### `setup [name]`
 
 * Runs the Magento install in an existing checkout, so a project can be reinstalled.
+* Asks for confirmation when `app/etc/env.php` exists, as it drops the database.
 * The env hook provides hosts and database settings.
 * `install` is no longer a public command, `create` is the entry point.
 
 ### `nuke [--keep-files]`
 
-* Reads the database name, credentials and OpenSearch prefix from `app/etc/env.php`, falling back to the folder name.
+* Reads the database name and credentials from `app/etc/env.php`, falling back to the folder name and the `MAGE_DB_*` settings.
+* The OpenSearch host, port and prefix come from `config:show catalog/search`, before the database is dropped.
 * Runs the env hook (Valet unsecures and unlinks its stores, Warden runs `env down -v`).
 * Drops the database for local and Valet, and clears the OpenSearch indices.
 * Removes the project folder, unless `--keep-files` is passed.
@@ -99,6 +103,7 @@ Kept as they are.
 * `src/mage.sh` also runs unbuilt during development, so a rebuild is not needed for every change.
 * The version comes from the first `## [x.y.z]` heading in `CHANGELOG.md`.
 * The output is checked with `bash -n`, and with `shellcheck` when it is installed.
+* `src/build.sh [OUTPUT]` can write elsewhere, which the tests use.
 
 ## Tests
 
