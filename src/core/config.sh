@@ -45,6 +45,7 @@ MAGE_PACKAGES=(
 MAGE_DEV_PACKAGES=(
   avstudnitz/scopehint2
   spatie/ray
+  siteation/magento2-debugbar
 )
 
 # Magento pins these, so they would always show as outdated
@@ -69,6 +70,7 @@ MAGE_STORE_CONFIG=(
   "admin/security/password_is_forced 0"
   "catalog/seo/category_canonical_tag 1"
   "catalog/seo/product_canonical_tag 1"
+  "siteation_debugbar/general/enabled 1"
 )
 
 # Defaults for the {{NAME}} placeholders in json files for 'mage add' go in the
