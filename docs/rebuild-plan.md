@@ -166,6 +166,10 @@ Without arguments it errors with its own help page, listing the composer and git
 * Building styles is not part of it, that is a separate build action that works for any theme.
 * Checkout and commerce return as subcommands, such as `add hyva checkout`.
 
+### `add storeinfo`
+
+* Applies `templates/composer-storeinfo.json` (the Siteation StoreInfo core, menus, USPs and payments modules), then runs `setup:upgrade`.
+
 ## Templates
 
 * `templates/` is synced to `~/.config/mage/templates` on first use, and again by every `self-update`. Commands never fetch them otherwise.
