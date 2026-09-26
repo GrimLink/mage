@@ -6,9 +6,9 @@ function mage_sample_hyva() {
     return 1
   fi
 
-  # Hyva from the GitLab, as 'mage add hyva --dev' adds it, has no license for the
-  # Koti packages, so their GitLab repositories are added first
-  if grep -q "gitlab.hyva.io" composer.json 2> /dev/null; then
+  # Without the Hyva packagist repository of a license, such as Hyva from the GitLab
+  # or from package-source, the Koti packages come from their GitLab repositories
+  if ! mage_hyva_has_license; then
     local file
     file="$(mage_template_file "composer-hyva-sample-dev.json")"
 
@@ -36,4 +36,10 @@ function mage_sample_hyva() {
   fi
 
   $MAGENTO_CLI hyva:sampledata:deploy "${args[@]}" && $MAGENTO_CLI setup:upgrade
+}
+
+# Check whether composer.json has the Hyva packagist repository that comes with a license
+function mage_hyva_has_license() {
+  mage_require_jq "The Hyva sample data"
+  jq -e '[.repositories // {} | .[] | .url? // empty | select(startswith("https://hyva-themes.repo.packagist.com/"))] | length > 0' composer.json &> /dev/null
 }

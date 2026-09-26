@@ -11,7 +11,7 @@ The files mage generates come from the `templates` folder of this repository:
 | `LocalValetDriver.php`          | [`mage setup`](commands/create.md#mage-setup) with Valet, when the project has none |
 | `composer-hyva.json`            | [`mage add hyva`](commands/add-hyva.md)                                             |
 | `composer-hyva-dev.json`        | [`mage add hyva --dev`](commands/add-hyva.md)                                       |
-| `composer-hyva-sample-dev.json` | [`mage add sample hyva`](commands/add-sample.md), when Hyvä comes from the GitLab   |
+| `composer-hyva-sample-dev.json` | [`mage add sample hyva`](commands/add-sample.md), without a Hyvä license   |
 | `composer-storeinfo.json`       | [`mage add storeinfo`](commands/add-storeinfo.md)                                   |
 
 ## Sync
