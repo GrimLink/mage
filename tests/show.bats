@@ -52,6 +52,23 @@ function make_registration() {
   [[ "$output" != *"frontend/Vendor/theme"* ]]
 }
 
+@test "shows only the themes of the direct dependencies and app/design, with their parent" {
+  cd "$BATS_TEST_TMPDIR"
+  echo '{ "require": { "vendor/theme": "*", "vendor/module": "*" } }' > composer.json
+  make_registration vendor/vendor/theme THEME frontend/Vendor/theme-name
+  printf '<theme>\n    <title>Theme</title>\n    <parent>Hyva/default</parent>\n</theme>\n' > vendor/vendor/theme/theme.xml
+  make_registration vendor/vendor/module MODULE Vendor_Module
+  make_registration vendor/other/indirect THEME frontend/Other/indirect
+  make_registration app/design/adminhtml/Custom/admin THEME adminhtml/Custom/admin
+
+  run mage_cmd_show themes
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"adminhtml/Custom/admin"*"app/design"* ]]
+  [[ "$output" == *"frontend/Vendor/theme-name"*"vendor/theme"*"parent: Hyva/default"* ]]
+  [[ "$output" != *"Vendor_Module"* ]]
+  [[ "$output" != *"Other/indirect"* ]]
+}
+
 @test "says so when there are no modules" {
   cd "$BATS_TEST_TMPDIR"
   echo '{ "require": {} }' > composer.json

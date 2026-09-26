@@ -46,6 +46,7 @@ source "${MAGE_SRC}/commands/clean/sample-files.sh"
 source "${MAGE_SRC}/commands/show.sh"
 source "${MAGE_SRC}/commands/show/stores.sh"
 source "${MAGE_SRC}/commands/show/modules.sh"
+source "${MAGE_SRC}/commands/show/themes.sh"
 
 # Commands that run outside a Magento project, setup finds the root itself
 MAGE_ROOTLESS_COMMANDS="help version self-update create setup"
