@@ -38,10 +38,10 @@ function setup() {
 }
 
 @test "warns about many modules" {
-  MODULES=60
+  MODULES=120
 
   run mage_cmd_info
-  [[ "$output" == *"- Modules: 60 (consider removing some for performance)"* ]]
+  [[ "$output" == *"- Modules: 120 (consider removing some for performance)"* ]]
 }
 
 @test "errors when Magento gives nothing" {

@@ -10,4 +10,4 @@ It shows the Magento product and version, with the Hyvä version when installed,
 
 Everything comes from Magento in one boot, so the PHP version is the one that runs Magento, inside the container with Warden and DDEV.
 The admin url counts a custom admin path and url, the same as [`mage open admin`](open.md).
-Above 25 modules the count turns yellow, above 50 red, as every module adds to each request.
+From 50 modules the count turns yellow, from 100 red, as every module adds to each request.

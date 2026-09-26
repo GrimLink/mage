@@ -77,9 +77,9 @@ function mage_cmd_info() {
   fi
 
   # Every module adds to each request, so many of them is worth a warning
-  if [[ $modules -lt 25 ]]; then
+  if [[ $modules -lt 50 ]]; then
     mage_info "- Modules: ${GREEN}${modules}${RESET}"
-  elif [[ $modules -lt 50 ]]; then
+  elif [[ $modules -lt 100 ]]; then
     mage_info "- Modules: ${YELLOW}${modules}${RESET}"
   else
     mage_info "- Modules: ${RED}${modules}${RESET} (consider removing some for performance)"
