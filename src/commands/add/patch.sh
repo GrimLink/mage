@@ -1,25 +1,33 @@
-MAGE_ADD_HANDLERS+=("patch|Add a patch: [PKG] [NAME] [SOURCE], or all patches of a GitHub or GitLab repository url")
+MAGE_ADD_HANDLERS+=("patch|Add a patch: [PKG] to create one from your changes, [PKG] [NAME] [SOURCE], or a repository url")
 
 MAGE_PATCHES_FILE="patches.json"
 
-# Add patches through cweagans/composer-patches, and apply them right away.
-# A GitHub or GitLab repository url adds all of its patches, otherwise the
-# arguments are the package, the patch name and the patch source, the last one.
+# Add patches, depending on the input:
+# - a GitHub or GitLab repository url adds all of its patches
+# - a package with a name and source adds that patch, the source is the last argument
+# - a package alone creates a patch from your changes in its vendor folder
 function mage_add_patch() {
   mage_require_jq "Adding a patch"
+  mage_patch_check_tool || exit 1
 
-  if [[ ! -d vendor/cweagans/composer-patches ]]; then
-    mage_error "Patches require cweagans/composer-patches, add it with 'mage add cweagans/composer-patches'"
+  local input="$1"
+
+  if [[ -z "$input" ]]; then
+    input="$(mage_ask "Package to patch (vendor/name), or a patch repository url")"
+  fi
+
+  if [[ "$input" =~ ^https://(github|gitlab)\.com/ ]]; then
+    mage_add_patch_repository "$input" || exit 1
+  elif [[ $# -ge 2 ]]; then
+    mage_add_patch_entry "$@" || exit 1
+  elif [[ "$input" == */* ]]; then
+    mage_add_patch_create "$input" || exit 1
+  else
+    mage_error "Give a package as vendor/name, or a GitHub or GitLab repository url"
     exit 1
   fi
 
-  if [[ "$1" =~ ^https://(github|gitlab)\.com/ ]]; then
-    mage_add_patch_repository "$1" || exit 1
-  else
-    mage_add_patch_entry "$@" || exit 1
-  fi
-
-  $COMPOSER_CLI patches-relock && $COMPOSER_CLI patches-repatch
+  mage_patch_apply
 }
 
 # Download the main branch of a patch repository, and add its patches
@@ -44,16 +52,109 @@ function mage_add_patch_repository() {
   fi
 
   rm -f "${temp_dir}/patches.tar.gz"
-  mage_add_patch_folder "$temp_dir"
+  mage_patch_merge "$temp_dir"
   local status=$?
 
   rm -rf "$temp_dir"
   return $status
 }
 
-# Merge the patches.json of a patch repository into the project, and copy its patches.
+# Add an existing patch file or url, the name may be several words as the source is last
+function mage_add_patch_entry() {
+  local package="$1"
+  local name="${*:2:$#-2}"
+  local source="${!#}"
+
+  if [[ -z "$name" ]]; then
+    name="$(mage_ask "Patch name")"
+  fi
+
+  if [[ -z "$name" ]]; then
+    mage_error "The patch name is required"
+    return 1
+  fi
+
+  if [[ "$source" != https://* ]] && [[ "$source" != *.patch ]]; then
+    source="${source%.*}.patch"
+  fi
+
+  mage_patch_register "$package" "$name" "$source"
+}
+
+# Track the vendor folder of the package with a temporary git repository,
+# let you make your changes, and save them as a patch in patches/<package>
+function mage_add_patch_create() {
+  local package="$1"
+  local package_dir="vendor/${package}"
+
+  if [[ ! -d "$package_dir" ]]; then
+    mage_error "${package_dir} not found, is ${package} installed?"
+    return 1
+  fi
+
+  # A git folder means a clone, such as a path repository package, which is changed directly
+  if [[ -e "${package_dir}/.git" ]]; then
+    mage_error "${package_dir} is a git repository, change it there instead of patching it"
+    return 1
+  fi
+
+  git -C "$package_dir" init --quiet && git -C "$package_dir" add -A || return 1
+
+  mage_patch_wait_for_changes "$package_dir"
+
+  local slug="${package//\//-}"
+  local name="Local: ${slug}"
+  local patch_file="patches/${package}/LOCAL-${slug}.patch"
+  local count=2
+
+  while [[ -e "$patch_file" ]]; do
+    name="Local: ${slug} ${count}"
+    patch_file="patches/${package}/LOCAL-${slug}-${count}.patch"
+    count=$((count + 1))
+  done
+
+  mkdir -p "patches/${package}"
+  git -C "$package_dir" add -A
+  git -C "$package_dir" diff --cached > "$patch_file"
+  rm -rf "${package_dir}/.git"
+
+  if [[ ! -s "$patch_file" ]]; then
+    rm -f "$patch_file"
+    mage_error "No changes found in ${package_dir}, no patch created"
+    return 1
+  fi
+
+  mage_check 0 "Created ${patch_file}"
+  mage_patch_register "$package" "$name" "$patch_file"
+}
+
+function mage_patch_wait_for_changes() {
+  read -r -s -n 1 -p "Make your changes in $1, then press any key to continue"
+  echo "" >&2
+}
+
+# The functions below hold what depends on the patch tool, now cweagans/composer-patches
+
+function mage_patch_check_tool() {
+  if [[ ! -d vendor/cweagans/composer-patches ]]; then
+    mage_error "Patches require cweagans/composer-patches, add it with 'mage add cweagans/composer-patches'"
+    return 1
+  fi
+}
+
+# Add a patch to the patches file, which is created when missing
+function mage_patch_register() {
+  mage_patches_file_init
+  jq --arg package "$1" --arg name "$2" --arg source "$3" \
+    '.patches[$package][$name] = $source' "$MAGE_PATCHES_FILE" > "${MAGE_PATCHES_FILE}.tmp" &&
+    mv "${MAGE_PATCHES_FILE}.tmp" "$MAGE_PATCHES_FILE" || return 1
+
+  mage_check 0 "Added '$2' for $1 to ${MAGE_PATCHES_FILE}"
+}
+
+# Merge the patches file of a patch repository into the project, and copy its patches.
 # The patches come from its patches folder, or the whole repository when it has none.
-function mage_add_patch_folder() {
+function mage_patch_merge() {
   local source="$1"
 
   if [[ -f "${source}/${MAGE_PATCHES_FILE}" ]]; then
@@ -75,47 +176,8 @@ function mage_add_patch_folder() {
   mage_check 0 "Copied the patches to patches/"
 }
 
-# Add a single patch to patches.json. Anything not given is asked,
-# the name may be several words when the source is given last.
-function mage_add_patch_entry() {
-  local package="$1"
-  local name=""
-  local source=""
-
-  if [[ $# -ge 3 ]]; then
-    name="${*:2:$#-2}"
-    source="${!#}"
-  elif [[ $# -eq 2 ]]; then
-    name="$2"
-  fi
-
-  if [[ -z "$package" ]]; then
-    package="$(mage_ask "Package to patch, such as magento/module-theme")"
-  fi
-
-  if [[ -z "$name" ]]; then
-    name="$(mage_ask "Patch name")"
-  fi
-
-  if [[ -z "$source" ]]; then
-    source="$(mage_ask "Patch source, a file in patches/ or a url")"
-  fi
-
-  if [[ -z "$package" ]] || [[ -z "$name" ]] || [[ -z "$source" ]]; then
-    mage_error "The package, name and source of the patch are required"
-    return 1
-  fi
-
-  if [[ "$source" != https://* ]] && [[ "$source" != *.patch ]]; then
-    source="${source%.*}.patch"
-  fi
-
-  mage_patches_file_init
-  jq --arg package "$package" --arg name "$name" --arg source "$source" \
-    '.patches[$package][$name] = $source' "$MAGE_PATCHES_FILE" > "${MAGE_PATCHES_FILE}.tmp" &&
-    mv "${MAGE_PATCHES_FILE}.tmp" "$MAGE_PATCHES_FILE" || return 1
-
-  mage_check 0 "Added '${name}' for ${package} to ${MAGE_PATCHES_FILE}"
+function mage_patch_apply() {
+  $COMPOSER_CLI patches-relock && $COMPOSER_CLI patches-repatch
 }
 
 function mage_patches_file_init() {
