@@ -6,6 +6,20 @@ function mage_sample_hyva() {
     return 1
   fi
 
+  # Hyva from the GitLab, as 'mage add hyva --dev' adds it, has no license for the
+  # Koti packages, so their GitLab repositories are added first
+  if grep -q "gitlab.hyva.io" composer.json 2> /dev/null; then
+    local file
+    file="$(mage_template_file "composer-hyva-sample-dev.json")"
+
+    if [[ -z "$file" ]]; then
+      mage_error "Could not get the 'composer-hyva-sample-dev.json' template from ${MAGE_TEMPLATES_ARCHIVE}"
+      return 1
+    fi
+
+    mage_add_json "$file" || return 1
+  fi
+
   if [[ ! -d vendor/magento/module-sample-data ]]; then
     $COMPOSER_CLI require magento/module-sample-data || return 1
   fi

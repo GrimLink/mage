@@ -101,4 +101,5 @@ Mage ships these fragments in its [templates](templates.md), used by the matchin
 
 - `composer-hyva.json`: Hyvä with a license.
 - `composer-hyva-dev.json`: Hyvä from the Hyvä GitLab.
+- `composer-hyva-sample-dev.json`: the repositories of the Koti sample data on the Hyvä GitLab.
 - `composer-storeinfo.json`: the Siteation StoreInfo modules.

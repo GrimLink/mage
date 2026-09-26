@@ -46,6 +46,21 @@ function setup() {
   [[ "${lines[0]}" == "composer require magento/module-sample-data" ]]
 }
 
+@test "the Hyva set adds the Koti GitLab repositories for Hyva from the GitLab" {
+  mkdir -p vendor/hyva-themes/magento2-theme-module vendor/magento/module-sample-data
+  MAGE_ROOT="$BATS_TEST_TMPDIR"
+  MAGE_CALL_DIR="$BATS_TEST_TMPDIR"
+
+  echo '{ "repositories": { "hyva-theme-module": { "type": "vcs", "url": "git@gitlab.hyva.io:hyva-themes/magento2-theme-module.git" } } }' > composer.json
+  run mage_cmd_add sample hyva
+  [[ "$output" == *"composer config repositories.koti-sample-data-catalog"*"gitlab.hyva.io:hyva-themes/sample-data/koti/koti-sample-data-catalog.git"* ]]
+  [[ "$output" == *"magento hyva:sampledata:deploy"* ]]
+
+  echo '{ "repositories": {} }' > composer.json
+  run mage_cmd_add sample hyva
+  [[ "$output" != *"koti-sample-data"* ]]
+}
+
 @test "the Hyva set keeps or replaces Luma sample data as answered" {
   mkdir -p vendor/hyva-themes/magento2-theme-module vendor/magento/module-sample-data vendor/magento/module-catalog-sample-data
 

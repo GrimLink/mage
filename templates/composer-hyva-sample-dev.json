@@ -1,0 +1,81 @@
+{
+  "description": "Hyvä Koti sample data for development, from the Hyvä GitLab",
+  "repositories": {
+    "koti-sample-data-bundle": {
+      "type": "vcs",
+      "url": "git@gitlab.hyva.io:hyva-themes/sample-data/koti/koti-sample-data-bundle.git"
+    },
+    "koti-sample-data-catalog": {
+      "type": "vcs",
+      "url": "git@gitlab.hyva.io:hyva-themes/sample-data/koti/koti-sample-data-catalog.git"
+    },
+    "koti-sample-data-catalog-rule": {
+      "type": "vcs",
+      "url": "git@gitlab.hyva.io:hyva-themes/sample-data/koti/koti-sample-data-catalog-rule.git"
+    },
+    "koti-sample-data-configurable": {
+      "type": "vcs",
+      "url": "git@gitlab.hyva.io:hyva-themes/sample-data/koti/koti-sample-data-configurable.git"
+    },
+    "koti-sample-data-customer": {
+      "type": "vcs",
+      "url": "git@gitlab.hyva.io:hyva-themes/sample-data/koti/koti-sample-data-customer.git"
+    },
+    "koti-sample-data-downloadable": {
+      "type": "vcs",
+      "url": "git@gitlab.hyva.io:hyva-themes/sample-data/koti/koti-sample-data-downloadable.git"
+    },
+    "koti-sample-data-grouped-product": {
+      "type": "vcs",
+      "url": "git@gitlab.hyva.io:hyva-themes/sample-data/koti/koti-sample-data-grouped-product.git"
+    },
+    "koti-sample-data-media": {
+      "type": "vcs",
+      "url": "git@gitlab.hyva.io:hyva-themes/sample-data/koti/koti-sample-data-media.git"
+    },
+    "koti-sample-data-msrp": {
+      "type": "vcs",
+      "url": "git@gitlab.hyva.io:hyva-themes/sample-data/koti/koti-sample-data-msrp.git"
+    },
+    "koti-sample-data-offline-shipping": {
+      "type": "vcs",
+      "url": "git@gitlab.hyva.io:hyva-themes/sample-data/koti/koti-sample-data-offline-shipping.git"
+    },
+    "koti-sample-data-product-links": {
+      "type": "vcs",
+      "url": "git@gitlab.hyva.io:hyva-themes/sample-data/koti/koti-sample-data-product-links.git"
+    },
+    "koti-sample-data-review": {
+      "type": "vcs",
+      "url": "git@gitlab.hyva.io:hyva-themes/sample-data/koti/koti-sample-data-review.git"
+    },
+    "koti-sample-data-sales": {
+      "type": "vcs",
+      "url": "git@gitlab.hyva.io:hyva-themes/sample-data/koti/koti-sample-data-sales.git"
+    },
+    "koti-sample-data-sales-rule": {
+      "type": "vcs",
+      "url": "git@gitlab.hyva.io:hyva-themes/sample-data/koti/koti-sample-data-sales-rule.git"
+    },
+    "koti-sample-data-swatches": {
+      "type": "vcs",
+      "url": "git@gitlab.hyva.io:hyva-themes/sample-data/koti/koti-sample-data-swatches.git"
+    },
+    "koti-sample-data-tax": {
+      "type": "vcs",
+      "url": "git@gitlab.hyva.io:hyva-themes/sample-data/koti/koti-sample-data-tax.git"
+    },
+    "koti-sample-data-theme": {
+      "type": "vcs",
+      "url": "git@gitlab.hyva.io:hyva-themes/sample-data/koti/koti-sample-data-theme.git"
+    },
+    "koti-sample-data-widget": {
+      "type": "vcs",
+      "url": "git@gitlab.hyva.io:hyva-themes/sample-data/koti/koti-sample-data-widget.git"
+    },
+    "koti-sample-data-wishlist": {
+      "type": "vcs",
+      "url": "git@gitlab.hyva.io:hyva-themes/sample-data/koti/koti-sample-data-wishlist.git"
+    }
+  }
+}
