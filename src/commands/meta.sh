@@ -36,6 +36,7 @@ function mage_cmd_help() {
   mage_help_cmd "upd/update [PKG|TERM]"       "Update all, a package, or every direct dependency matching the terms"
 
   mage_help_header "Development"
+  mage_help_cmd "show [OPTION]"               "Show project information, see 'mage show help' for all options"
   mage_help_cmd "run [ARGS]"                  "Run n98-magerun2"
   mage_help_cmd "clean/purge [OPTION]"        "Clean caches and files, see 'mage clean help' for all options"
 

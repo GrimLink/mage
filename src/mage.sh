@@ -43,6 +43,8 @@ source "${MAGE_SRC}/commands/clean/redis.sh"
 source "${MAGE_SRC}/commands/clean/varnish.sh"
 source "${MAGE_SRC}/commands/clean/opensearch.sh"
 source "${MAGE_SRC}/commands/clean/sample-files.sh"
+source "${MAGE_SRC}/commands/show.sh"
+source "${MAGE_SRC}/commands/show/stores.sh"
 
 # Commands that run outside a Magento project, setup finds the root itself
 MAGE_ROOTLESS_COMMANDS="help version self-update create setup"
@@ -85,6 +87,9 @@ function mage_main() {
       ;;
     "outdated")
       mage_cmd_outdated "${@:2}"
+      ;;
+    "show")
+      mage_cmd_show "${@:2}"
       ;;
     "run")
       mage_cmd_run "${@:2}"

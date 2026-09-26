@@ -43,6 +43,8 @@ src/
     add/           one file per add handler
     clean.sh       dispatcher for mage clean
     clean/         one file per clean handler
+    show.sh        dispatcher for mage show
+    show/          one file per show handler
     meta.sh        help, version, self-update
   build.sh
 tests/             bats suite
@@ -191,6 +193,12 @@ Without arguments it errors with its own help page, listing the composer and git
 * `clean help` shows its own help page. Unlike `add`, no option is not an error, as cleaning everything is a sensible default.
 * `redis` goes through the `clean_redis` env hook. Local and Valet share one Redis, so only the keys with the project cache prefixes are deleted. Warden and DDEV run Redis per project, so they flush it.
 * `opensearch` runs curl through `SEARCH_CURL_CLI`, which Warden and DDEV run inside the OpenSearch container.
+
+### `show <option>`
+
+* Uses the same handler registry as `add` and `clean`: `MAGE_SHOW_HANDLERS`, `mage_show_<name>`, one file per handler in `commands/show/`.
+* Without an option it errors with its own help page, like `add`, as there is no sensible default.
+* `show stores` replaces `mage stores`: the store base urls through magerun, further arguments go to magerun.
 
 ### `help`, `version`, `self-update`
 

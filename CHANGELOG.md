@@ -18,6 +18,7 @@ Version 3 is a rebuild of mage. The commands of version 2 return step by step, u
 - **`mage add hyva [--dev]`:** Adds Hyvä through the bundled composer fragments, with a license or with `--dev` from the Hyvä GitLab, then runs `setup:upgrade` and activates the theme. The development setup now uses composer `vcs` repositories instead of a git clone per package.
 - **`mage add theme` command:** Replaces `mage new theme`. The vendor, name and parent can be given as options, the parent defaults to Hyvä when it is installed, and a theme created in `package-source` is required right away.
 - **`mage add module` command:** Replaces `mage new module`. The vendor, name and Hyvä choice can be given as options, and a module created in `package-source` is required right away.
+- **`mage show [OPTION]` command:** Shows information about the project, built from handlers like `mage add` and `mage clean`. The first option is `stores`.
 - **`mage nuke --keep-files`:** Removes the database and environment, but keeps the project files.
 - **Config file:** The defaults, such as the admin user, database credentials, store config and default composer packages, can be overridden in `~/.config/mage/config`.
 - **DDEV support:** Projects with a `.ddev/config.yaml` run their commands through DDEV. `mage create` can set up a new DDEV project, with the OpenSearch and Redis add-ons, and `mage nuke` removes it with `ddev delete`.
@@ -40,6 +41,7 @@ Version 3 is a rebuild of mage. The commands of version 2 return step by step, u
 
 ### Removed
 - **`mage install`:** Use `mage create`, which installs and sets up the project in one go.
+- **`mage stores`:** Use `mage show stores`.
 - **`mage new theme` and `mage new module`:** Use `mage add theme` and `mage add module`.
 - **`mage cleanup [TYPE]`:** Use `mage clean [OPTION]`, where `sample` is now `sample-files`.
 

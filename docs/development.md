@@ -15,12 +15,13 @@ src/
     env.sh         environment detection and hooks
     root.sh        Magento root detection
     helpers.sh     questions, env.php reader, downloads, composer helpers
-    handlers.sh    the handler registry shared by add and clean
+    handlers.sh    the handler registry shared by add, clean and show
     templates.sh   template sync and copy
   env/             one file per environment
   commands/        one file per command
     add/           one file per add handler
     clean/         one file per clean option
+    show/          one file per show option
 templates/         files for generated code and bundled composer fragments
 tests/             bats tests
 ```
@@ -71,9 +72,9 @@ On every push and pull request to main, a GitHub Action checks the built script 
 3. When it works outside a Magento project, add it to `MAGE_ROOTLESS_COMMANDS`.
 4. Add it to `mage_cmd_help` in `src/commands/meta.sh`, and document it in `docs/commands`.
 
-## Adding an add handler or clean option
+## Adding an add handler, clean option or show option
 
-Both use the handler registry of `src/core/handlers.sh`. For `mage add example`:
+All three use the handler registry of `src/core/handlers.sh`. For `mage add example`:
 
 ```bash
 # src/commands/add/example.sh
