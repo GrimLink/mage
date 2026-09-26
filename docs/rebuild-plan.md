@@ -39,6 +39,7 @@ src/
     add-json.sh    composer fragments from json files
     remove.sh      del and remove
     update.sh      upd and update
+    outdated.sh
     add/           one file per add handler
     clean.sh       dispatcher for mage clean
     clean/         one file per clean handler
@@ -143,6 +144,11 @@ Without arguments it errors with its own help page, listing the composer and git
 * Without arguments, with a name with a slash, or starting with an option, everything is passed as is to `composer update`.
 * Otherwise each argument is a term, matched the same way as `del` through `mage_composer_matches`, and all matches (dev included) are updated in one run. Options among the terms go to composer.
 * No confirmation, an update is undone with the `composer.lock` in git.
+
+### `outdated [ARGS]`
+
+* Runs `composer outdated --direct --no-dev`, ignoring the packages in `MAGE_OUTDATED_IGNORE` (default the symfony packages Magento pins). Further arguments go to composer.
+* Prints to the terminal instead of writing `composer-outdated.json`, `--format=json > file` gives the old result.
 
 ### `add theme [Vendor/Name] [--parent=THEME] [--admin]`
 

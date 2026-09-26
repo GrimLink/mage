@@ -31,6 +31,7 @@ function mage_cmd_help() {
   mage_help_cmd "add [PKG|GIT_URL|HANDLER]"   "Add to the project, see 'mage add help' for all options"
   mage_help_cmd "del/remove [PKG|TERM]"       "Remove a package, or every direct dependency matching the terms"
   mage_help_cmd "  -y, --yes"                 "Remove the matches without asking"
+  mage_help_cmd "outdated [ARGS]"             "Show the direct dependencies with a newer version"
   mage_help_cmd "upd/update [PKG|TERM]"       "Update all, a package, or every direct dependency matching the terms"
 
   mage_help_header "Development"

@@ -42,6 +42,12 @@ MAGE_DEV_PACKAGES=(
   spatie/ray
 )
 
+# Magento pins these, so they would always show as outdated
+MAGE_OUTDATED_IGNORE=(
+  symfony/finder
+  symfony/process
+)
+
 # The handlers 'mage clean all' and 'mage purge' run, in order
 MAGE_CLEAN_ALL="files redis varnish"
 
