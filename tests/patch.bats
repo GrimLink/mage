@@ -37,6 +37,7 @@ function setup() {
 
   run mage_cmd_add patch vendor/package
   [ "$status" -eq 0 ]
+  [[ "$output" == *"composer patches-repatch"* ]]
 
   local patch="patches/vendor/package/LOCAL-vendor-package.patch"
   grep -q "^-old" "$patch"
@@ -48,7 +49,6 @@ function setup() {
   [ "$status" -eq 1 ]
   [ ! -e vendor/vendor/package/.git ]
   [ "$(jq -r '.patches["vendor/package"]["Local: vendor-package"]' patches.json)" = "$patch" ]
-  [[ "$output" == *"composer patches-repatch"* ]]
 }
 
 @test "numbers a second local patch of the same package" {
