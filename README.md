@@ -1,6 +1,7 @@
 # Mage
 
-**Mage** is a simple tool built on top of `bin/magento` to enhance your Magento 2 development experience. It provides shortcuts and custom functions to save you time and effort.
+**Mage** is a simple tool built on top of `bin/magento` to enhance your Magento 2 development experience.
+It provides shortcuts and custom functions to save you time and effort.
 
 ## Benefits of Using Mage
 
@@ -24,7 +25,8 @@ Alternatively, use wget:
 wget https://raw.githubusercontent.com/GrimLink/mage/main/mage && chmod +x mage
 ```
 
-Move it to a folder in your `PATH`, such as `~/.local/bin`. Update it later with `mage self-update`, which also updates the [templates](docs/templates.md).
+Move it to a folder in your `PATH`, such as `~/.local/bin`.
+Update it later with `mage self-update`, which also updates the [templates](docs/templates.md).
 
 ### Requirements
 
@@ -34,7 +36,8 @@ Move it to a folder in your `PATH`, such as `~/.local/bin`. Update it later with
 
 ## Commands
 
-Run `mage help` for the full list. Anything mage does not know runs `bin/magento`, so `mage cache:flush` works as expected.
+Run `mage help` for the full list.
+Anything mage does not know runs `bin/magento`, so `mage cache:flush` works as expected.
 
 | Command                                                        | Does                                                               |
 | -------------------------------------------------------------- | ------------------------------------------------------------------ |
@@ -60,7 +63,7 @@ Run `mage help` for the full list. Anything mage does not know runs `bin/magento
 | [`log`](docs/commands/log.md)                                  | Follow a log in `var/log`                                          |
 | [`reindex`](docs/commands/reindex.md)                          | Reindex, then flush the cache                                      |
 | [`clean`](docs/commands/clean.md)                              | Clean caches and generated files (alias: `purge`)                  |
-| [`open`](docs/commands/open.md)                                | Open a store view or the admin in your browser                     |
+| [`open`](docs/commands/open.md)                                | Open a store view, the admin or the mail catcher in your browser  |
 | [`set`](docs/commands/set.md)                                  | Change a setting, such as the CSP or full page cache               |
 | [`show`](docs/commands/show.md)                                | Show project information, such as the stores                       |
 | [`run`](docs/commands/run.md)                                  | Run [n98-magerun2]                                                 |
@@ -68,11 +71,14 @@ Run `mage help` for the full list. Anything mage does not know runs `bin/magento
 
 ### Working from a nested folder
 
-Mage looks for the Magento root (the folder with `bin/magento` and `app/etc/di.xml`) from the current folder upwards, and runs from there. So `mage cache:flush` works from `app/code/Vendor/Module` too. Outside a project only `create`, `setup`, `help`, `version` and `self-update` work.
+Mage looks for the Magento root (the folder with `bin/magento` and `app/etc/di.xml`) from the current folder upwards, and runs from there.
+So `mage cache:flush` works from `app/code/Vendor/Module` too.
+Outside a project only `create`, `setup`, `help`, `version` and `self-update` work.
 
 ## Configuration
 
-Mage runs with sensible defaults, all of which can be changed in `~/.config/mage/config`. See [configuration](docs/config.md).
+Mage runs with sensible defaults, all of which can be changed in `~/.config/mage/config`.
+See [configuration](docs/config.md).
 
 ## Supported Platforms
 
@@ -85,11 +91,14 @@ Mage works on **macOS** and **most Linux platforms**, and detects these environm
 
 ## Contributing
 
-We welcome contributions to Mage! Fork the repository, make your changes, and submit a pull request. See [development](docs/development.md) for how the source is organised, built and tested.
+We welcome contributions to Mage!
+Fork the repository, make your changes, and submit a pull request.
+See [development](docs/development.md) for how the source is organised, built and tested.
 
 ## License
 
-Mage is licensed under the MIT License. See the LICENSE file for details.
+Mage is licensed under the MIT License.
+See the LICENSE file for details.
 
 [n98-magerun2]: https://github.com/netz98/n98-magerun2
 [jq]: https://jqlang.org/
