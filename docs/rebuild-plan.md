@@ -191,6 +191,10 @@ Without arguments it errors with its own help page, listing the composer and git
 
 * Picks the command first, then runs it: `vendor/bin/cache-clean.js` through `NODE_CLI`, so in the container with Warden and DDEV, or else the global one the `watch_cli` env hook echoes (`cache-clean.js` in the `PATH`, the global composer folder of the Warden container, none for DDEV). No command is an error, the status of the watcher itself is never checked. Arguments are ignored, the watcher is all it runs.
 
+### `reindex [INDEX...]`
+
+* `indexer:reindex` with the given index names, all without, then `cache:flush` only when that succeeds.
+
 ### Setting a theme
 
 * `mage_set_theme <theme>` in `core/helpers.sh` is the one place that activates a theme, so every script calls it, even while it can not always set the theme.
