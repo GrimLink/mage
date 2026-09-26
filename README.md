@@ -60,6 +60,7 @@ Run `mage help` for the full list. Anything mage does not know runs `bin/magento
 | [`reindex`](docs/commands/reindex.md) | Reindex, then flush the cache |
 | [`clean`](docs/commands/clean.md) | Clean caches and generated files (alias: `purge`) |
 | [`open`](docs/commands/open.md) | Open a store view or the admin in your browser |
+| [`set`](docs/commands/set.md) | Change a setting, such as the CSP or full page cache |
 | [`show`](docs/commands/show.md) | Show project information, such as the stores |
 | [`run`](docs/commands/run.md) | Run [n98-magerun2] |
 | `help`, `version`, `self-update` | Show help, show the version, update mage |

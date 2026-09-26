@@ -37,6 +37,7 @@ function mage_cmd_help() {
 
   mage_help_header "Development"
   mage_help_cmd "open [STORE|admin|mail]"     "Open the default store view, a store view by its code, the admin or the mail catcher"
+  mage_help_cmd "set [OPTION]"                "Change a setting, see 'mage set help' for all options"
   mage_help_cmd "show [OPTION]"               "Show project information, see 'mage show help' for all options"
   mage_help_cmd "run [ARGS]"                  "Run n98-magerun2"
   mage_help_cmd "watch"                       "Clean only the caches a file change affects, with cache-clean"

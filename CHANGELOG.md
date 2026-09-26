@@ -44,6 +44,8 @@ Version 3 is a rebuild of mage. The commands of version 2 return step by step, u
 - **`mage add store`:** Also accepts a prefix with dashes, as `my-store` with the code `my_store`, and refuses an invalid store code. DDEV and a local setup get a hint on how to reach the new domain.
 - **`mage open`:** Gets the url from Magento in one call instead of magerun or several config lookups, so a base url on a website and a custom admin url now work too. A store view is matched by its exact code instead of any part of the text, an unknown one lists the codes there are, and the url is printed when there is no open command.
 - **`mage watch`:** The cache-clean of the project now runs in the environment, so in the container with Warden and DDEV. Without any cache-clean it stops with an error and how to add it.
+- **`mage set csp`:** No longer needs magerun, it writes the values to `app/etc/env.php` with Magento's own `config:set --lock-env`, and flushes the config cache.
+- **`mage set fpc`:** Refuses an unknown cache instead of using the builtin one, and shows errors instead of hiding them. `builtin` can be given by name.
 - **Output:** Errors go to stderr, and colors are left out when `NO_COLOR` is set or the output is not a terminal.
 
 ### Removed

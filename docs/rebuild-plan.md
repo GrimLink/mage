@@ -43,6 +43,8 @@ src/
     add/           one file per add handler
     clean.sh       dispatcher for mage clean
     clean/         one file per clean handler
+    set.sh         dispatcher for mage set
+    set/           one file per set handler
     show.sh        dispatcher for mage show
     show/          one file per show handler
     meta.sh        help, version, self-update
@@ -240,6 +242,13 @@ Without arguments it errors with its own help page, listing the composer and git
 * `show stores` replaces `mage stores`: the store base urls through magerun, further arguments go to magerun.
 * `show themes`: the same lookup as `show modules` for themes (`app/design` locally), with the parent from each `theme.xml`.
 * `show modules` replaces `mage modules`: only the modules of the direct dependencies (`require` and `require-dev`, read with jq) and `app/code`, found by the `registration.php` files up to three folders deep in each package, with disabled modules marked.
+
+### `set <option>`
+
+* The same handler registry: `MAGE_SET_HANDLERS`, `mage_set_<name>`, one file per handler in `commands/set/`. Without an option it errors with its help page.
+* `set csp` writes the strict storefront CSP (no report only, no inline or eval scripts) with `config:set --lock-env`, instead of magerun `config:env:set` and `app:config:import`, then flushes the config cache.
+* `set fpc [builtin|varnish]` sets the full page cache application, an unknown value is refused and errors are no longer hidden.
+* To port later: `set theme` (through `mage_set_theme`) and `set mage-os`.
 
 ### `help`, `version`, `self-update`
 

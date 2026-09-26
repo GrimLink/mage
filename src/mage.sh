@@ -56,6 +56,9 @@ source "${MAGE_SRC}/commands/show.sh"
 source "${MAGE_SRC}/commands/show/stores.sh"
 source "${MAGE_SRC}/commands/show/modules.sh"
 source "${MAGE_SRC}/commands/show/themes.sh"
+source "${MAGE_SRC}/commands/set.sh"
+source "${MAGE_SRC}/commands/set/csp.sh"
+source "${MAGE_SRC}/commands/set/fpc.sh"
 
 # Commands that run outside a Magento project, setup finds the root itself
 MAGE_ROOTLESS_COMMANDS="help version self-update create setup"
@@ -98,6 +101,9 @@ function mage_main() {
       ;;
     "outdated")
       mage_cmd_outdated "${@:2}"
+      ;;
+    "set")
+      mage_cmd_set "${@:2}"
       ;;
     "show")
       mage_cmd_show "${@:2}"

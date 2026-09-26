@@ -1,4 +1,4 @@
-# Commands like add, clean and show pass their first argument to a handler.
+# Commands like add, clean, set and show pass their first argument to a handler.
 # A handler registers as 'name|description' in the registry of its command,
 # and is implemented as mage_<command>_<name>, with dashes as underscores.
 
