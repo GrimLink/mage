@@ -33,7 +33,6 @@ MAGE_SEARCH_PORT="9200"
 MAGE_REDIS_HOST="127.0.0.1"
 
 MAGE_PACKAGES=(
-  mage-os/theme-adminhtml-m137
   cweagans/composer-patches
   yireo/magento2-theme-commands
   swissup/module-ignition
