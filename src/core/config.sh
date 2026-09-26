@@ -16,6 +16,9 @@ MAGE_ADMIN_LASTNAME="admin"
 MAGE_ADMIN_EMAIL="${GIT_EMAIL}"
 MAGE_ADMIN_PASS="magento_123$"
 
+# The edition 'mage create' defaults to: mage-os, community or enterprise
+MAGE_EDITION="mage-os"
+
 # Stores are served as https://<project>.<MAGE_DOMAIN>/
 MAGE_DOMAIN="test"
 

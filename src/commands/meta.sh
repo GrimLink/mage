@@ -19,7 +19,7 @@ function mage_cmd_help() {
 
   mage_help_header "Project"
   mage_help_cmd "create [NAME]"               "Create, install and set up a new Magento 2 project"
-  mage_help_cmd "  --edition=[EDITION]"       "community (default), enterprise or mage-os"
+  mage_help_cmd "  --edition=[EDITION]"       "mage-os, community or enterprise (default: ${MAGE_EDITION})"
   mage_help_cmd "  --version=[VERSION]"       "Magento version (default: latest)"
   mage_help_cmd "  --env=[ENV]"               "warden, ddev, valet or local (default: first one installed)"
   mage_help_cmd "  -y, --yes"                 "Use the defaults instead of asking"

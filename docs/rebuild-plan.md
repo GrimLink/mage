@@ -86,6 +86,7 @@ tests/             bats suite
 ### `create <name> [--edition=] [--version=] [--env=] [-y]`
 
 * Prompts for any value not passed as a flag.
+* The edition defaults to `MAGE_EDITION` from the config, which is `mage-os`.
 * The env prompt defaults to what is installed (warden, then ddev, then valet, then local).
 * Runs install, then `setup`, then adds the `.gitignore`.
 * Refuses when `<name>` already exists.

@@ -1,4 +1,4 @@
-MAGE_EDITIONS="community enterprise mage-os"
+MAGE_EDITIONS="mage-os community enterprise"
 
 # Create a new Magento project, install it and set it up.
 # Anything not given as an option is asked, or defaulted with -y.
@@ -44,13 +44,13 @@ function mage_cmd_create() {
   local default_env="${available_envs%% *}"
 
   if [[ $assume_yes == 1 ]]; then
-    edition="${edition:-community}"
+    edition="${edition:-$MAGE_EDITION}"
     version="${version:-latest}"
     env="${env:-$default_env}"
   fi
 
   if [[ -z "$edition" ]]; then
-    edition="$(mage_ask "Edition [${MAGE_EDITIONS}]" "community")"
+    edition="$(mage_ask "Edition [${MAGE_EDITIONS}]" "$MAGE_EDITION")"
   fi
 
   if [[ -z "$version" ]]; then
