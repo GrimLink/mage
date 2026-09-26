@@ -1,6 +1,7 @@
 # Development
 
-The `mage` script in the root of the repository is built, never edit it directly. The source lives in `src`, the design decisions in the [rebuild plan](rebuild-plan.md).
+The `mage` script in the root of the repository is built, never edit it directly.
+The source lives in `src`, the design decisions in the [rebuild plan](rebuild-plan.md).
 
 ## Layout
 
@@ -29,7 +30,9 @@ tests/             bats tests
 
 ## Running unbuilt
 
-`src/mage.sh` runs as is, so a change needs no build while developing. It then uses the `templates` folder of the repository. An alias helps:
+`src/mage.sh` runs as is, so a change needs no build while developing.
+It then uses the `templates` folder of the repository.
+An alias helps:
 
 ```bash
 alias mage-dev="$HOME/path/to/mage/src/mage.sh"
@@ -42,7 +45,9 @@ src/build.sh          # writes ./mage
 src/build.sh /tmp/x   # writes elsewhere
 ```
 
-The build inlines every `source "${MAGE_SRC}/..."` line of `src/mage.sh`, recursively, so the order of those lines is the order of the script. It takes the version from the first released `## [x.y.z]` heading in `CHANGELOG.md`, and checks the result with `bash -n`. When that fails, the existing `mage` is left untouched.
+The build inlines every `source "${MAGE_SRC}/..."` line of `src/mage.sh`, recursively, so the order of those lines is the order of the script.
+It takes the version from the first released `## [x.y.z]` heading in `CHANGELOG.md`, and checks the result with `bash -n`.
+When that fails, the existing `mage` is left untouched.
 
 ## Tests
 
@@ -61,10 +66,10 @@ On every push and pull request to main, a GitHub Action checks the built script 
 
 ## Conventions
 
-* Stay compatible with bash 3.2: no associative arrays, `${var,,}` or `mapfile`.
-* Command functions are named `mage_cmd_<name>`.
-* Errors go to stderr through `mage_error`, notices through `mage_notice`.
-* The `*_CLI` variables hold a command with its arguments, and are used unquoted on purpose.
+- Stay compatible with bash 3.2: no associative arrays, `${var,,}` or `mapfile`.
+- Command functions are named `mage_cmd_<name>`.
+- Errors go to stderr through `mage_error`, notices through `mage_notice`.
+- The `*_CLI` variables hold a command with its arguments, and are used unquoted on purpose.
 
 ## Adding a command
 
@@ -75,7 +80,8 @@ On every push and pull request to main, a GitHub Action checks the built script 
 
 ## Adding an add handler, or a clean, set or show option
 
-All four use the handler registry of `src/core/handlers.sh`. For `mage add example`:
+All four use the handler registry of `src/core/handlers.sh`.
+For `mage add example`:
 
 ```bash
 # src/commands/add/example.sh
@@ -86,11 +92,13 @@ function mage_add_example() {
 }
 ```
 
-Dashes in the name become underscores in the function, so `sample-files` is `mage_clean_sample_files`. Source the file in `src/mage.sh`, after its command.
+Dashes in the name become underscores in the function, so `sample-files` is `mage_clean_sample_files`.
+Source the file in `src/mage.sh`, after its command.
 
 ## Adding an environment
 
 1. Add `src/env/<name>.sh` with `env_<name>_available` (the tool is installed) and `env_<name>_detect` (the current folder uses it).
 2. Add `env_<name>_apply` to set the `*_CLI` and `MAGE_DB_*` variables it needs.
-3. Add the hooks that differ from local: `create_project`, `setup_prepare`, `setup_finish`, `clean_redis`, `add_store`, `open_mail`, `watch_cli` and `nuke`. A hook it does not define falls back to the local one.
+3. Add the hooks that differ from local: `create_project`, `setup_prepare`, `setup_finish`, `clean_redis`, `add_store`, `open_mail`, `watch_cli` and `nuke`.
+   A hook it does not define falls back to the local one.
 4. Add the name to `MAGE_ENVS` in `src/core/env.sh`, in order of priority, and source the file in `src/mage.sh`.
