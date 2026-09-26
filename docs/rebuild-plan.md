@@ -264,7 +264,7 @@ Without arguments it errors with its own help page, listing the composer and git
 
 ### `info`
 
-- One php bootstrap returns `INFO:key=value` lines, instead of about eight Magento boots and a `composer show`: product and version, Hyvä version (Composer's installed data), mode, maintenance, base and admin url (`mageAdminUrl`, shared with `open`), database, search engine, the PHP version that runs Magento, and the enabled modules outside Magento.
+- One php bootstrap returns `INFO:key=value` lines, instead of about eight Magento boots and a `composer show`: product and version, Hyvä version (Composer's installed data), mode, maintenance, base and admin url (`mageAdminUrl`, shared with `open`), database, search engine, Redis (server, the databases of the caches and sessions, and the cache prefix, from `env.php`), the PHP version that runs Magento, and the enabled modules outside Magento.
 - Node comes from `NODE_CLI`. The module count is yellow above 25 and red above 50.
 
 ### Setting a theme

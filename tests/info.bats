@@ -10,6 +10,7 @@ function fake_php() {
     "INFO:admin_url=https://shop.test/shop_admin/" \
     "INFO:database=shop" \
     "INFO:search=opensearch" \
+    "INFO:redis=127.0.0.1:6379, cache db 0, page cache db 1, sessions db 2, prefix shop_" \
     "INFO:php=8.3.1" \
     "INFO:modules=${MODULES:-12}" \
     "INFO:hyva=1.3.10"
@@ -29,6 +30,7 @@ function setup() {
   [[ "$output" == *"- Maintenance: OFF"* ]]
   [[ "$output" == *"- Admin url: https://shop.test/shop_admin/"* ]]
   [[ "$output" == *"- Database: shop"* ]]
+  [[ "$output" == *"- Redis: 127.0.0.1:6379, cache db 0, page cache db 1, sessions db 2, prefix shop_"* ]]
   [[ "$output" == *"- PHP: 8.3.1"* ]]
   [[ "$output" == *"- Node: 20.11.0"* ]]
   [[ "$output" == *"- Modules: 12"* ]]

@@ -16,6 +16,7 @@ function mage_cmd_info() {
   local admin_url=""
   local database=""
   local search=""
+  local redis=""
   local php=""
   local modules=0
   local key
@@ -31,6 +32,7 @@ function mage_cmd_info() {
       admin_url) admin_url="$value" ;;
       database) database="$value" ;;
       search) search="$value" ;;
+      redis) redis="$value" ;;
       php) php="$value" ;;
       modules) modules="$value" ;;
     esac
@@ -60,6 +62,10 @@ function mage_cmd_info() {
 
   if [[ -n "$search" ]]; then
     mage_info "- Search engine: ${search}"
+  fi
+
+  if [[ -n "$redis" ]]; then
+    mage_info "- Redis: ${redis}"
   fi
 
   mage_info "- PHP: ${GREEN}${php}${RESET}"
@@ -104,6 +110,25 @@ function mage_info_read() {
         "php" => PHP_VERSION,
         "modules" => count($modules),
     ];
+
+    // The Redis the caches and sessions use, and the prefix that keeps a shared Redis apart
+    $cache = $deployment->get("cache/frontend/default") ?: [];
+    if (stripos($cache["backend"] ?? "", "redis") !== false) {
+        $options = $cache["backend_options"] ?? [];
+        $pageCache = $deployment->get("cache/frontend/page_cache/backend_options") ?: [];
+        $redis = ($options["server"] ?? "127.0.0.1") . ":" . ($options["port"] ?? "6379")
+            . ", cache db " . ($options["database"] ?? "0");
+        if (isset($pageCache["database"])) {
+            $redis .= ", page cache db " . $pageCache["database"];
+        }
+        if ($deployment->get("session/save") === "redis") {
+            $redis .= ", sessions db " . ($deployment->get("session/redis/database") ?? "2");
+        }
+        if (!empty($cache["id_prefix"])) {
+            $redis .= ", prefix " . $cache["id_prefix"];
+        }
+        $info["redis"] = $redis;
+    }
 
     $hyva = "hyva-themes/magento2-theme-module";
     if (class_exists(\Composer\InstalledVersions::class) && \Composer\InstalledVersions::isInstalled($hyva)) {

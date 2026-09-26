@@ -50,7 +50,7 @@ Anything mage does not know still runs `bin/magento`.
 - **`mage set fpc`:** Refuses an unknown cache instead of using the builtin one, and shows errors instead of hiding them. The builtin cache is used when none is given, and can be named `builtin` or `default`.
 - **`mage log`:** Also accepts the log name with `.log`. `mage log show` is now `mage show logs`, which also shows the size of each log, and `mage log clear` is now `mage clean logs`.
 - **`mage enable` and `mage disable` by term:** Read the modules from `app/etc/config.php` instead of `module:status`, so only one Magento boot is left, and only match modules that can change. The matches are listed and confirmed first, `-y` skips it, terms match as plain text, and options such as `--clear-static-content` go to Magento.
-- **`mage info`:** Reads everything from Magento in one boot instead of about eight, so it is much faster. The PHP version is now the one that runs Magento, also inside a container, the admin url counts a custom admin url, and the module count only counts enabled modules.
+- **`mage info`:** Reads everything from Magento in one boot instead of about eight, so it is much faster. It now also shows the Redis the caches and sessions use, with their databases and cache prefix. The PHP version is now the one that runs Magento, also inside a container, the admin url counts a custom admin url, and the module count only counts enabled modules.
 - **Output:** Errors go to stderr, and colors are left out when `NO_COLOR` is set or the output is not a terminal.
 
 ### Removed
