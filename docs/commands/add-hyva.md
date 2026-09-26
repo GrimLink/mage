@@ -1,6 +1,6 @@
 # mage add hyva
 
-Add the [Hyvä Theme](https://www.hyva.io/) and make it the active theme.
+Add the [Hyvä Theme](https://www.hyva.io/).
 
 ```bash
 mage add hyva         # with a license
@@ -12,7 +12,7 @@ mage add hyva --dev   # from the Hyvä GitLab
 1. Applies the bundled [composer fragment](../composer-fragments.md) `composer-hyva.json`, or `composer-hyva-dev.json` with `--dev`.
 2. Runs `setup:upgrade`.
 3. Disables the Magento captcha, which the Hyvä default theme does not support.
-4. Switches to `Hyva/default` when `yireo/magento2-theme-commands` is installed, otherwise it tells you to select the theme in the admin.
+4. Tells you to select the `Hyva/default` theme in the admin, under Content, Design, Configuration.
 
 Building the styles is not part of it.
 

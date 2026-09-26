@@ -1,6 +1,6 @@
 MAGE_ADD_HANDLERS+=("hyva|Add the Hyva Theme with a license, or with --dev from the Hyva GitLab")
 
-# Install Hyva from its composer fragment, then make it the active theme.
+# Install Hyva from its composer fragment.
 # The fragment holds the composer part, so updating the packages needs no rebuild.
 function mage_add_hyva() {
   local fragment="composer-hyva.json"
@@ -31,11 +31,7 @@ function mage_add_hyva() {
   # The Hyva default theme does not support the Magento captcha
   $MAGENTO_CLI config:set customer/captcha/enable 0 &> /dev/null
 
-  if [[ -d vendor/yireo/magento2-theme-commands ]]; then
-    $MAGENTO_CLI theme:change Hyva/default && $MAGENTO_CLI cache:flush
-  else
-    mage_notice "Select the Hyva/default theme in the admin, under Content, Design, Configuration"
-  fi
+  mage_notice "Select the Hyva/default theme in the admin, under Content, Design, Configuration"
 
   mage_info "Done! For more information, see https://docs.hyva.io/hyva-themes/getting-started/"
 }

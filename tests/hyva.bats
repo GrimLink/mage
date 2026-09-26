@@ -11,14 +11,12 @@ function setup() {
   MAGE_VAR_HYVA_LICENSE_KEY="key"
 }
 
-@test "adds Hyva with a license and activates it" {
-  mkdir -p vendor/yireo/magento2-theme-commands
-
+@test "adds Hyva with a license" {
   run mage_cmd_add hyva <<< "$(printf '\n\n')"
   [ "$status" -eq 0 ]
   [[ "$output" == *"hyva-themes.repo.packagist.com/acme/"* ]]
   [[ "$output" == *"magento setup:upgrade"* ]]
-  [[ "$output" == *"magento theme:change Hyva/default"* ]]
+  [[ "$output" == *"Select the Hyva/default theme in the admin"* ]]
 }
 
 @test "adds Hyva from the GitLab with --dev" {
@@ -26,12 +24,6 @@ function setup() {
   [ "$status" -eq 0 ]
   [[ "$output" == *"git@gitlab.hyva.io:hyva-themes/magento2-theme-module.git"* ]]
   [[ "$output" != *"--auth"* ]]
-}
-
-@test "points to the admin without the theme commands" {
-  run mage_cmd_add hyva --dev
-  [[ "$output" == *"Select the Hyva/default theme in the admin"* ]]
-  [[ "$output" != *"theme:change"* ]]
 }
 
 @test "rejects unknown options" {

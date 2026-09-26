@@ -34,7 +34,6 @@ MAGE_REDIS_HOST="127.0.0.1"
 
 MAGE_PACKAGES=(
   cweagans/composer-patches
-  yireo/magento2-theme-commands
   swissup/module-ignition
   community-engineering/language-nl_nl
 )
