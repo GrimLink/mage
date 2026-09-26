@@ -1,6 +1,6 @@
 # Configuration
 
-Mage runs with defaults that suit most projects. To change them, create the file `~/.config/mage/config`. When `XDG_CONFIG_HOME` is set, the file is `$XDG_CONFIG_HOME/mage/config` instead.
+Mage runs with defaults that suit most projects. To change them, create the file `~/.config/mage/config`, where `~` is your home folder (`$HOME`). This is the same on macOS and Linux, mage does not use `~/Library` on macOS. When `XDG_CONFIG_HOME` is set, the file is `$XDG_CONFIG_HOME/mage/config` instead.
 
 The file is plain bash, sourced after the defaults. So set only what you want to change, and use the same syntax as below, arrays included.
 
