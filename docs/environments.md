@@ -32,6 +32,8 @@ The connection settings come from the [configuration](config.md), by default `ro
 Works like local, and adds:
 
 - **Setup:** secures the site with `valet secure`, and writes a `.valet-env.php` with the default store and a commented example for a second store.
+  It also adds a `LocalValetDriver.php`, unless the project has one.
+  Valet serves static files without `Cache-Control`, so browsers keep stale JS and CSS in developer mode, and the driver makes them revalidate.
 - **Nuke:** unsecures the site, and unsecures and unlinks every extra store from `.valet-env.php`.
 - **Add store:** adds the store to `.valet-env.php`, then links and secures it.
 

@@ -31,7 +31,7 @@ function env_valet_store_entry() {
   printf "\t%s],\n" "$prefix"
 }
 
-# Prepare the .valet-env.php for multi store setups
+# Prepare the .valet-env.php for multi store setups, and the driver that keeps assets fresh
 function env_valet_setup_finish() {
   local name="$1"
 
@@ -41,6 +41,28 @@ function env_valet_setup_finish() {
     env_valet_store_entry "store-2" "default2" true
     printf '];\n'
   } > .valet-env.php
+
+  env_valet_add_driver
+}
+
+# Valet serves static files without Cache-Control, so browsers keep stale assets
+# in developer mode, this driver makes them revalidate. An existing driver is kept.
+function env_valet_add_driver() {
+  if [[ -e LocalValetDriver.php ]]; then
+    mage_notice "A LocalValetDriver.php is already present, skipping"
+    return
+  fi
+
+  local template
+  template="$(mage_template_file "LocalValetDriver.php")"
+
+  if [[ -z "$template" ]]; then
+    mage_warn "Could not get the LocalValetDriver.php from ${MAGE_TEMPLATES_ARCHIVE}"
+    return 1
+  fi
+
+  cp "$template" LocalValetDriver.php
+  mage_check 0 "Added LocalValetDriver.php, so the browser revalidates static files"
 }
 
 function env_valet_nuke() {

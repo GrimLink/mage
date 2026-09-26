@@ -8,6 +8,7 @@ The files mage generates come from the `templates` folder of this repository:
 | `module/`                 | [`mage add module`](commands/add-module.md)                                         |
 | `module-hyva/`            | [`mage add module`](commands/add-module.md), the extra files of a Hyvä module       |
 | `magento.gitignore`       | [`mage setup`](commands/create.md#mage-setup), when the project has no `.gitignore` |
+| `LocalValetDriver.php`    | [`mage setup`](commands/create.md#mage-setup) with Valet, when the project has none |
 | `composer-hyva.json`      | [`mage add hyva`](commands/add-hyva.md)                                             |
 | `composer-hyva-dev.json`  | [`mage add hyva --dev`](commands/add-hyva.md)                                       |
 | `composer-storeinfo.json` | [`mage add storeinfo`](commands/add-storeinfo.md)                                   |

@@ -59,6 +59,7 @@ Version 3 is a rebuild of mage. The commands of version 2 return step by step, u
 - **`mage cleanup [TYPE]`:** Use `mage clean [OPTION]`, where `sample` is now `sample-files`.
 
 ### Fixed
+- **Stale static files with Valet:** Valet serves static files without `Cache-Control`, so browsers kept old JS and CSS in developer mode until a hard reload. `mage setup` now adds a `LocalValetDriver.php` that makes them revalidate, and the gitignore template ignores it. See [#55](https://github.com/GrimLink/mage/issues/55).
 - **`mage add store` with Valet:** The store is linked and added to `.valet-env.php` by its site name, instead of the full domain, which Valet served with a second tld.
 - **Module location:** A module in `app/code` is now created as `Vendor/MyModule`, the path Magento autoloads it from, instead of `Vendor/my-module`.
 - **`mage create` with Warden:** The project folder is now created before moving into it.
