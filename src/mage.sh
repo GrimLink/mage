@@ -30,6 +30,7 @@ source "${MAGE_SRC}/commands/nuke.sh"
 source "${MAGE_SRC}/commands/run.sh"
 source "${MAGE_SRC}/commands/add.sh"
 source "${MAGE_SRC}/commands/add-json.sh"
+source "${MAGE_SRC}/commands/remove.sh"
 source "${MAGE_SRC}/commands/add/theme.sh"
 source "${MAGE_SRC}/commands/add/module.sh"
 source "${MAGE_SRC}/commands/add/hyva.sh"
@@ -72,6 +73,9 @@ function mage_main() {
       ;;
     "add")
       mage_cmd_add "${@:2}"
+      ;;
+    "del" | "remove")
+      mage_cmd_remove "${@:2}"
       ;;
     "run")
       mage_cmd_run "${@:2}"

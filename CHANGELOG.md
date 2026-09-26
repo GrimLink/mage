@@ -32,6 +32,7 @@ Version 3 is a rebuild of mage. The commands of version 2 return step by step, u
 - **`mage add [GIT_URL]`:** A cloned repository is now required as `dev-<branch> as <latest tag>`, so packages that depend on a version of it still resolve. Without tags it falls back to `@dev`. An existing clone is reused, and the `package-source` path repository is registered when a project does not have it yet.
 - **Redis per project:** `mage setup` gives the cache and page cache a readable prefix (`<db_name>_`), like the OpenSearch indices already had. `mage nuke` and `mage clean redis` now only delete the Redis keys of that project, instead of flushing all of Redis, so other projects on the same Redis keep their cache.
 - **Templates:** The templates are no longer refreshed every 30 days, `mage self-update` updates them together with the script.
+- **`mage del [TERM]`:** Removing by term now lists the matching packages and asks before removing them, `-y` skips the question. Terms match as plain text instead of a regex, `require-dev` packages are removed with `--dev`, and platform entries like `php` never match. It reads the composer.json with jq instead of asking composer.
 - **Output:** Errors go to stderr, and colors are left out when `NO_COLOR` is set or the output is not a terminal.
 
 ### Removed
