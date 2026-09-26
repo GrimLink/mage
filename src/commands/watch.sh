@@ -1,5 +1,5 @@
 # Clean only the caches affected by file changes, with the cache-clean of the
-# project, or a global one. Further arguments go to cache-clean.
+# project, or a global one. Arguments replace --watch, to run cache-clean as you need.
 function mage_cmd_watch() {
   local cache_clean=""
 
@@ -14,5 +14,9 @@ function mage_cmd_watch() {
     exit 1
   fi
 
-  $cache_clean --watch "$@"
+  if [[ $# -eq 0 ]]; then
+    set -- --watch
+  fi
+
+  $cache_clean "$@"
 }

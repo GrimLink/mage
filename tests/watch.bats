@@ -10,8 +10,16 @@ function setup() {
   mkdir -p vendor/bin
   touch vendor/bin/cache-clean.js
 
-  run mage_cmd_watch --directory app/code
-  [ "$output" = "node vendor/bin/cache-clean.js --watch --directory app/code" ]
+  run mage_cmd_watch
+  [ "$output" = "node vendor/bin/cache-clean.js --watch" ]
+}
+
+@test "replaces the watch flag with the given arguments" {
+  mkdir -p vendor/bin
+  touch vendor/bin/cache-clean.js
+
+  run mage_cmd_watch full_page
+  [ "$output" = "node vendor/bin/cache-clean.js full_page" ]
 }
 
 @test "falls back to a global cache-clean" {
