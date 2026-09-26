@@ -77,3 +77,14 @@ function make_registration() {
   [ "$status" -eq 0 ]
   [[ "$output" == *"No modules found"* ]]
 }
+
+@test "shows the full page cache by name" {
+  function varnish_magento() { echo "2"; }
+  MAGENTO_CLI="varnish_magento"
+  run mage_cmd_show fpc
+  [ "$output" = "varnish" ]
+
+  MAGENTO_CLI="true"
+  run mage_cmd_show fpc
+  [ "$output" = "builtin" ]
+}

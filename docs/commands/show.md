@@ -7,6 +7,7 @@ mage show stores
 mage show stores --format=json
 mage show modules
 mage show themes
+mage show fpc
 ```
 
 `mage show help` lists the options. Without an option it stops with an error and the same list.
@@ -16,6 +17,7 @@ mage show themes
 | `stores` | Lists the stores with their base urls, through [n98-magerun2](https://github.com/netz98/n98-magerun2). Further arguments go to magerun. |
 | `modules` | Lists the modules of your direct dependencies and `app/code`, with where they come from |
 | `themes` | Lists the themes of your direct dependencies and `app/design`, with where they come from and their parent |
+| `fpc` | Shows the full page cache in use, `builtin` or `varnish`, the counterpart of [`mage set fpc`](set.md) |
 
 ## modules and themes
 
