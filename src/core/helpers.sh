@@ -129,3 +129,7 @@ function mage_ask_vendor_name() {
   MAGE_NEW_VENDOR_PKG="$(mage_lower_case "$MAGE_NEW_VENDOR")"
   MAGE_NEW_NAME_PKG="$(mage_kebab_case "$MAGE_NEW_NAME")"
 }
+
+function mage_is_hyva_installed() {
+  [[ -d vendor/hyva-themes/magento2-theme-module ]]
+}

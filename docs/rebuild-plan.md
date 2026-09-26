@@ -123,6 +123,13 @@ Without arguments it errors with its own help page, listing the composer and git
 * A Hyvä child theme gets a copy of the default theme `web/tailwind` folder, without `node_modules`.
 * The files come from `templates/theme`.
 
+### `add module [Vendor/Name] [--hyva|--no-hyva]`
+
+* Asks for anything not given, the Hyvä question defaults to yes when the Hyvä theme module is installed.
+* The vendor and name must be valid PHP namespace parts (letters and numbers).
+* Creates the module in `app/code/Vendor/MyModule`, which Magento autoloads by namespace (the old script wrongly used the kebab-case name), or when chosen in `package-source/<vendor>/magento2-my-module`, required as `@dev` like a theme.
+* The files come from `templates/module`, a Hyvä module also gets `templates/module-hyva` and sequences `Hyva_Theme` instead of `Magento_Theme`.
+
 ## Templates
 
 * `templates/` is synced to `~/.config/mage/templates` on first use, and again by every `self-update`. Commands never fetch them otherwise.
@@ -164,6 +171,6 @@ A minimal bats suite covering root detection, env selection (with a fake `.env` 
 
 * Aliases and the remaining old commands.
 * The `create` extras (BFCache, Hyvä, sample data).
-* `add` handlers, one per commit: module, patch and bfcache, sample, hyva, and the other old `new` commands.
+* `add` handlers, one per commit: patch and bfcache, sample, hyva, and the other old `new` commands.
 * Aliases for `add` from a JSON file with default entries, instead of hardcoded ones like `storeinfo`.
 * Global packages shared between projects (the old `add dev` and `upd dev`), in a more optimized form.

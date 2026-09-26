@@ -60,8 +60,7 @@ function mage_add_theme() {
   mage_check 0 "Created theme ${area}/${theme_path} in ${dest}"
 
   if [[ $in_package_source == 1 ]]; then
-    mage_add_path_repository
-    $COMPOSER_CLI require "${package}:@dev"
+    mage_add_require_local "$package"
   fi
 
   mage_notice "Run 'mage setup:upgrade' to register the theme"

@@ -15,6 +15,7 @@ Version 3 is a rebuild of mage. The commands of version 2 return step by step, u
 - **`mage add` handlers:** `mage add` is now the central command for adding to a project, with handlers such as the upcoming theme and module generators. Without arguments it shows its own help page with every option.
 - **`mage clean [OPTION]` command:** Replaces `mage cleanup`, with the options `files`, `redis`, `varnish`, `opensearch`, `sample-files` and `all`. Like `mage add` it is built from handlers, so new options are easy to add. Without an option it cleans all, which options that runs can be set with `MAGE_CLEAN_ALL`. `mage purge` stays as an alias for `mage clean`.
 - **`mage add theme` command:** Replaces `mage new theme`. The vendor, name and parent can be given as options, the parent defaults to Hyvä when it is installed, and a theme created in `package-source` is required right away.
+- **`mage add module` command:** Replaces `mage new module`. The vendor, name and Hyvä choice can be given as options, and a module created in `package-source` is required right away.
 - **`mage nuke --keep-files`:** Removes the database and environment, but keeps the project files.
 - **Config file:** The defaults, such as the admin user, database credentials, store config and default composer packages, can be overridden in `~/.config/mage/config`.
 - **DDEV support:** Projects with a `.ddev/config.yaml` run their commands through DDEV. `mage create` can set up a new DDEV project, with the OpenSearch and Redis add-ons, and `mage nuke` removes it with `ddev delete`.
@@ -33,10 +34,11 @@ Version 3 is a rebuild of mage. The commands of version 2 return step by step, u
 
 ### Removed
 - **`mage install`:** Use `mage create`, which installs and sets up the project in one go.
-- **`mage new theme`:** Use `mage add theme`.
+- **`mage new theme` and `mage new module`:** Use `mage add theme` and `mage add module`.
 - **`mage cleanup [TYPE]`:** Use `mage clean [OPTION]`, where `sample` is now `sample-files`.
 
 ### Fixed
+- **Module location:** A module in `app/code` is now created as `Vendor/MyModule`, the path Magento autoloads it from, instead of `Vendor/my-module`.
 - **`mage create` with Warden:** The project folder is now created before moving into it.
 
 ## [2.8.1] - 2026-07-02

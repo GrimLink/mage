@@ -126,6 +126,12 @@ function mage_git_constraint() {
   echo "dev-${branch} as ${tag}"
 }
 
+# Require a package created in the package source folder
+function mage_add_require_local() {
+  mage_add_path_repository
+  $COMPOSER_CLI require "${1}:@dev"
+}
+
 # Register the package source folder as a composer path repository, once
 function mage_add_path_repository() {
   if [[ -f composer.json ]] && grep -q '"local-packages"' composer.json; then
