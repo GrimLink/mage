@@ -37,27 +37,6 @@ function mage_add_hyva() {
     mage_notice "Select the Hyva/default theme in the admin, under Content, Design, Configuration"
   fi
 
-  mage_hyva_build
-
   mage_info "Done! For more information, see https://docs.hyva.io/hyva-themes/getting-started/"
 }
 
-# Build the styles of the Hyva default theme, the CSP variant when that is installed
-function mage_hyva_build() {
-  local path="vendor/hyva-themes/magento2-default-theme"
-
-  if [[ -d vendor/hyva-themes/magento2-default-theme-csp ]]; then
-    path="vendor/hyva-themes/magento2-default-theme-csp"
-  fi
-
-  if [[ ! -d "${path}/web/tailwind" ]]; then
-    mage_warn "${path}/web/tailwind not found, skipping the build"
-    return 1
-  fi
-
-  if [[ ! -d "${path}/web/tailwind/node_modules" ]]; then
-    $NPM_CLI --prefix "${path}/web/tailwind" install || return 1
-  fi
-
-  $NPM_CLI --prefix "${path}/web/tailwind" run build
-}

@@ -148,7 +148,8 @@ Without arguments it errors with its own help page, listing the composer and git
 ### `add hyva [--dev]`
 
 * Applies `templates/composer-hyva.json` (license), or with `--dev` `templates/composer-hyva-dev.json` (the Hyvä GitLab repositories as `vcs` repositories over ssh, no token needed).
-* Then runs `setup:upgrade`, disables the Magento captcha (not supported by the Hyvä default theme), switches to `Hyva/default` when `yireo/magento2-theme-commands` is installed, and builds the default theme styles (the CSP variant when installed).
+* Then runs `setup:upgrade`, disables the Magento captcha (not supported by the Hyvä default theme), and switches to `Hyva/default` when `yireo/magento2-theme-commands` is installed.
+* Building styles is not part of it, that is a separate build action that works for any theme.
 * Checkout and commerce return as subcommands, such as `add hyva checkout`.
 
 ## Templates
@@ -194,4 +195,5 @@ A minimal bats suite covering root detection, env selection (with a fake `.env` 
 * The `create` extras (BFCache, Hyvä, sample data).
 * `add` handlers, one per commit: patch and bfcache, sample, hyva checkout and commerce, and the other old `new` commands.
 * `import`: run groups of actions from a json file.
+* A build action for theme styles that is not locked to one theme, replacing the old `build hyva`.
 * Global packages shared between projects (the old `add dev` and `upd dev`), in a more optimized form.
