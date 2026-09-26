@@ -41,6 +41,9 @@ MAGE_DEV_PACKAGES=(
   spatie/ray
 )
 
+# The handlers 'mage clean all' and 'mage purge' run, in order
+MAGE_CLEAN_ALL="files redis varnish"
+
 # Each entry is 'path value', an entry without a value sets it empty
 MAGE_STORE_CONFIG=(
   "currency/options/base EUR"

@@ -9,6 +9,7 @@ MYSQL_CLI="mysql"
 REDIS_CLI="redis-cli"
 VARNISH_CLI="varnishadm"
 RSYNC_CLI="rsync"
+SEARCH_CURL_CLI="curl"
 PURGE_CLI="rm -rf"
 OPEN_CLI="xdg-open"
 

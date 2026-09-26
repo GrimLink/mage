@@ -1,5 +1,4 @@
-# Handlers register themselves as 'name|description', and are
-# implemented as mage_add_<name>, with dashes in the name as underscores
+# Handlers register as 'name|description', see core/handlers.sh
 MAGE_ADD_HANDLERS=()
 
 MAGE_PACKAGE_SOURCE="package-source"
@@ -19,8 +18,8 @@ function mage_cmd_add() {
       ;;
   esac
 
-  if mage_add_is_handler "$1"; then
-    "mage_add_${1//-/_}" "${@:2}"
+  if mage_handler_exists "$1" "${MAGE_ADD_HANDLERS[@]}"; then
+    mage_handler_run add "$@"
   elif [[ "$1" == *.git ]]; then
     mage_add_git "$@"
   else
@@ -28,28 +27,11 @@ function mage_cmd_add() {
   fi
 }
 
-function mage_add_is_handler() {
-  local entry
-
-  for entry in "${MAGE_ADD_HANDLERS[@]}"; do
-    if [[ "${entry%%|*}" == "$1" ]]; then
-      return 0
-    fi
-  done
-
-  return 1
-}
-
 function mage_add_help() {
   mage_help_header "Add"
   mage_help_cmd "add [PKG] [ARGS]"            "Run composer require, all arguments are passed as is"
   mage_help_cmd "add [GIT_URL] [ARGS]"        "Clone a git repository (ssh url ending in .git) into ${MAGE_PACKAGE_SOURCE} and require it"
-
-  local entry
-
-  for entry in "${MAGE_ADD_HANDLERS[@]}"; do
-    mage_help_cmd "add ${entry%%|*}" "${entry#*|}"
-  done
+  mage_handler_help add "${MAGE_ADD_HANDLERS[@]}"
 }
 
 # Clone a git repository into the package source folder and require it,

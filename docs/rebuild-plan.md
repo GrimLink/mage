@@ -24,6 +24,7 @@ src/
     env.sh         environment registry: detect loop, MAGE_ENV, env_call <hook>
     root.sh        Magento root detection, path argument resolving, cd
     helpers.sh     ask, confirm, env.php reader, download, templates
+    handlers.sh    shared handler registry logic for add and clean
   env/
     local.sh       fallback for every hook
     warden.sh
@@ -35,6 +36,8 @@ src/
     nuke.sh
     add.sh         dispatcher for mage add, git clones
     add/           one file per add handler
+    clean.sh       dispatcher for mage clean
+    clean/         one file per clean handler
     meta.sh        help, version, self-update
   build.sh
 tests/             bats suite
@@ -43,7 +46,7 @@ tests/             bats suite
 ## Environments
 
 * Each `env/<name>.sh` defines `env_<name>_available` (the tool is installed), `env_<name>_detect` (the current folder uses it) and optionally `env_<name>_apply` (overrides the CLI vars such as `MAGENTO_CLI`, `COMPOSER_CLI`, `PURGE_CLI`, and the `MAGE_DB_*` settings).
-* Other hooks: `create_project`, `setup_prepare`, `setup_finish` and `nuke`. `env_call <hook>` runs the hook of the current env, falls back to the local one, and does nothing when neither defines it.
+* Other hooks: `create_project`, `setup_prepare`, `setup_finish`, `clean_redis` and `nuke`. `env_call <hook>` runs the hook of the current env, falls back to the local one, and does nothing when neither defines it.
 * The CLI defaults live in `core/tools.sh`, `local.sh` holds the local hooks. The first env that matches wins, and its name ends up in `MAGE_ENV`.
 * Priority: warden, then ddev, then valet, then local. Valet is an environment, not a separate tool flag.
 * Commands call hooks through `env_call` instead of checking env flags themselves.
@@ -96,7 +99,7 @@ tests/             bats suite
 
 * Reads the database name and credentials from `app/etc/env.php`, falling back to the folder name and the `MAGE_DB_*` settings.
 * The OpenSearch host, port and prefix come from `config:show catalog/search`, before the database is dropped.
-* The Redis prefix, host, port and database of each cache come from `app/etc/env.php`. Only keys matching `zc:*:<prefix>*` are deleted, never `flushall`, so other projects on a shared Redis keep their cache. The future `purge` should clean Redis the same way.
+* The Redis prefix, host, port and database of each cache come from `app/etc/env.php`. Only keys matching `zc:*:<prefix>*` are deleted, never `flushall`, so other projects on a shared Redis keep their cache.
 * Runs the env hook (Valet unsecures and unlinks its stores, Warden runs `env down -v`).
 * Drops the database for local and Valet, and clears the OpenSearch indices and Redis cache keys of the project only.
 * Removes the project folder, unless `--keep-files` is passed.
@@ -105,11 +108,20 @@ tests/             bats suite
 
 Resolved in this order, never mixed:
 
-1. **Handler:** a name registered in `MAGE_ADD_HANDLERS` as `name|description`, implemented as `mage_add_<name>` (dashes become underscores) in its own file in `commands/add/`. It gets the remaining arguments. The old `new …` commands (theme, module, store, patch …) return as handlers.
+1. **Handler:** a name registered in `MAGE_ADD_HANDLERS` as `name|description`, implemented as `mage_add_<name>` (dashes become underscores) in its own file in `commands/add/`. The registry logic is shared with `clean`, see `core/handlers.sh`. It gets the remaining arguments. The old `new …` commands (theme, module, store, patch …) return as handlers.
 2. **Git url:** anything ending in `.git` (ssh urls). It is cloned into `package-source/<vendor>/<name>`, using the name from its `composer.json`, and required as `<name>:dev-<branch> as <latest tag>` (a leading `v` stripped), or `<name>:@dev` without a tag. An existing clone with the same origin is reused. The `local-packages` path repository is registered when missing. Further arguments go to composer.
 3. **Anything else:** passed as is to `composer require`, so composer handles the errors.
 
 Without arguments it errors with its own help page, listing the composer and git forms and every registered handler. `mage add help` shows the same page.
+
+### `clean <option>` and `purge`
+
+* Uses the same handler registry as `add`: `MAGE_CLEAN_HANDLERS`, `mage_clean_<name>`, one file per handler in `commands/clean/`.
+* Handlers: `files` (generated code, static files and file caches, in one remove call), `redis`, `varnish`, `opensearch` and `sample-files`.
+* `clean all` runs the handlers in `MAGE_CLEAN_ALL` (default `files redis varnish`, the old purge). `purge` is an alias for `clean all`.
+* Without an option it errors with its own help page, like `add`.
+* `redis` goes through the `clean_redis` env hook. Local and Valet share one Redis, so only the keys with the project cache prefixes are deleted. Warden and DDEV run Redis per project, so they flush it.
+* `opensearch` runs curl through `SEARCH_CURL_CLI`, which Warden and DDEV run inside the OpenSearch container.
 
 ### `help`, `version`, `self-update`
 

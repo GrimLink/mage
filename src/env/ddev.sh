@@ -17,6 +17,7 @@ function env_ddev_apply() {
   NPM_CLI="ddev npm"
   REDIS_CLI="ddev exec -s redis redis-cli"
   RSYNC_CLI="ddev exec rsync"
+  SEARCH_CURL_CLI="ddev exec -s opensearch curl"
   PURGE_CLI="ddev exec rm -rf"
 
   MAGE_DOMAIN="ddev.site"
@@ -49,6 +50,12 @@ function env_ddev_create_project() {
 # The database already exists in its container, and ddev provides the certificate
 function env_ddev_setup_prepare() {
   return 0
+}
+
+# Redis runs per project, so it can be flushed as a whole
+function env_ddev_clean_redis() {
+  $REDIS_CLI flushall > /dev/null
+  mage_check $? "Redis"
 }
 
 # Removing the project removes its database and add-on volumes too

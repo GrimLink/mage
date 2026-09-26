@@ -95,14 +95,8 @@ function mage_setup() {
 
   env_call setup_finish "$name"
 
-  mage_cleanup_sample_files
+  mage_clean_sample_files
   mage_add_gitignore
-}
-
-function mage_cleanup_sample_files() {
-  mkdir -p dev/sample-files
-  find . -maxdepth 1 -type f -name "*.sample" -exec mv {} dev/sample-files/ \;
-  mage_info "All files ending with '.sample' have been moved to 'dev/sample-files'"
 }
 
 function mage_add_gitignore() {

@@ -19,6 +19,7 @@ function env_warden_apply() {
   REDIS_CLI="warden env exec redis redis-cli"
   VARNISH_CLI="warden env exec -T varnish varnishadm"
   RSYNC_CLI="warden env exec -T php-fpm rsync"
+  SEARCH_CURL_CLI="warden env exec -T opensearch curl"
   # Run removal within the container, so changes are in effect immediately
   PURGE_CLI="warden env exec -T php-fpm rm -rf"
 
@@ -48,6 +49,12 @@ function env_warden_create_project() {
 function env_warden_setup_prepare() {
   mage_info "Signing certificate with Warden..."
   warden sign-certificate "${1}.${MAGE_DOMAIN}"
+}
+
+# Redis runs per project, so it can be flushed as a whole
+function env_warden_clean_redis() {
+  $REDIS_CLI flushall > /dev/null
+  mage_check $? "Redis"
 }
 
 # The volumes hold the database and search indices, so removing them is enough

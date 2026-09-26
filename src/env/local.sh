@@ -45,12 +45,47 @@ function env_local_setup_prepare() {
 function env_local_nuke() {
   local db_name="$2"
 
-  mage_clear_opensearch "$db_name"
-  mage_clear_redis
+  mage_clean_opensearch "$db_name"
+  env_local_clean_redis
 
   if env_local_mysql -e "DROP DATABASE IF EXISTS \`${db_name}\`;"; then
     mage_check 0 "Database '${db_name}' dropped"
   else
     mage_check 1 "Could not drop database '${db_name}'"
   fi
+}
+
+# Delete the cache keys of the project from Redis, by the id prefix of each
+# cache in app/etc/env.php, so other projects on the same Redis keep theirs
+function env_local_clean_redis() {
+  if ! command -v $REDIS_CLI &> /dev/null; then
+    mage_check 1 "redis-cli not found, the Redis caches are left as is"
+    return 1
+  fi
+
+  local cache
+  local options
+  local prefix
+  local host
+  local port
+  local db
+
+  for cache in default page_cache; do
+    options="cache/frontend/${cache}/backend_options"
+    prefix="$(mage_env_php "cache/frontend/${cache}/id_prefix")"
+    host="$(mage_env_php "${options}/server" || echo "$MAGE_REDIS_HOST")"
+    port="$(mage_env_php "${options}/port" || echo 6379)"
+    db="$(mage_env_php "${options}/database" || echo 0)"
+
+    if [[ -z "$prefix" ]]; then
+      mage_check 1 "Could not determine the Redis prefix of the ${cache} cache"
+      continue
+    fi
+
+    # Cache keys look like zc:k:<prefix><ID> and their tags like zc:ti:<prefix><TAG>
+    $REDIS_CLI -h "$host" -p "$port" -n "$db" --scan --pattern "zc:*:${prefix}*" |
+      xargs -n 100 $REDIS_CLI -h "$host" -p "$port" -n "$db" del &> /dev/null
+
+    mage_check 0 "Redis ${cache} cache with prefix '${prefix}'"
+  done
 }

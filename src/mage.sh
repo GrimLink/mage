@@ -15,6 +15,7 @@ source "${MAGE_SRC}/core/tools.sh"
 source "${MAGE_SRC}/core/env.sh"
 source "${MAGE_SRC}/core/root.sh"
 source "${MAGE_SRC}/core/helpers.sh"
+source "${MAGE_SRC}/core/handlers.sh"
 
 source "${MAGE_SRC}/env/local.sh"
 source "${MAGE_SRC}/env/valet.sh"
@@ -26,6 +27,12 @@ source "${MAGE_SRC}/commands/create.sh"
 source "${MAGE_SRC}/commands/setup.sh"
 source "${MAGE_SRC}/commands/nuke.sh"
 source "${MAGE_SRC}/commands/add.sh"
+source "${MAGE_SRC}/commands/clean.sh"
+source "${MAGE_SRC}/commands/clean/files.sh"
+source "${MAGE_SRC}/commands/clean/redis.sh"
+source "${MAGE_SRC}/commands/clean/varnish.sh"
+source "${MAGE_SRC}/commands/clean/opensearch.sh"
+source "${MAGE_SRC}/commands/clean/sample-files.sh"
 
 # Commands that run outside a Magento project, setup finds the root itself
 MAGE_ROOTLESS_COMMANDS="help version self-update create setup"
@@ -59,6 +66,12 @@ function mage_main() {
       ;;
     "add")
       mage_cmd_add "${@:2}"
+      ;;
+    "clean")
+      mage_cmd_clean "${@:2}"
+      ;;
+    "purge")
+      mage_cmd_clean all
       ;;
     *)
       $MAGENTO_CLI "$@"
