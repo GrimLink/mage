@@ -222,6 +222,13 @@ Without arguments it errors with its own help page, listing the composer and git
   Edits `patches.json` with jq.
 - `add bfcache` is `add patch` with the BFCache patch repository.
 
+### `add sample [magento|hyva]`
+
+- One set at a time, from a registry like the handlers: `MAGE_SAMPLE_SETS`, `mage_sample_<name>`, one file per set in `commands/add/sample/`. Without a set it asks, `hyva` by default when Hyvä is installed.
+- `magento` uses `sampledata:deploy`, which fits the installed version and edition and works inside containers, where the old git clone did not. Then clears `design/head/includes` and sets Hyvä as theme when installed.
+- `hyva` uses `hyva:sampledata:deploy` (Koti), needs Hyvä, adds `magento/module-sample-data` when missing, and asks to keep or replace Luma sample data when present.
+- Further arguments go to the deploy command, then it reindexes and cleans the cache.
+
 ### `add admin` and `add customer`
 
 - `add admin` asks for the admin user with the `MAGE_ADMIN_*` settings as defaults (password hidden), `-y` uses them without asking, then runs `admin:user:create`.
@@ -367,7 +374,6 @@ A minimal bats suite covering root detection, env selection (with a fake `.env` 
 
 ## Later
 
-- `add sample`, with more options than before.
 - The `create` extras (BFCache, Hyvä, sample data).
 - `import`: run groups of actions from a json file.
 - `mage_set_theme` without `yireo/magento2-theme-commands`: look up the theme id (for example with magerun `db:query`) and set `design/theme/theme_id` with `config:set`.

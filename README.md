@@ -55,6 +55,7 @@ Anything mage does not know runs `bin/magento`, so `mage cache:clean` works as e
 | [`add customer`](docs/commands/add-admin.md#mage-add-customer) | Create a customer                                                  |
 | [`add store`](docs/commands/add-store.md)                      | Create a store view with its own domain                            |
 | [`add i18n`](docs/commands/add-i18n.md)                        | Collect the phrases of a module or theme                           |
+| [`add sample`](docs/commands/add-sample.md)                    | Add the Luma or Koti sample data                                   |
 | [`del`](docs/commands/remove.md)                               | Remove packages by name or term                                    |
 | [`upd`](docs/commands/update.md)                               | Update packages by name or term                                    |
 | [`enable`, `disable`](docs/commands/enable.md)                 | Enable or disable modules by name or term                          |
@@ -63,8 +64,8 @@ Anything mage does not know runs `bin/magento`, so `mage cache:clean` works as e
 | [`log`](docs/commands/log.md)                                  | Follow a log in `var/log`                                          |
 | [`reindex`](docs/commands/reindex.md)                          | Reindex, then clean the cache                                      |
 | [`clean`](docs/commands/clean.md)                              | Clean caches and generated files (alias: `purge`)                  |
-| [`info`](docs/commands/info.md)                                | Show the version, mode, urls and more of the project              |
-| [`open`](docs/commands/open.md)                                | Open a store view, the admin or the mail catcher in your browser  |
+| [`info`](docs/commands/info.md)                                | Show the version, mode, urls and more of the project               |
+| [`open`](docs/commands/open.md)                                | Open a store view, the admin or the mail catcher in your browser   |
 | [`set`](docs/commands/set.md)                                  | Change a setting, such as the CSP or full page cache               |
 | [`show`](docs/commands/show.md)                                | Show project information, such as the stores                       |
 | [`run`](docs/commands/run.md)                                  | Run [n98-magerun2]                                                 |

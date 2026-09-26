@@ -51,6 +51,7 @@ Anything mage does not know still runs `bin/magento`.
 - **`mage log`:** Also accepts the log name with `.log`. `mage log show` is now `mage show logs`, which also shows the size of each log, and `mage log clear` is now `mage clean logs`.
 - **`mage enable` and `mage disable` by term:** Read the modules from `app/etc/config.php` instead of `module:status`, so only one Magento boot is left, and only match modules that can change. The matches are listed and confirmed first, `-y` skips it, terms match as plain text, and options such as `--clear-static-content` go to Magento.
 - **`mage info`:** Reads everything from Magento in one boot instead of about eight, so it is much faster. It now also shows the Redis the caches and sessions use, with their databases and cache prefix. The PHP version is now the one that runs Magento, also inside a container, the admin url counts a custom admin url, and the module count only counts enabled modules.
+- **`mage add sample [magento|hyva]`:** Asks which sample data to add: the Luma sample data of Magento, or the new Koti sample data of Hyvä. The Magento set now uses `sampledata:deploy`, so it fits the installed version of every edition, Mage-OS included, and works in Warden and DDEV. The old clones in `~/.config/mage/sampledata` can be deleted. The version argument is gone, the installed version is used.
 - **Output:** Errors go to stderr, and colors are left out when `NO_COLOR` is set or the output is not a terminal.
 
 ### Removed
@@ -61,7 +62,6 @@ Anything mage does not know still runs `bin/magento`.
 - **`mage add hyva checkout` and `mage add hyva commerce`:** Add their repositories with `mage add <url>.git`.
 - **`mage set theme` and `mage set mage-os`:** For the theme, use `mage theme:change`.
 - **`mage build`, `mage build hyva`, `mage browser-sync` and `mage get`:** Use their `bin/magento`, npm or composer commands directly.
-- **`mage add sample`:** Not available for now, it returns in a later release with more options.
 - **`mage cleanup [TYPE]`:** Use `mage clean [OPTION]`, where `sample` is now `sample-files`.
 
 ### Fixed
