@@ -35,6 +35,7 @@ Version 3 is a rebuild of mage. The commands of version 2 return step by step, u
 - **Templates:** The templates are no longer refreshed every 30 days, `mage self-update` updates them together with the script.
 - **`mage del [TERM]`:** Removing by term now lists the matching packages and asks before removing them, `-y` skips the question. Terms match as plain text instead of a regex, `require-dev` packages are removed with `--dev`, and platform entries like `php` never match. It reads the composer.json with jq instead of asking composer.
 - **`mage upd [TERM]`:** Updating by term matches the same way as `mage del`, and passes options like `-W` on to composer. `mage upd` without arguments now runs `composer update`.
+- **`mage add patch` and `mage add bfcache`:** Edit `patches.json` with jq instead of php, and stop with a hint when `cweagans/composer-patches` is missing.
 - **`mage add storeinfo`:** Now reads its packages from the bundled `composer-storeinfo.json`, so the list can change without a new mage release, and runs `setup:upgrade` afterwards.
 - **`mage outdated`:** The new `--terminal` option shows the result instead of writing `composer-outdated.json`, further arguments go to composer, and the ignored packages can be set with `MAGE_OUTDATED_IGNORE`.
 - **Output:** Errors go to stderr, and colors are left out when `NO_COLOR` is set or the output is not a terminal.

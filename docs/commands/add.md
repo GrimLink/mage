@@ -19,6 +19,8 @@ Add something to the project. The first argument decides what, in this order:
 | [`module`](add-module.md) | Create a module |
 | [`hyva`](add-hyva.md) | Add the Hyvä Theme |
 | [`storeinfo`](add-storeinfo.md) | Add the Siteation StoreInfo modules |
+| [`patch`](add-patch.md) | Add a composer patch, or all patches of a repository |
+| [`bfcache`](add-patch.md#mage-add-bfcache) | Add the BFCache compatibility patches |
 
 ## Composer packages
 

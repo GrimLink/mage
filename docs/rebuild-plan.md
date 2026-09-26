@@ -161,6 +161,13 @@ Without arguments it errors with its own help page, listing the composer and git
 * A Hyvä child theme gets a copy of the default theme `web/tailwind` folder, without `node_modules`.
 * The files come from `templates/theme`.
 
+### `add patch` and `add bfcache`
+
+* `add patch [PKG] [NAME] [SOURCE]` adds one entry to `patches.json`, the source is the last argument so the name can be several words, anything missing is asked. A GitHub or GitLab repository url instead downloads its `main` branch, merges its `patches.json` and copies its patches. Both run `patches-relock` and `patches-repatch`.
+* Edits `patches.json` with jq instead of `php -r`, and requires `cweagans/composer-patches`.
+* `add bfcache` is `add patch` with the BFCache patch repository.
+* The old `new patch` (create a patch from changes in vendor) is not ported yet.
+
 ### Setting a theme
 
 * `mage_set_theme <theme>` in `core/helpers.sh` is the one place that activates a theme, so every script calls it, even while it can not always set the theme.
@@ -233,7 +240,7 @@ A minimal bats suite covering root detection, env selection (with a fake `.env` 
 
 * Aliases and the remaining old commands.
 * The `create` extras (BFCache, Hyvä, sample data).
-* `add` handlers, one per commit: patch and bfcache, sample, hyva checkout and commerce, and the other old `new` commands.
+* `add` handlers, one per commit: sample, hyva checkout and commerce, and the other old `new` commands.
 * `import`: run groups of actions from a json file.
 * `mage_set_theme` without `yireo/magento2-theme-commands`: look up the theme id (for example with magerun `db:query`) and set `design/theme/theme_id` with `config:set`. A `set theme` command can then call the same helper.
 * A build action for theme styles that is not locked to one theme, replacing the old `build hyva`.

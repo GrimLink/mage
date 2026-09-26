@@ -30,7 +30,7 @@ Move it to a folder in your `PATH`, such as `~/.local/bin`. Update it later with
 
 * **bash** 3.2 or newer, the version macOS ships with is enough.
 * **git**, and **curl** or **wget**.
-* **[jq]** for `mage add <file>.json`, and for removing or updating packages by term.
+* **[jq]** for `mage add <file>.json` and `mage add patch`, for removing or updating packages by term, and for `mage show modules` and `themes`.
 * **php** on your machine is optional, `mage nuke` uses it to read `app/etc/env.php`.
 
 ## Commands
@@ -47,6 +47,8 @@ Run `mage help` for the full list. Anything mage does not know runs `bin/magento
 | [`add module`](docs/commands/add-module.md) | Create a module |
 | [`add hyva`](docs/commands/add-hyva.md) | Add the Hyvä Theme |
 | [`add storeinfo`](docs/commands/add-storeinfo.md) | Add the Siteation StoreInfo modules |
+| [`add patch`](docs/commands/add-patch.md) | Add a composer patch, or all patches of a repository |
+| [`add bfcache`](docs/commands/add-patch.md#mage-add-bfcache) | Add the BFCache compatibility patches |
 | [`del`](docs/commands/remove.md) | Remove packages by name or term |
 | [`upd`](docs/commands/update.md) | Update packages by name or term |
 | [`outdated`](docs/commands/outdated.md) | List the direct dependencies with a newer version |
