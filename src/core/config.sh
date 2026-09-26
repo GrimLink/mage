@@ -4,6 +4,7 @@ MAGE_CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/mage"
 MAGE_CONFIG_FILE="${MAGE_CONFIG_DIR}/config"
 
 MAGE_UPDATE_URL="https://raw.githubusercontent.com/GrimLink/mage/main/mage"
+# The templates folder of this archive is synced to the config folder
 MAGE_TEMPLATES_ARCHIVE="https://github.com/GrimLink/mage/tarball/main"
 
 GIT_NAME="$(git config --global --get user.name 2> /dev/null | head -n1 | cut -d " " -f1)"

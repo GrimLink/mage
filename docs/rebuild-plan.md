@@ -25,6 +25,7 @@ src/
     root.sh        Magento root detection, path argument resolving, cd
     helpers.sh     ask, confirm, env.php reader, download, templates
     handlers.sh    shared handler registry logic for add and clean
+    templates.sh   template sync and copy with {{NAME}} replacements
   env/
     local.sh       fallback for every hook
     warden.sh
@@ -114,6 +115,20 @@ Resolved in this order, never mixed:
 
 Without arguments it errors with its own help page, listing the composer and git forms and every registered handler. `mage add help` shows the same page.
 
+### `add theme [Vendor/Name] [--parent=THEME] [--admin]`
+
+* Asks for anything not given. `Vendor/Name` works as one answer, the path uses the kebab-case name (`Vendor/my-theme`).
+* The parent defaults to `Hyva/default` when the Hyvä default theme is installed, otherwise `Magento/luma`, or `Magento/backend` for an admin theme.
+* Creates the theme in `app/design/<area>/Vendor/my-theme`, or when chosen in `package-source/<vendor>/magento2-theme-my-theme`, named after its composer package like git clones. A theme in package-source is required as `@dev`.
+* A Hyvä child theme gets a copy of the default theme `web/tailwind` folder, without `node_modules`.
+* The files come from `templates/theme`.
+
+## Templates
+
+* `templates/` is synced to `~/.config/mage/templates` on first use, and again by every `self-update`. Commands never fetch them otherwise.
+* Running unbuilt (`MAGE_VERSION` is `dev`), mage uses the `templates/` folder of the repository directly.
+* A failed sync keeps the previous templates.
+
 ### `clean <option>` and `purge`
 
 * Uses the same handler registry as `add`: `MAGE_CLEAN_HANDLERS`, `mage_clean_<name>`, one file per handler in `commands/clean/`.
@@ -149,6 +164,6 @@ A minimal bats suite covering root detection, env selection (with a fake `.env` 
 
 * Aliases and the remaining old commands.
 * The `create` extras (BFCache, Hyvä, sample data).
-* `add` handlers, one per commit: patch and bfcache, sample, hyva, and the old `new` commands.
+* `add` handlers, one per commit: module, patch and bfcache, sample, hyva, and the other old `new` commands.
 * Aliases for `add` from a JSON file with default entries, instead of hardcoded ones like `storeinfo`.
 * Global packages shared between projects (the old `add dev` and `upd dev`), in a more optimized form.

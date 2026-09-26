@@ -14,6 +14,7 @@ Version 3 is a rebuild of mage. The commands of version 2 return step by step, u
 - **`mage create` options:** `--edition`, `--version` and `--env` skip their questions, and `-y` uses the defaults for anything not given.
 - **`mage add` handlers:** `mage add` is now the central command for adding to a project, with handlers such as the upcoming theme and module generators. Without arguments it shows its own help page with every option.
 - **`mage clean [OPTION]` command:** Replaces `mage cleanup`, with the options `files`, `redis`, `varnish`, `opensearch`, `sample-files` and `all`. Like `mage add` it is built from handlers, so new options are easy to add. Without an option it cleans all, which options that runs can be set with `MAGE_CLEAN_ALL`. `mage purge` stays as an alias for `mage clean`.
+- **`mage add theme` command:** Replaces `mage new theme`. The vendor, name and parent can be given as options, the parent defaults to Hyvä when it is installed, and a theme created in `package-source` is required right away.
 - **`mage nuke --keep-files`:** Removes the database and environment, but keeps the project files.
 - **Config file:** The defaults, such as the admin user, database credentials, store config and default composer packages, can be overridden in `~/.config/mage/config`.
 - **DDEV support:** Projects with a `.ddev/config.yaml` run their commands through DDEV. `mage create` can set up a new DDEV project, with the OpenSearch and Redis add-ons, and `mage nuke` removes it with `ddev delete`.
@@ -27,10 +28,12 @@ Version 3 is a rebuild of mage. The commands of version 2 return step by step, u
 - **`mage nuke`:** Asks to type the folder name to confirm. The database name and credentials are read from `app/etc/env.php`, and the local environment now also drops its database, not only Valet.
 - **`mage add [GIT_URL]`:** A cloned repository is now required as `dev-<branch> as <latest tag>`, so packages that depend on a version of it still resolve. Without tags it falls back to `@dev`. An existing clone is reused, and the `package-source` path repository is registered when a project does not have it yet.
 - **Redis per project:** `mage setup` gives the cache and page cache a readable prefix (`<db_name>_`), like the OpenSearch indices already had. `mage nuke` and `mage clean redis` now only delete the Redis keys of that project, instead of flushing all of Redis, so other projects on the same Redis keep their cache.
+- **Templates:** The templates are no longer refreshed every 30 days, `mage self-update` updates them together with the script.
 - **Output:** Errors go to stderr, and colors are left out when `NO_COLOR` is set or the output is not a terminal.
 
 ### Removed
 - **`mage install`:** Use `mage create`, which installs and sets up the project in one go.
+- **`mage new theme`:** Use `mage add theme`.
 - **`mage cleanup [TYPE]`:** Use `mage clean [OPTION]`, where `sample` is now `sample-files`.
 
 ### Fixed

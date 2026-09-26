@@ -38,7 +38,7 @@ function mage_cmd_help() {
   mage_info "${ITALIC}From a nested folder, mage runs from the Magento root${RESET}"
 }
 
-# Replace this script with the latest release, following any symlinks to it
+# Replace this script and the templates with the latest release, following any symlinks to the script
 function mage_cmd_self_update() {
   if [[ "$MAGE_VERSION" == "dev" ]]; then
     mage_error "self-update only works for the built mage script"
@@ -64,5 +64,12 @@ function mage_cmd_self_update() {
   fi
 
   chmod +x "$target"
+
+  if mage_sync_templates "$(mage_config_dir)/templates"; then
+    mage_check 0 "Templates updated"
+  else
+    mage_check 1 "Could not update the templates, the previous ones are kept"
+  fi
+
   "$target" version
 }

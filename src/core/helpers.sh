@@ -80,57 +80,52 @@ function mage_download_file() {
   mv "$temp" "$target"
 }
 
-# Sync the templates folder into the mage config folder.
-# The whole folder is replaced at once, so a failed sync
-# keeps the previous templates usable.
-function mage_sync_templates() {
-  local target="$1"
-  local temp_dir
-  temp_dir="$(mktemp -d)"
-  local archive="${temp_dir}/templates.tar.gz"
-
-  if mage_download_file "$MAGE_TEMPLATES_ARCHIVE" "$archive" &&
-    tar -xzf "$archive" -C "$temp_dir" --strip-components=1 &> /dev/null &&
-    [[ -d "$temp_dir/templates" ]]; then
-    rm -rf "$target"
-    mv "$temp_dir/templates" "$target"
-    touch "$target"
-  fi
-
-  rm -rf "$temp_dir"
-}
-
-# Echo the folder with the mage templates, refreshed when older than 30 days
-function mage_templates_dir() {
-  local templates_dir
-  templates_dir="$(mage_config_dir)/templates"
-
-  if [[ ! -d "$templates_dir" ]] || [[ -n "$(find "$templates_dir" -maxdepth 0 -mtime +30)" ]]; then
-    mage_sync_templates "$templates_dir"
-  fi
-
-  if [[ ! -d "$templates_dir" ]]; then
-    return 1
-  fi
-
-  echo "$templates_dir"
-}
-
-# Echo the path to a single template file
-function mage_template_file() {
-  local file
-  file="$(mage_templates_dir)/$1"
-
-  if [[ ! -f "$file" ]]; then
-    return 1
-  fi
-
-  echo "$file"
-}
-
 # Echo the package name from a composer.json
 function mage_composer_name() {
   if [[ -f "$1" ]]; then
     grep -E '"name"[[:space:]]*:' "$1" | head -n 1 | sed -E 's/.*"name"[[:space:]]*:[[:space:]]*"([^"]+)".*/\1/'
   fi
+}
+
+# Convert a string to kebab-case, such as MyTheme to my-theme
+function mage_kebab_case() {
+  echo "$*" | sed 's/\([A-Z]\)/-\1/g' | tr '[:upper:]' '[:lower:]' | sed -e 's/^-*//' -e 's/-*$//' | tr -s '[:blank:]' '-'
+}
+
+function mage_lower_case() {
+  echo "$*" | tr '[:upper:]' '[:lower:]'
+}
+
+# Ask for the vendor and name of a new theme or module, where 'Vendor/Name'
+# works as one answer, and a name given as argument skips the question.
+# A function can only echo one value, so the result is shared through
+# MAGE_NEW_VENDOR, MAGE_NEW_NAME, MAGE_NEW_VENDOR_PKG and MAGE_NEW_NAME_PKG.
+function mage_ask_vendor_name() {
+  local label="$1"
+  local name="$2"
+  local vendor=""
+
+  if [[ -z "$name" ]]; then
+    name="$(mage_ask "${label} name (Vendor/Name)")"
+  fi
+
+  if [[ "$name" == */* ]]; then
+    vendor="${name%%/*}"
+    name="${name#*/}"
+  fi
+
+  if [[ -z "$vendor" ]]; then
+    vendor="$(mage_ask "${label} vendor")"
+  fi
+
+  MAGE_NEW_VENDOR="$(echo "$vendor" | tr -d '[:blank:]')"
+  MAGE_NEW_NAME="$(echo "$name" | tr -d '[:blank:]')"
+
+  if [[ -z "$MAGE_NEW_VENDOR" ]] || [[ -z "$MAGE_NEW_NAME" ]]; then
+    mage_error "The ${label} vendor and name can not be empty"
+    return 1
+  fi
+
+  MAGE_NEW_VENDOR_PKG="$(mage_lower_case "$MAGE_NEW_VENDOR")"
+  MAGE_NEW_NAME_PKG="$(mage_kebab_case "$MAGE_NEW_NAME")"
 }

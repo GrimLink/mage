@@ -9,8 +9,12 @@ function setup() {
 @test "builds a single valid script" {
   [ -x "$BUILD" ]
   bash -n "$BUILD"
-  ! grep -q 'source "${MAGE_SRC}' "$BUILD"
-  ! grep -q '^MAGE_SRC=' "$BUILD"
+
+  run grep -q 'source "${MAGE_SRC}' "$BUILD"
+  [ "$status" -eq 1 ]
+
+  run grep -q '^MAGE_SRC=' "$BUILD"
+  [ "$status" -eq 1 ]
 }
 
 @test "takes the version from the changelog" {
