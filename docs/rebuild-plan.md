@@ -199,6 +199,7 @@ Without arguments it errors with its own help page, listing the composer and git
 * Uses the same handler registry as `add` and `clean`: `MAGE_SHOW_HANDLERS`, `mage_show_<name>`, one file per handler in `commands/show/`.
 * Without an option it errors with its own help page, like `add`, as there is no sensible default.
 * `show stores` replaces `mage stores`: the store base urls through magerun, further arguments go to magerun.
+* `show modules` replaces `mage modules`: only the modules of the direct dependencies (`require` and `require-dev`, read with jq) and `app/code`, found by the `registration.php` files up to three folders deep in each package, with disabled modules marked.
 
 ### `help`, `version`, `self-update`
 
