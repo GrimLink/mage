@@ -7,19 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+Version 3 is a rebuild of mage. The commands of version 2 return step by step, until then anything unknown still runs `bin/magento`.
+
 ### Added
-- **`mage new gitignore` command:** New command that adds a Magento aware `.gitignore` to the project. The templates are synced on first use to `~/.config/mage/templates`, so they stay available offline and refresh themselves after 30 days.
-- **`mage setup`:** Now adds the same `.gitignore`, existing files are left untouched.
+- **Magento root detection:** Mage now works from any folder inside a Magento project, it moves to the root on its own. Relative paths like `./app/code/Vendor` are resolved from the folder you called it in.
+- **`mage create` options:** `--edition`, `--version` and `--env` skip their questions, and `-y` uses the defaults for anything not given.
+- **`mage nuke --keep-files`:** Removes the database and environment, but keeps the project files.
+- **Config file:** The defaults, such as the admin user, database credentials, store config and default composer packages, can be overridden in `~/.config/mage/config`.
+- **Tests and CI:** A bats test suite, and a GitHub Action that runs it together with ShellCheck on every push and pull request to main.
 
 ### Changed
-- **`mage new theme` and `mage new module`:** The generated files now come from the `templates/theme` and `templates/module` folders instead of being built as strings in the script, so files can be added or removed without a rebuild. Both now also get a `composer.json`, a `README.md`, a `CHANGELOG.md`, a `SECURITY.md`, an `.editorconfig` and a `.gitignore`, and the generated `theme.xml` starts with an XML declaration.
-- **`mage new module`:** The module template now follows the [hyva-module-template](https://github.com/GrimLink/hyva-module-template). It asks whether this is a Hyvä module, defaulting to what the project has installed. A Hyvä module additionally gets the config observer, its `events.xml` and the tailwind sources, and sequences `Hyva_Theme` instead of `Magento_Theme`.
-- **`mage new theme` and `mage new module` prompts:** Both now share the vendor and name question, and yes/no questions go through one helper, so the answer options and the handling of an empty answer are the same everywhere.
+- **Source layout:** The source is split into `core`, `env` and `commands`, with `src/mage.sh` as the entrypoint. It runs unbuilt during development, and the build inlines its source lines into the single `mage` script. The version now comes from this changelog.
+- **Environments:** Warden, Valet and local are separate environments with their own setup and nuke steps. Warden is only used when the `warden` command is installed, so mage inside the container runs as local.
+- **`mage create`:** Asks which environment to use, defaulting to the first one installed (Warden, Valet, then local).
+- **`mage setup`:** Asks for confirmation before reinstalling a project that is already installed, as it drops the database.
+- **`mage nuke`:** Asks to type the folder name to confirm. The database name and credentials are read from `app/etc/env.php`, and the local environment now also drops its database, not only Valet.
+- **Output:** Errors go to stderr, and colors are left out when `NO_COLOR` is set or the output is not a terminal.
 
-- **Sample data cache:** The sample data clones now live in `~/.config/mage/sampledata`. An existing `~/.magento-sampledata` folder is moved there on the next `mage add sample`, so nothing has to be cloned again.
+### Removed
+- **`mage install`:** Use `mage create`, which installs and sets up the project in one go.
 
 ### Fixed
-- **`mage new theme` and `mage new module` paths:** The blank line printed after the package-source question ended up in the captured folder name, which put a newline in front of the generated path.
+- **`mage create` with Warden:** The project folder is now created before moving into it.
 
 ## [2.8.1] - 2026-07-02
 
