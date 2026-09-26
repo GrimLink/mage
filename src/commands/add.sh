@@ -44,9 +44,8 @@ function mage_add_git() {
   shift
 
   local target
-  target="$(mage_add_find_clone "$url")"
 
-  if [[ -n "$target" ]]; then
+  if target="$(mage_add_find_clone "$url")"; then
     mage_notice "Using the existing clone in ${target}"
   else
     target="$(mage_add_clone "$url")" || return 1

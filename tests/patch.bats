@@ -29,6 +29,7 @@ function setup() {
 @test "creates a patch from the changes in the vendor folder, new files included" {
   mkdir -p vendor/vendor/package
   echo "old" > vendor/vendor/package/file.php
+  echo "untouched" > vendor/vendor/package/other.php
   function mage_patch_wait_for_changes() {
     echo "new" > "$1/file.php"
     echo "added" > "$1/added.php"
@@ -38,9 +39,13 @@ function setup() {
   [ "$status" -eq 0 ]
 
   local patch="patches/vendor/package/LOCAL-vendor-package.patch"
+  grep -q "^-old" "$patch"
   grep -q "^+new" "$patch"
   grep -q "^+added" "$patch"
   grep -q "a/file.php" "$patch"
+
+  run grep -q "other.php" "$patch"
+  [ "$status" -eq 1 ]
   [ ! -e vendor/vendor/package/.git ]
   [ "$(jq -r '.patches["vendor/package"]["Local: vendor-package"]' patches.json)" = "$patch" ]
   [[ "$output" == *"composer patches-repatch"* ]]

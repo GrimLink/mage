@@ -92,7 +92,7 @@ function env_valet_nuke() {
 function env_valet_add_store() {
   local domain="$1"
   local code="$2"
-  local site="${domain%.${MAGE_DOMAIN}}"
+  local site="${domain%."${MAGE_DOMAIN}"}"
 
   if [[ ! -f .valet-env.php ]]; then
     env_valet_setup_finish "$(basename "$PWD")"

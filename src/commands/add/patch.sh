@@ -104,7 +104,13 @@ function mage_add_patch_create() {
     return 1
   fi
 
-  git -C "$package_dir" init --quiet && git -C "$package_dir" add -A || return 1
+  # The baseline commit is what the changes are compared to, without it the
+  # diff would hold every file of the package. Hooks, signing and the git
+  # user of your machine stay out of it, the repository is removed after.
+  git -C "$package_dir" init --quiet &&
+    git -C "$package_dir" add -A &&
+    git -C "$package_dir" -c user.name=mage -c user.email=mage@localhost -c commit.gpgsign=false \
+      commit --quiet --no-verify -m "Baseline" || return 1
 
   mage_patch_wait_for_changes "$package_dir"
 
