@@ -17,6 +17,7 @@ Without an option, or with `all`, it runs the options in `MAGE_CLEAN_ALL`, by de
 | `varnish` | Bans all pages from Varnish, skipped when `varnishadm` is not installed |
 | `opensearch` | Deletes the OpenSearch indices of this project, run a reindex afterwards |
 | `sample-files` | Moves the `*.sample` files of the root to `dev/sample-files` |
+| `logs` | Deletes the logs in `var/log`, not part of `all` |
 
 ## Redis
 

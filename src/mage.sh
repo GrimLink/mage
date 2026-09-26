@@ -31,6 +31,7 @@ source "${MAGE_SRC}/commands/run.sh"
 source "${MAGE_SRC}/commands/open.sh"
 source "${MAGE_SRC}/commands/watch.sh"
 source "${MAGE_SRC}/commands/reindex.sh"
+source "${MAGE_SRC}/commands/log.sh"
 source "${MAGE_SRC}/commands/add.sh"
 source "${MAGE_SRC}/commands/add-json.sh"
 source "${MAGE_SRC}/commands/remove.sh"
@@ -52,11 +53,13 @@ source "${MAGE_SRC}/commands/clean/redis.sh"
 source "${MAGE_SRC}/commands/clean/varnish.sh"
 source "${MAGE_SRC}/commands/clean/opensearch.sh"
 source "${MAGE_SRC}/commands/clean/sample-files.sh"
+source "${MAGE_SRC}/commands/clean/logs.sh"
 source "${MAGE_SRC}/commands/show.sh"
 source "${MAGE_SRC}/commands/show/stores.sh"
 source "${MAGE_SRC}/commands/show/modules.sh"
 source "${MAGE_SRC}/commands/show/themes.sh"
 source "${MAGE_SRC}/commands/show/fpc.sh"
+source "${MAGE_SRC}/commands/show/logs.sh"
 source "${MAGE_SRC}/commands/set.sh"
 source "${MAGE_SRC}/commands/set/csp.sh"
 source "${MAGE_SRC}/commands/set/fpc.sh"
@@ -117,6 +120,9 @@ function mage_main() {
       ;;
     "reindex")
       mage_cmd_reindex
+      ;;
+    "log")
+      mage_cmd_log "${@:2}"
       ;;
     "run")
       mage_cmd_run "${@:2}"

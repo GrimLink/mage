@@ -197,6 +197,11 @@ Without arguments it errors with its own help page, listing the composer and git
 
 * A shortcut: `indexer:reindex`, then `cache:flush` only when that succeeds. Arguments are ignored, `mage indexer:reindex` covers specific indexes.
 
+### `log [FILE]`
+
+* Follows `var/log/<FILE>.log` with `tail -f`, `debug` by default, the name with or without `.log`. A missing log lists the ones there are.
+* The old `log show` is `show logs` (names and sizes), `log clear` is `clean logs` (not in `MAGE_CLEAN_ALL`).
+
 ### Setting a theme
 
 * `mage_set_theme <theme>` in `core/helpers.sh` is the one place that activates a theme, so every script calls it, even while it can not always set the theme.
