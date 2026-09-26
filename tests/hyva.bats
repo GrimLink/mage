@@ -26,6 +26,20 @@ function setup() {
   [[ "$output" != *"--auth"* ]]
 }
 
+@test "sets the theme with the yireo theme commands" {
+  mkdir -p vendor/yireo/magento2-theme-commands
+
+  run mage_set_theme Hyva/default
+  [ "$status" -eq 0 ]
+  [ "$output" = "$(printf 'magento theme:change Hyva/default\nmagento cache:flush')" ]
+}
+
+@test "points to the admin without the yireo theme commands" {
+  run mage_set_theme Hyva/default
+  [ "$status" -eq 1 ]
+  [[ "$output" == *"Select the Hyva/default theme in the admin"* ]]
+}
+
 @test "rejects unknown options" {
   run mage_cmd_add hyva checkout
   [ "$status" -eq 1 ]

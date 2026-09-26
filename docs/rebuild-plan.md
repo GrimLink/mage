@@ -161,6 +161,11 @@ Without arguments it errors with its own help page, listing the composer and git
 * A Hyvä child theme gets a copy of the default theme `web/tailwind` folder, without `node_modules`.
 * The files come from `templates/theme`.
 
+### Setting a theme
+
+* `mage_set_theme <theme>` in `core/helpers.sh` is the one place that activates a theme, so every script calls it, even while it can not always set the theme.
+* With `yireo/magento2-theme-commands` in the project it runs `theme:change` and flushes the cache. Otherwise it points to the admin and returns 1. Mage never installs yireo itself.
+
 ### `add module [Vendor/Name] [--hyva|--no-hyva]`
 
 * Asks for anything not given, the Hyvä question defaults to yes when the Hyvä theme module is installed.
@@ -171,7 +176,7 @@ Without arguments it errors with its own help page, listing the composer and git
 ### `add hyva [--dev]`
 
 * Applies `templates/composer-hyva.json` (license), or with `--dev` `templates/composer-hyva-dev.json` (the Hyvä GitLab repositories as `vcs` repositories over ssh, no token needed).
-* Then runs `setup:upgrade` and disables the Magento captcha (not supported by the Hyvä default theme). Selecting the theme is left to the admin, mage has no dependency on `yireo/magento2-theme-commands`.
+* Then runs `setup:upgrade` and disables the Magento captcha (not supported by the Hyvä default theme). Then sets `Hyva/default` through `mage_set_theme`.
 * Building styles is not part of it, that is a separate build action that works for any theme.
 * Checkout and commerce return as subcommands, such as `add hyva checkout`.
 
@@ -230,6 +235,6 @@ A minimal bats suite covering root detection, env selection (with a fake `.env` 
 * The `create` extras (BFCache, Hyvä, sample data).
 * `add` handlers, one per commit: patch and bfcache, sample, hyva checkout and commerce, and the other old `new` commands.
 * `import`: run groups of actions from a json file.
-* `set theme` without `yireo/magento2-theme-commands`: look up the theme id (for example with magerun `db:query`) and set `design/theme/theme_id` with `config:set`. `add hyva` could use it afterwards.
+* `mage_set_theme` without `yireo/magento2-theme-commands`: look up the theme id (for example with magerun `db:query`) and set `design/theme/theme_id` with `config:set`. A `set theme` command can then call the same helper.
 * A build action for theme styles that is not locked to one theme, replacing the old `build hyva`.
 * Global packages shared between projects (the old `add dev` and `upd dev`), in a more optimized form.

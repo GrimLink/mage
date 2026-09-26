@@ -158,3 +158,15 @@ function mage_require_jq() {
     exit 1
   fi
 }
+
+# Make the theme, such as Hyva/default, the active theme where possible,
+# otherwise point to the admin. Returns 1 when the theme was not set.
+function mage_set_theme() {
+  if [[ -d vendor/yireo/magento2-theme-commands ]]; then
+    $MAGENTO_CLI theme:change "$1" && $MAGENTO_CLI cache:flush
+    return
+  fi
+
+  mage_notice "Select the $1 theme in the admin, under Content, Design, Configuration"
+  return 1
+}
