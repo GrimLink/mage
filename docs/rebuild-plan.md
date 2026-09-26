@@ -253,7 +253,7 @@ Without arguments it errors with its own help page, listing the composer and git
 
 ### `reindex`
 
-- A shortcut: `indexer:reindex`, then `cache:flush` only when that succeeds.
+- A shortcut: `indexer:reindex`, then `cache:clean` only when that succeeds.
   Arguments are ignored, `mage indexer:reindex` covers specific indexes.
 
 ### `log [FILE]`
@@ -353,6 +353,11 @@ A minimal bats suite covering root detection, env selection (with a fake `.env` 
   Locally, running ShellCheck and the tests is up to the author.
 - ShellCheck runs on the built `mage` and `src/build.sh`, with the settings from `.shellcheckrc`.
 - The bats suite runs on Ubuntu and on macOS, where it uses the bash 3.2 that macOS ships.
+
+## Shared Redis
+
+- Mage runs `cache:clean`, never `cache:flush`: with Redis, flushing is a `FLUSHDB`, which also clears the cache of the other projects on a shared Redis, cache prefixes or not.
+- Sessions and a manual `cache:flush` stay shared on a local or Valet Redis. A Redis instance per project (as proposed in #54) and pinning the search config in `env.php` against imported databases are not part of v3.
 
 ## Not ported
 

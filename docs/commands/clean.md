@@ -27,6 +27,9 @@ On your machine and with Valet, projects share one Redis.
 So `redis` only deletes the keys with the cache prefixes of this project, read from `app/etc/env.php`.
 With Warden and DDEV the Redis belongs to the project, so it is flushed as a whole.
 
+On a shared Redis, prefer `bin/magento cache:clean` over `cache:flush`.
+Flushing empties the whole Redis database, so it also clears the cache of the other projects.
+
 ## OpenSearch
 
 The host, port and index prefix come from the Magento config.

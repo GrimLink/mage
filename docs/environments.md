@@ -26,6 +26,8 @@ The connection settings come from the [configuration](config.md), by default `ro
 - **Open mail:** opens `MAGE_MAIL_URL`, Mailpit on `http://localhost:8025` by default.
 - **Watch:** without cache-clean in the project, uses `cache-clean.js` from your `PATH`.
 - **Redis:** projects share one Redis, so every project gets its own cache prefix and only its own keys are cleaned.
+  Use `cache:clean` rather than `cache:flush`: flushing empties the whole Redis database, so it also clears the cache of every other project.
+  Mage itself only cleans, and [`mage watch`](commands/watch.md) cleans just the affected cache types.
 
 ## Valet
 

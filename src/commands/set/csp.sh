@@ -7,5 +7,5 @@ function mage_set_csp() {
     $MAGENTO_CLI config:set --lock-env csp/policies/storefront/scripts/inline 0 &&
     $MAGENTO_CLI config:set --lock-env csp/policies/storefront/scripts/eval 0 || exit 1
 
-  $MAGENTO_CLI cache:flush config
+  $MAGENTO_CLI cache:clean config
 }

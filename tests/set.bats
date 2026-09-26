@@ -18,7 +18,7 @@ function setup() {
   [[ "$output" == *"magento config:set --lock-env csp/mode/storefront/report_only 0"* ]]
   [[ "$output" == *"magento config:set --lock-env csp/policies/storefront/scripts/inline 0"* ]]
   [[ "$output" == *"magento config:set --lock-env csp/policies/storefront/scripts/eval 0"* ]]
-  [[ "$output" == *"magento cache:flush config"* ]]
+  [[ "$output" == *"magento cache:clean config"* ]]
 }
 
 @test "sets the full page cache" {

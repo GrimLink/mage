@@ -51,7 +51,7 @@ function mage_add_store() {
   env_call add_store "$domain" "$code"
 
   $MAGENTO_CLI indexer:reindex design_config_grid
-  $MAGENTO_CLI cache:flush
+  $MAGENTO_CLI cache:clean
 
   mage_check 0 "Store view ${code} uses ${store_url}"
 }

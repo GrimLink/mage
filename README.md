@@ -37,7 +37,7 @@ Update it later with `mage self-update`, which also updates the [templates](docs
 ## Commands
 
 Run `mage help` for the full list.
-Anything mage does not know runs `bin/magento`, so `mage cache:flush` works as expected.
+Anything mage does not know runs `bin/magento`, so `mage cache:clean` works as expected.
 
 | Command                                                        | Does                                                               |
 | -------------------------------------------------------------- | ------------------------------------------------------------------ |
@@ -61,7 +61,7 @@ Anything mage does not know runs `bin/magento`, so `mage cache:flush` works as e
 | [`outdated`](docs/commands/outdated.md)                        | List the direct dependencies with a newer version                  |
 | [`watch`](docs/commands/watch.md)                              | Clean only the caches a file change affects                        |
 | [`log`](docs/commands/log.md)                                  | Follow a log in `var/log`                                          |
-| [`reindex`](docs/commands/reindex.md)                          | Reindex, then flush the cache                                      |
+| [`reindex`](docs/commands/reindex.md)                          | Reindex, then clean the cache                                      |
 | [`clean`](docs/commands/clean.md)                              | Clean caches and generated files (alias: `purge`)                  |
 | [`info`](docs/commands/info.md)                                | Show the version, mode, urls and more of the project              |
 | [`open`](docs/commands/open.md)                                | Open a store view, the admin or the mail catcher in your browser  |
@@ -73,7 +73,7 @@ Anything mage does not know runs `bin/magento`, so `mage cache:flush` works as e
 ### Working from a nested folder
 
 Mage looks for the Magento root (the folder with `bin/magento` and `app/etc/di.xml`) from the current folder upwards, and runs from there.
-So `mage cache:flush` works from `app/code/Vendor/Module` too.
+So `mage cache:clean` works from `app/code/Vendor/Module` too.
 Outside a project only `create`, `setup`, `help`, `version` and `self-update` work.
 
 ## Configuration

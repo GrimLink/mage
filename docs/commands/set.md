@@ -18,7 +18,7 @@ Without an option it stops with an error and the same list.
 ## csp
 
 Turns off the report only mode of the storefront CSP, and disallows inline and eval scripts, as needed by for example a Hyvä CSP theme.
-The values are written to `app/etc/env.php` with `config:set --lock-env`, so they are locked in the admin, and the config cache is flushed.
+The values are written to `app/etc/env.php` with `config:set --lock-env`, so they are locked in the admin, and the config cache is cleaned.
 
 ## fpc
 

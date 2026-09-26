@@ -163,7 +163,7 @@ function mage_require_jq() {
 # otherwise point to the admin. Returns 1 when the theme was not set.
 function mage_set_theme() {
   if [[ -d vendor/yireo/magento2-theme-commands ]]; then
-    $MAGENTO_CLI theme:change "$1" && $MAGENTO_CLI cache:flush
+    $MAGENTO_CLI theme:change "$1" && $MAGENTO_CLI cache:clean
     return
   fi
 

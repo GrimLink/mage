@@ -16,7 +16,7 @@ Without an argument it asks for the prefix or domain.
 2. Creates the store view in the default store group of the default website, unless the code exists.
 3. Sets its base urls, with the protocol of the main store.
 4. Makes the domain reachable, depending on the [environment](../environments.md).
-5. Reindexes the design config grid and flushes the cache.
+5. Reindexes the design config grid and cleans the cache.
 
 ## Environments
 

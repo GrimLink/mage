@@ -31,7 +31,7 @@ function setup() {
 
   run mage_set_theme Hyva/default
   [ "$status" -eq 0 ]
-  [ "$output" = "$(printf 'magento theme:change Hyva/default\nmagento cache:flush')" ]
+  [ "$output" = "$(printf 'magento theme:change Hyva/default\nmagento cache:clean')" ]
 }
 
 @test "points to the admin without the yireo theme commands" {
