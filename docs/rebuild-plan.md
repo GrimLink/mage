@@ -148,7 +148,7 @@ Without arguments it errors with its own help page, listing the composer and git
 ### `outdated [ARGS]`
 
 * Runs `composer outdated --direct --no-dev`, ignoring the packages in `MAGE_OUTDATED_IGNORE` (default the symfony packages Magento pins). Further arguments go to composer.
-* Prints to the terminal instead of writing `composer-outdated.json`, `--format=json > file` gives the old result.
+* Writes the result as json to `composer-outdated.json` (ignored by the gitignore template), or with `--terminal` shows it instead.
 
 ### `add theme [Vendor/Name] [--parent=THEME] [--admin]`
 
