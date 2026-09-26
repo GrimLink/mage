@@ -1,29 +1,76 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-script_dir="$(cd "$( dirname "${BASH_SOURCE[0]}")" > /dev/null 2>&1 && pwd)"
+# Build the single mage script from src/mage.sh, by inlining every source line.
+# Usage: src/build.sh [OUTPUT], the output defaults to ./mage in the repo root
 
-# Initialize sorted_files with _global
-sorted_files=("_global.sh")
+set -o pipefail
 
-# Find remaining files and add to sorted_files
-files=("${script_dir}"/_*.sh)
-for file in "${files[@]}"; do
-  [[ "${file}" == "${script_dir}"/_mage.sh ]] || [[ "${file}" == "${script_dir}"/_global.sh ]] || sorted_files+=("${file#${script_dir}/}")
-done
+src_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" > /dev/null 2>&1 && pwd)"
+root_dir="$(dirname "$src_dir")"
+output="${1:-${root_dir}/mage}"
 
-# Add _mage to the end
-sorted_files+=("_mage.sh")
+source_pattern='^source "\$\{MAGE_SRC\}/(.+)"$'
+version_pattern='^## \[([0-9]+\.[0-9]+\.[0-9]+)\]'
 
-function merge_files() {
-  echo -e "#!/usr/bin/env bash\n"
-  echo "# Mage is a collection of easy commands and aliases for bin/magento"
-  echo -e "# For those who hate typing long shell commands\n"
+# Echo the first released version in the changelog
+function changelog_version() {
+  local line
 
-  for file in "$@"; do
-    cat "${script_dir}/${file}"
-    echo
-  done
+  while IFS= read -r line; do
+    if [[ "$line" =~ $version_pattern ]]; then
+      echo "${BASH_REMATCH[1]}"
+      return 0
+    fi
+  done < "${root_dir}/CHANGELOG.md"
+
+  return 1
 }
 
-merge_files "${sorted_files[@]}" > "${script_dir}/../mage"
-chmod +x "${script_dir}/../mage"
+# Echo a source file, with its own source lines replaced by their contents
+function inline_file() {
+  local file="$1"
+  local line
+  local include
+
+  if [[ ! -f "$file" ]]; then
+    echo "Source file not found: ${file}" >&2
+    return 1
+  fi
+
+  while IFS= read -r line || [[ -n "$line" ]]; do
+    if [[ "$line" =~ $source_pattern ]]; then
+      include="${BASH_REMATCH[1]}"
+      echo "# --- ${include}"
+      inline_file "${src_dir}/${include}" || return 1
+    elif [[ "$line" == 'MAGE_SRC='* ]]; then
+      continue
+    elif [[ "$line" == 'MAGE_VERSION="dev"' ]]; then
+      echo "MAGE_VERSION=\"${version}\""
+    else
+      printf '%s\n' "$line"
+    fi
+  done < "$file"
+}
+
+if ! version="$(changelog_version)"; then
+  echo "No released version found in CHANGELOG.md" >&2
+  exit 1
+fi
+
+temp="$(mktemp)"
+trap 'rm -f "$temp"' EXIT
+
+inline_file "${src_dir}/mage.sh" > "$temp" || exit 1
+
+if ! bash -n "$temp"; then
+  echo "The build has syntax errors, ${output} is left untouched" >&2
+  exit 1
+fi
+
+if command -v shellcheck &> /dev/null; then
+  shellcheck -s bash "$temp" || echo "shellcheck reported issues, see above" >&2
+fi
+
+mv "$temp" "$output"
+chmod 755 "$output"
+echo "Built mage ${version} to ${output}"
