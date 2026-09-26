@@ -3,8 +3,8 @@ MAGE_ADD_HANDLERS=()
 
 MAGE_PACKAGE_SOURCE="package-source"
 
-# Add to the project: a handler by name, a git repository by its ssh url,
-# or anything else passed as is to composer require
+# Add to the project: a handler by name, a composer fragment from a json file,
+# a git repository by its ssh url, or anything else passed as is to composer require
 function mage_cmd_add() {
   case "$1" in
     "")
@@ -20,6 +20,8 @@ function mage_cmd_add() {
 
   if mage_handler_exists "$1" "${MAGE_ADD_HANDLERS[@]}"; then
     mage_handler_run add "$@"
+  elif [[ "$1" == *.json ]]; then
+    mage_add_json "$1"
   elif [[ "$1" == *.git ]]; then
     mage_add_git "$@"
   else
@@ -30,6 +32,7 @@ function mage_cmd_add() {
 function mage_add_help() {
   mage_help_header "Add"
   mage_help_cmd "add [PKG] [ARGS]"            "Run composer require, all arguments are passed as is"
+  mage_help_cmd "add [FILE].json"             "Apply a composer fragment: repositories, config, auth and packages"
   mage_help_cmd "add [GIT_URL] [ARGS]"        "Clone a git repository (ssh url ending in .git) into ${MAGE_PACKAGE_SOURCE} and require it"
   mage_handler_help add "${MAGE_ADD_HANDLERS[@]}"
 }

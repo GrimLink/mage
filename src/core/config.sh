@@ -60,6 +60,9 @@ MAGE_STORE_CONFIG=(
   "catalog/seo/product_canonical_tag 1"
 )
 
+# Defaults for the {{NAME}} placeholders in json files for 'mage add' go in the
+# config as MAGE_VAR_<NAME>, such as MAGE_VAR_HYVA_PROJECT="my-project"
+
 if [[ -f "$MAGE_CONFIG_FILE" ]]; then
   # shellcheck source=/dev/null
   source "$MAGE_CONFIG_FILE"

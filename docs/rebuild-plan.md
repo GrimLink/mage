@@ -36,6 +36,7 @@ src/
     setup.sh
     nuke.sh
     add.sh         dispatcher for mage add, git clones
+    add-json.sh    composer fragments from json files
     add/           one file per add handler
     clean.sh       dispatcher for mage clean
     clean/         one file per clean handler
@@ -110,10 +111,23 @@ tests/             bats suite
 Resolved in this order, never mixed:
 
 1. **Handler:** a name registered in `MAGE_ADD_HANDLERS` as `name|description`, implemented as `mage_add_<name>` (dashes become underscores) in its own file in `commands/add/`. The registry logic is shared with `clean`, see `core/handlers.sh`. It gets the remaining arguments. The old `new …` commands (theme, module, store, patch …) return as handlers.
-2. **Git url:** anything ending in `.git` (ssh urls). It is cloned into `package-source/<vendor>/<name>`, using the name from its `composer.json`, and required as `<name>:dev-<branch> as <latest tag>` (a leading `v` stripped), or `<name>:@dev` without a tag. An existing clone with the same origin is reused. The `local-packages` path repository is registered when missing. Further arguments go to composer.
-3. **Anything else:** passed as is to `composer require`, so composer handles the errors.
+2. **Json file:** anything ending in `.json`, see the composer fragments below.
+3. **Git url:** anything ending in `.git` (ssh urls). It is cloned into `package-source/<vendor>/<name>`, using the name from its `composer.json`, and required as `<name>:dev-<branch> as <latest tag>` (a leading `v` stripped), or `<name>:@dev` without a tag. An existing clone with the same origin is reused. The `local-packages` path repository is registered when missing. Further arguments go to composer.
+4. **Anything else:** passed as is to `composer require`, so composer handles the errors.
 
 Without arguments it errors with its own help page, listing the composer and git forms and every registered handler. `mage add help` shows the same page.
+
+### Composer fragments, `add <file>.json`
+
+* A json file with composer.json keys: `description`, `repositories`, `config`, `auth`, `require` and `require-dev`. The file name is free, such as `composer-hyva.json`. Unknown keys are skipped with a warning.
+* The path is resolved from the folder mage was called in. There is no lookup by name, a handler like `add hyva` does more than composer and uses a bundled json itself. Development setups get their own file, such as `hyva-dev.json`.
+* Applied in the order auth, repositories, config, then one `composer require` for `require` and one with `--dev` for `require-dev`.
+* `repositories` is an object keyed by name, each value is passed as json to `composer config repositories.<name>`.
+* `config` is flattened to dotted keys (`allow-plugins.vendor/name`), lists are not supported.
+* `auth` follows the composer `auth.json` format and goes to the global composer auth, never to the project, as the Magento gitignore does not ignore `auth.json`. `http-basic` takes a username and password, other types such as `gitlab-token` a single token.
+* `{{NAME}}` placeholders (uppercase, digits, underscores) are asked, with `MAGE_VAR_<NAME>` from the config as the default. Placeholders inside `auth` are secrets, their input is hidden. Answers are escaped for json.
+* Requires `jq`, with a clear error when it is missing.
+* Anything that is not composer, such as `setup:upgrade`, belongs to the future `import` command.
 
 ### `add theme [Vendor/Name] [--parent=THEME] [--admin]`
 
@@ -172,5 +186,5 @@ A minimal bats suite covering root detection, env selection (with a fake `.env` 
 * Aliases and the remaining old commands.
 * The `create` extras (BFCache, Hyvä, sample data).
 * `add` handlers, one per commit: patch and bfcache, sample, hyva, and the other old `new` commands.
-* Aliases for `add` from a JSON file with default entries, instead of hardcoded ones like `storeinfo`.
+* `import`: run groups of actions from a json file.
 * Global packages shared between projects (the old `add dev` and `upd dev`), in a more optimized form.
