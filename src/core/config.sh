@@ -15,6 +15,9 @@ MAGE_ADMIN_LASTNAME="admin"
 MAGE_ADMIN_EMAIL="${GIT_EMAIL}"
 MAGE_ADMIN_PASS="magento_123$"
 
+# Stores are served as https://<project>.<MAGE_DOMAIN>/
+MAGE_DOMAIN="test"
+
 # An empty MAGE_DB_NAME uses the project folder name
 MAGE_DB_HOST="localhost"
 MAGE_DB_NAME=""

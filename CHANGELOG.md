@@ -15,13 +15,14 @@ Version 3 is a rebuild of mage. The commands of version 2 return step by step, u
 - **`mage add` handlers:** `mage add` is now the central command for adding to a project, with handlers such as the upcoming theme and module generators. Without arguments it shows its own help page with every option.
 - **`mage nuke --keep-files`:** Removes the database and environment, but keeps the project files.
 - **Config file:** The defaults, such as the admin user, database credentials, store config and default composer packages, can be overridden in `~/.config/mage/config`.
+- **DDEV support:** Projects with a `.ddev/config.yaml` run their commands through DDEV. `mage create` can set up a new DDEV project, with the OpenSearch and Redis add-ons, and `mage nuke` removes it with `ddev delete`.
 - **Tests and CI:** A bats test suite, and a GitHub Action that runs it together with ShellCheck on every push and pull request to main.
 
 ### Changed
 - **Source layout:** The source is split into `core`, `env` and `commands`, with `src/mage.sh` as the entrypoint. It runs unbuilt during development, and the build inlines its source lines into the single `mage` script. The version now comes from this changelog.
 - **Environments:** Warden, Valet and local are separate environments with their own setup and nuke steps. Warden is only used when the `warden` command is installed, so mage inside the container runs as local.
-- **`mage create`:** Asks which environment to use, defaulting to the first one installed (Warden, Valet, then local).
-- **`mage setup`:** Asks for confirmation before reinstalling a project that is already installed, as it drops the database.
+- **`mage create`:** Asks which environment to use, defaulting to the first one installed (Warden, DDEV, Valet, then local).
+- **`mage setup`:** Asks for confirmation before reinstalling a project that is already installed, and now cleans the database as part of the install, so reinstalling also works in Warden and DDEV.
 - **`mage nuke`:** Asks to type the folder name to confirm. The database name and credentials are read from `app/etc/env.php`, and the local environment now also drops its database, not only Valet.
 - **`mage add [GIT_URL]`:** A cloned repository is now required as `dev-<branch> as <latest tag>`, so packages that depend on a version of it still resolve. Without tags it falls back to `@dev`. An existing clone is reused, and the `package-source` path repository is registered when a project does not have it yet.
 - **Output:** Errors go to stderr, and colors are left out when `NO_COLOR` is set or the output is not a terminal.

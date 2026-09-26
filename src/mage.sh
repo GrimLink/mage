@@ -19,6 +19,7 @@ source "${MAGE_SRC}/core/helpers.sh"
 source "${MAGE_SRC}/env/local.sh"
 source "${MAGE_SRC}/env/valet.sh"
 source "${MAGE_SRC}/env/warden.sh"
+source "${MAGE_SRC}/env/ddev.sh"
 
 source "${MAGE_SRC}/commands/meta.sh"
 source "${MAGE_SRC}/commands/create.sh"

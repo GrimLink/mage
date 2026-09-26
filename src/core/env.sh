@@ -1,7 +1,7 @@
 # Environments in order of priority, the first one detected wins.
 # Each env/<name>.sh defines env_<name>_available, env_<name>_detect
 # and env_<name>_apply, and may add any other hook, see env_call.
-MAGE_ENVS="warden valet local"
+MAGE_ENVS="warden ddev valet local"
 MAGE_ENV="local"
 
 # Echo the environment used by the current folder

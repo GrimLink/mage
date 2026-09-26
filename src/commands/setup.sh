@@ -30,7 +30,7 @@ function mage_cmd_setup() {
 function mage_setup() {
   local name="$1"
   local db_name="${MAGE_DB_NAME:-$name}"
-  local url="https://${name}.test/"
+  local url="https://${name}.${MAGE_DOMAIN}/"
   local admin_url="${name//-/}_admin"
 
   env_call setup_prepare "$name" "$db_name" || return 1
@@ -40,6 +40,7 @@ function mage_setup() {
     --backend-frontname="${admin_url}" \
     --base-url="${url}" \
     --use-rewrites=1 \
+    --cleanup-database \
     --db-host="${MAGE_DB_HOST}" \
     --db-name="${db_name}" \
     --db-user="${MAGE_DB_USER}" \
@@ -123,7 +124,7 @@ function mage_add_gitignore() {
 # Print where to find the new store, with the cd hint when the second argument is 'true'
 function mage_getting_started() {
   local name="$1"
-  local url="https://${name}.test/"
+  local url="https://${name}.${MAGE_DOMAIN}/"
 
   mage_info ""
   mage_info "${GREEN}${name} is ready!${RESET}"

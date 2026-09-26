@@ -26,6 +26,31 @@ function setup() {
   [ "$(mage_env_available)" = "warden valet local" ]
 }
 
+@test "uses ddev for a ddev project, over valet" {
+  use_stub_bins valet ddev
+  mkdir .ddev
+  touch .ddev/config.yaml
+
+  [ "$(mage_env_detect)" = "ddev" ]
+  [ "$(mage_env_available)" = "ddev valet local" ]
+}
+
+@test "uses local inside the ddev container" {
+  use_stub_bins
+  mkdir .ddev
+  touch .ddev/config.yaml
+
+  [ "$(mage_env_detect)" = "local" ]
+}
+
+@test "applies the ddev domain and services" {
+  mage_env_use ddev
+
+  [ "$MAGENTO_CLI" = "ddev magento" ]
+  [ "$MAGE_DOMAIN" = "ddev.site" ]
+  [ "$MAGE_DB_NAME" = "db" ]
+}
+
 @test "ignores warden without its .env" {
   use_stub_bins warden
 

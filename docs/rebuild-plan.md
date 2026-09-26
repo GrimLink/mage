@@ -27,6 +27,7 @@ src/
   env/
     local.sh       fallback for every hook
     warden.sh
+    ddev.sh
     valet.sh
   commands/
     create.sh
@@ -44,11 +45,12 @@ tests/             bats suite
 * Each `env/<name>.sh` defines `env_<name>_available` (the tool is installed), `env_<name>_detect` (the current folder uses it) and optionally `env_<name>_apply` (overrides the CLI vars such as `MAGENTO_CLI`, `COMPOSER_CLI`, `PURGE_CLI`, and the `MAGE_DB_*` settings).
 * Other hooks: `create_project`, `setup_prepare`, `setup_finish` and `nuke`. `env_call <hook>` runs the hook of the current env, falls back to the local one, and does nothing when neither defines it.
 * The CLI defaults live in `core/tools.sh`, `local.sh` holds the local hooks. The first env that matches wins, and its name ends up in `MAGE_ENV`.
-* Priority: warden, then valet, then local. Valet is an environment, not a separate tool flag.
+* Priority: warden, then ddev, then valet, then local. Valet is an environment, not a separate tool flag.
 * Commands call hooks through `env_call` instead of checking env flags themselves.
 * Warden is detected by `WARDEN_ENV_NAME` in `.env`, and only when the `warden` binary is installed. Inside the container it is not, so mage runs there as local (the old code wrongly checked `$PATH` for this).
 * Generic tools (php, composer, node, magerun, open) stay global vars that an env may override. Magerun is detected on first use, since the check is slow.
-* DDEV is the next env to add. Others only on request.
+* DDEV is detected by `.ddev/config.yaml`, and only when the `ddev` binary is installed. `mage create` sets it up with the OpenSearch and Redis add-ons and settings management off, following the DDEV Magento quickstart. Its stores use the `ddev.site` domain.
+* Other environments only on request.
 
 ## Magento root detection
 
@@ -76,7 +78,7 @@ tests/             bats suite
 ### `create <name> [--edition=] [--version=] [--env=] [-y]`
 
 * Prompts for any value not passed as a flag.
-* The env prompt defaults to what is installed (warden, then valet, then local).
+* The env prompt defaults to what is installed (warden, then ddev, then valet, then local).
 * Runs install, then `setup`, then adds the `.gitignore`.
 * Refuses when `<name>` already exists.
 * Fixes the old Warden flow, which changed into the project folder before it existed.
@@ -132,7 +134,6 @@ A minimal bats suite covering root detection, env selection (with a fake `.env` 
 ## Later
 
 * Aliases and the remaining old commands.
-* DDEV environment.
 * The `create` extras (BFCache, Hyvä, sample data).
 * `add` handlers, one per commit: patch and bfcache, sample, hyva, and the old `new` commands.
 * Aliases for `add` from a JSON file with default entries, instead of hardcoded ones like `storeinfo`.

@@ -47,7 +47,7 @@ function env_warden_create_project() {
 
 function env_warden_setup_prepare() {
   mage_info "Signing certificate with Warden..."
-  warden sign-certificate "${1}.test"
+  warden sign-certificate "${1}.${MAGE_DOMAIN}"
 }
 
 # The volumes hold the database and search indices, so removing them is enough
