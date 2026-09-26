@@ -7,8 +7,9 @@ MAGE_UPDATE_URL="https://raw.githubusercontent.com/GrimLink/mage/main/mage"
 # The templates folder of this archive is synced to the config folder
 MAGE_TEMPLATES_ARCHIVE="https://github.com/GrimLink/mage/tarball/main"
 
-GIT_NAME="$(git config --global --get user.name 2> /dev/null | head -n1 | cut -d " " -f1)"
-GIT_EMAIL="$(git config --global --get user.email 2> /dev/null)"
+# Without a git user these stay empty, such as on a CI runner
+GIT_NAME="$(git config --global --get user.name 2> /dev/null | head -n1 | cut -d " " -f1 || true)"
+GIT_EMAIL="$(git config --global --get user.email 2> /dev/null || true)"
 
 MAGE_ADMIN_USER="$(echo "$GIT_NAME" | tr '[:upper:]' '[:lower:]')"
 MAGE_ADMIN_FIRSTNAME="${GIT_NAME}"
