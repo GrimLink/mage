@@ -118,8 +118,8 @@ Without arguments it errors with its own help page, listing the composer and git
 
 * Uses the same handler registry as `add`: `MAGE_CLEAN_HANDLERS`, `mage_clean_<name>`, one file per handler in `commands/clean/`.
 * Handlers: `files` (generated code, static files and file caches, in one remove call), `redis`, `varnish`, `opensearch` and `sample-files`.
-* `clean all` runs the handlers in `MAGE_CLEAN_ALL` (default `files redis varnish`, the old purge). `purge` is an alias for `clean all`.
-* Without an option it errors with its own help page, like `add`.
+* `clean` without an option, or `clean all`, runs the handlers in `MAGE_CLEAN_ALL` (default `files redis varnish`, the old purge). `purge` is an alias for `clean`, so `purge redis` works too.
+* `clean help` shows its own help page. Unlike `add`, no option is not an error, as cleaning everything is a sensible default.
 * `redis` goes through the `clean_redis` env hook. Local and Valet share one Redis, so only the keys with the project cache prefixes are deleted. Warden and DDEV run Redis per project, so they flush it.
 * `opensearch` runs curl through `SEARCH_CURL_CLI`, which Warden and DDEV run inside the OpenSearch container.
 

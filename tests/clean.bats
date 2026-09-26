@@ -5,9 +5,17 @@ function setup() {
   cd "$BATS_TEST_TMPDIR"
 }
 
-@test "errors without arguments" {
+@test "cleans all without arguments" {
+  MAGE_CLEAN_ALL="varnish"
+  function mage_clean_varnish() { echo "varnish"; }
+
   run mage_cmd_clean
-  [ "$status" -eq 1 ]
+  [ "$output" = "varnish" ]
+}
+
+@test "lists the handlers in the help" {
+  run mage_cmd_clean help
+  [ "$status" -eq 0 ]
   [[ "$output" == *"clean redis"* ]]
 }
 

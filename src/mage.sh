@@ -67,11 +67,8 @@ function mage_main() {
     "add")
       mage_cmd_add "${@:2}"
       ;;
-    "clean")
+    "clean" | "purge")
       mage_cmd_clean "${@:2}"
-      ;;
-    "purge")
-      mage_cmd_clean all
       ;;
     *)
       $MAGENTO_CLI "$@"

@@ -13,7 +13,7 @@ Version 3 is a rebuild of mage. The commands of version 2 return step by step, u
 - **Magento root detection:** Mage now works from any folder inside a Magento project, it moves to the root on its own.
 - **`mage create` options:** `--edition`, `--version` and `--env` skip their questions, and `-y` uses the defaults for anything not given.
 - **`mage add` handlers:** `mage add` is now the central command for adding to a project, with handlers such as the upcoming theme and module generators. Without arguments it shows its own help page with every option.
-- **`mage clean [OPTION]` command:** Replaces `mage cleanup`, with the options `files`, `redis`, `varnish`, `opensearch`, `sample-files` and `all`. Like `mage add` it is built from handlers, so new options are easy to add. `mage purge` stays as an alias for `mage clean all`, and which options that runs can be set with `MAGE_CLEAN_ALL`.
+- **`mage clean [OPTION]` command:** Replaces `mage cleanup`, with the options `files`, `redis`, `varnish`, `opensearch`, `sample-files` and `all`. Like `mage add` it is built from handlers, so new options are easy to add. Without an option it cleans all, which options that runs can be set with `MAGE_CLEAN_ALL`. `mage purge` stays as an alias for `mage clean`.
 - **`mage nuke --keep-files`:** Removes the database and environment, but keeps the project files.
 - **Config file:** The defaults, such as the admin user, database credentials, store config and default composer packages, can be overridden in `~/.config/mage/config`.
 - **DDEV support:** Projects with a `.ddev/config.yaml` run their commands through DDEV. `mage create` can set up a new DDEV project, with the OpenSearch and Redis add-ons, and `mage nuke` removes it with `ddev delete`.

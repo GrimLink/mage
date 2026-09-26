@@ -31,8 +31,7 @@ function mage_cmd_help() {
   mage_help_cmd "add [PKG|GIT_URL|HANDLER]"   "Add to the project, see 'mage add help' for all options"
 
   mage_help_header "Development"
-  mage_help_cmd "clean [OPTION]"              "Clean caches or files, see 'mage clean help' for all options"
-  mage_help_cmd "purge"                       "Alias for 'clean all'"
+  mage_help_cmd "clean/purge [OPTION]"        "Clean caches and files, see 'mage clean help' for all options"
 
   mage_info ""
   mage_info "${ITALIC}Anything else will run ${GREEN}bin/magento${RESET}"

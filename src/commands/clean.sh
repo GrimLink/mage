@@ -1,14 +1,9 @@
 # Handlers register as 'name|description', see core/handlers.sh
 MAGE_CLEAN_HANDLERS=()
 
-# Clean a part of the project, or with 'all' the handlers in MAGE_CLEAN_ALL
+# Clean a part of the project, or by default all handlers in MAGE_CLEAN_ALL
 function mage_cmd_clean() {
-  case "$1" in
-    "")
-      mage_error "Nothing to clean, use one of the options below"
-      mage_clean_help
-      exit 1
-      ;;
+  case "${1:-all}" in
     "help" | "-h" | "--help")
       mage_clean_help
       return
@@ -38,6 +33,6 @@ function mage_clean_all() {
 
 function mage_clean_help() {
   mage_help_header "Clean"
-  mage_help_cmd "clean all"                   "Clean ${MAGE_CLEAN_ALL// /, } (alias: purge)"
+  mage_help_cmd "clean [all]"                 "Clean ${MAGE_CLEAN_ALL// /, } (alias: purge)"
   mage_handler_help clean "${MAGE_CLEAN_HANDLERS[@]}"
 }
