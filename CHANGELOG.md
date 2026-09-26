@@ -14,45 +14,90 @@ Anything mage does not know still runs `bin/magento`.
 ### Added
 - **Magento root detection:** Mage now works from any folder inside a Magento project, it moves to the root on its own.
 - **`mage create` options:** `--edition`, `--version` and `--env` skip their questions, and `-y` uses the defaults for anything not given.
-- **`mage add` handlers:** `mage add` is now the central command for adding to a project, with handlers for themes, modules, patches, sample data, stores and more. Without arguments it shows its own help page with every option.
-- **`mage clean [OPTION]` command:** Replaces `mage cleanup`, with the options `files`, `redis`, `varnish`, `opensearch`, `sample-files`, `logs` and `all`. Like `mage add` it is built from handlers, so new options are easy to add. Without an option it cleans all, which options that runs can be set with `MAGE_CLEAN_ALL`. `mage purge` stays as an alias for `mage clean`.
-- **`mage add [FILE].json`:** Applies a composer fragment, a json file with the `repositories`, `config`, `auth`, `require` and `require-dev` keys of a composer.json. `{{NAME}}` placeholders are asked, with defaults from `MAGE_VAR_<NAME>` in the config, and credentials go to the global composer auth, so they never end up in the project. Requires jq. `templates/composer-hyva.json` is an example that adds Hyvä with a license.
-- **`mage add theme` command:** Replaces `mage new theme`. The vendor, name and parent can be given as options, the parent defaults to Hyvä when it is installed, and a theme created in `package-source` is required right away. Besides `theme.xml` and `registration.php`, a theme now also gets a `composer.json`, `README.md`, `CHANGELOG.md`, `SECURITY.md`, `.editorconfig` and `.gitignore`.
-- **`mage add module` command:** Replaces `mage new module`. The vendor, name and Hyvä choice can be given as options, and a module created in `package-source` is required right away. A module now also gets a `composer.json`, `README.md`, `CHANGELOG.md`, `SECURITY.md`, `.editorconfig` and `.gitignore`, and a Hyvä module the observer, `events.xml` and tailwind sources that register it with the Hyvä config, following the [hyva-module-template](https://github.com/GrimLink/hyva-module-template).
-- **`mage show [OPTION]` command:** Shows information about the project, built from handlers like `mage add` and `mage clean`. The options are `stores`, `themes`, which lists the themes of your direct dependencies and `app/design` with their parent, `modules`, which now only lists the modules of your direct dependencies and `app/code`, with where each comes from and whether it is disabled, `fpc`, the full page cache in use, and `logs`.
+- **`mage add` handlers:** `mage add` is now the central command for adding to a project, with handlers for themes, modules, patches, sample data, stores and more.
+  Without arguments it shows its own help page with every option.
+- **`mage clean [OPTION]` command:** Replaces `mage cleanup`, with the options `files`, `redis`, `varnish`, `opensearch`, `sample-files`, `logs` and `all`.
+  Like `mage add` it is built from handlers, so new options are easy to add.
+  Without an option it cleans all, which options that runs can be set with `MAGE_CLEAN_ALL`.
+  `mage purge` stays as an alias for `mage clean`.
+- **`mage add [FILE].json`:** Applies a composer fragment, a json file with the `repositories`, `config`, `auth`, `require` and `require-dev` keys of a composer.json.
+  `{{NAME}}` placeholders are asked, with defaults from `MAGE_VAR_<NAME>` in the config, and credentials go to the global composer auth, so they never end up in the project.
+  Requires jq.
+  `templates/composer-hyva.json` is an example that adds Hyvä with a license.
+- **`mage add theme` command:** Replaces `mage new theme`.
+  The vendor, name and parent can be given as options, the parent defaults to Hyvä when it is installed, and a theme created in `package-source` is required right away.
+  Besides `theme.xml` and `registration.php`, a theme now also gets a `composer.json`, `README.md`, `CHANGELOG.md`, `SECURITY.md`, `.editorconfig` and `.gitignore`.
+- **`mage add module` command:** Replaces `mage new module`.
+  The vendor, name and Hyvä choice can be given as options, and a module created in `package-source` is required right away.
+  A module now also gets a `composer.json`, `README.md`, `CHANGELOG.md`, `SECURITY.md`, `.editorconfig` and `.gitignore`, and a Hyvä module the observer, `events.xml` and tailwind sources that register it with the Hyvä config, following the [hyva-module-template](https://github.com/GrimLink/hyva-module-template).
+- **`mage show [OPTION]` command:** Shows information about the project, built from handlers like `mage add` and `mage clean`.
+  The options are `stores`, `themes`, which lists the themes of your direct dependencies and `app/design` with their parent, `modules`, which now only lists the modules of your direct dependencies and `app/code`, with where each comes from and whether it is disabled, `fpc`, the full page cache in use, and `logs`.
 - **`mage open mail`:** Opens the mail catcher of the environment: the Warden Mailpit, the DDEV one, or `MAGE_MAIL_URL` on your machine.
-- **Templates:** Generated files, such as those of a new theme or module, and the bundled composer fragments come from the `templates` folder of mage. They are synced to `~/.config/mage/templates` on first use, and updated by `mage self-update`.
+- **Templates:** Generated files, such as those of a new theme or module, and the bundled composer fragments come from the `templates` folder of mage.
+  They are synced to `~/.config/mage/templates` on first use, and updated by `mage self-update`.
 - **`.gitignore` for Magento:** `mage setup` adds a Magento aware `.gitignore` when the project has none.
 - **`mage nuke --keep-files`:** Removes the database and environment, but keeps the project files.
 - **Config file:** The defaults, such as the admin user, database credentials, store config and default composer packages, can be overridden in `~/.config/mage/config`.
-- **DDEV support:** Projects with a `.ddev/config.yaml` run their commands through DDEV. `mage create` can set up a new DDEV project, with the OpenSearch and Redis add-ons, and `mage nuke` removes it with `ddev delete`.
+- **DDEV support:** Projects with a `.ddev/config.yaml` run their commands through DDEV.
+  `mage create` can set up a new DDEV project, with the OpenSearch and Redis add-ons, and `mage nuke` removes it with `ddev delete`.
 - **Tests and CI:** A bats test suite, and a GitHub Action that runs it together with ShellCheck on every push and pull request to main.
 
 ### Changed
-- **Source layout:** The source is split into `core`, `env` and `commands`, with `src/mage.sh` as the entrypoint. It runs unbuilt during development, and the build inlines its source lines into the single `mage` script. The version now comes from this changelog.
-- **Environments:** Warden, Valet and local are separate environments with their own setup and nuke steps. Warden is only used when the `warden` command is installed, so mage inside the container runs as local.
-- **`mage create`:** Adds the [Siteation Debug Bar](https://github.com/Siteation/magento2-debugbar) as a dev package, enabled by `mage setup`. No longer requires `mage-os/theme-adminhtml-m137`, Mage-OS installs its admin theme itself, matching its version. Mage-OS is now the default edition, set `MAGE_EDITION="community"` in the config to change it. Asks which environment to use, defaulting to the first one installed (Warden, DDEV, Valet, then local).
+- **Source layout:** The source is split into `core`, `env` and `commands`, with `src/mage.sh` as the entrypoint.
+  It runs unbuilt during development, and the build inlines its source lines into the single `mage` script.
+  The version now comes from this changelog.
+- **Environments:** Warden, Valet and local are separate environments with their own setup and nuke steps.
+  Warden is only used when the `warden` command is installed, so mage inside the container runs as local.
+- **`mage create`:** Adds the [Siteation Debug Bar](https://github.com/Siteation/magento2-debugbar) as a dev package, enabled by `mage setup`.
+  No longer requires `mage-os/theme-adminhtml-m137`, Mage-OS installs its admin theme itself, matching its version.
+  Mage-OS is now the default edition, set `MAGE_EDITION="community"` in the config to change it.
+  Asks which environment to use, defaulting to the first one installed (Warden, DDEV, Valet, then local).
 - **`mage setup`:** Asks for confirmation before reinstalling a project that is already installed, and now cleans the database as part of the install, so reinstalling also works in Warden and DDEV.
-- **`mage nuke`:** Asks to type the folder name to confirm. The database name and credentials are read from `app/etc/env.php`, and the local environment now also drops its database, not only Valet.
-- **`mage add [GIT_URL]`:** A cloned repository is now required as `dev-<branch> as <latest tag>`, so packages that depend on a version of it still resolve. Without tags it falls back to `@dev`. An existing clone is reused, and the `package-source` path repository is registered when a project does not have it yet.
-- **Redis per project:** `mage setup` gives the cache and page cache a readable prefix (`<db_name>_`), like the OpenSearch indices already had. `mage nuke` and `mage clean redis` now only delete the Redis keys of that project, instead of flushing all of Redis, so other projects on the same Redis keep their cache. For the same reason `reindex`, `set csp`, `add store` and the theme switch now run `cache:clean` instead of `cache:flush`, which empties the whole Redis database.
-- **`mage del [TERM]`:** Removing by term now lists the matching packages and asks before removing them, `-y` skips the question. Terms match as plain text instead of a regex, `require-dev` packages are removed with `--dev`, and platform entries like `php` never match. It reads the composer.json with jq instead of asking composer.
-- **`mage upd [TERM]`:** Updating by term matches the same way as `mage del`, and passes options like `-W` on to composer. `mage upd` without arguments now runs `composer update`.
-- **`mage add patch`:** Now also replaces `mage new patch`, the input decides: a package alone creates a patch from your changes, a repository url adds its patches, and a package with a name and source adds that patch. A created patch now includes new files, and a second one for the same package no longer overwrites the first. `patches.json` is edited with jq instead of php, and a missing `cweagans/composer-patches` stops with a hint.
-- **`mage add hyva [--dev]`:** The packages and repositories now come from the bundled `composer-hyva.json` and `composer-hyva-dev.json`, so they can change without a new mage release. `--dev` replaces the question for a production setup. The license key goes to the global composer auth instead of the `auth.json` of the project. It no longer asks for Checkout and Commerce, and no longer builds the theme styles.
+- **`mage nuke`:** Asks to type the folder name to confirm.
+  The database name and credentials are read from `app/etc/env.php`, and the local environment now also drops its database, not only Valet.
+- **`mage add [GIT_URL]`:** A cloned repository is now required as `dev-<branch> as <latest tag>`, so packages that depend on a version of it still resolve.
+  Without tags it falls back to `@dev`.
+  An existing clone is reused, and the `package-source` path repository is registered when a project does not have it yet.
+- **Redis per project:** `mage setup` gives the cache and page cache a readable prefix (`<db_name>_`), like the OpenSearch indices already had.
+  `mage nuke` and `mage clean redis` now only delete the Redis keys of that project, instead of flushing all of Redis, so other projects on the same Redis keep their cache.
+  For the same reason `reindex`, `set csp`, `add store` and the theme switch now run `cache:clean` instead of `cache:flush`, which empties the whole Redis database.
+- **`mage del [TERM]`:** Removing by term now lists the matching packages and asks before removing them, `-y` skips the question.
+  Terms match as plain text instead of a regex, `require-dev` packages are removed with `--dev`, and platform entries like `php` never match.
+  It reads the composer.json with jq instead of asking composer.
+- **`mage upd [TERM]`:** Updating by term matches the same way as `mage del`, and passes options like `-W` on to composer.
+  `mage upd` without arguments now runs `composer update`.
+- **`mage add patch`:** Now also replaces `mage new patch`, the input decides: a package alone creates a patch from your changes, a repository url adds its patches, and a package with a name and source adds that patch.
+  A created patch now includes new files, and a second one for the same package no longer overwrites the first.
+  `patches.json` is edited with jq instead of php, and a missing `cweagans/composer-patches` stops with a hint.
+- **`mage add hyva [--dev]`:** The packages and repositories now come from the bundled `composer-hyva.json` and `composer-hyva-dev.json`, so they can change without a new mage release.
+  `--dev` replaces the question for a production setup.
+  The license key goes to the global composer auth instead of the `auth.json` of the project.
+  It no longer asks for Checkout and Commerce, and no longer builds the theme styles.
 - **`mage add storeinfo`:** Now reads its packages from the bundled `composer-storeinfo.json`, so the list can change without a new mage release, and runs `setup:upgrade` afterwards.
 - **`mage outdated`:** The new `--terminal` option shows the result instead of writing `composer-outdated.json`, further arguments go to composer, and the ignored packages can be set with `MAGE_OUTDATED_IGNORE`.
-- **`mage add admin`:** The defaults come from the `MAGE_ADMIN_*` settings, and `-y` creates the admin without asking. `mage add customer` passes its arguments to magerun.
+- **`mage add admin`:** The defaults come from the `MAGE_ADMIN_*` settings, and `-y` creates the admin without asking.
+  `mage add customer` passes its arguments to magerun.
 - **`mage add i18n`:** The path is resolved from the folder you run mage in, and it now also works on Linux, it used the macOS only `sed -i ''`.
-- **`mage add store`:** Also accepts a prefix with dashes, as `my-store` with the code `my_store`, and refuses an invalid store code. DDEV and a local setup get a hint on how to reach the new domain.
-- **`mage open`:** Gets the url from Magento in one call instead of magerun or several config lookups, so a base url on a website and a custom admin url now work too. A store view is matched by its exact code instead of any part of the text, an unknown one lists the codes there are, and the url is printed when there is no open command.
-- **`mage watch`:** The cache-clean of the project now runs in the environment, so in the container with Warden and DDEV. Without any cache-clean it stops with an error and how to add it.
+- **`mage add store`:** Also accepts a prefix with dashes, as `my-store` with the code `my_store`, and refuses an invalid store code.
+  DDEV and a local setup get a hint on how to reach the new domain.
+- **`mage open`:** Gets the url from Magento in one call instead of magerun or several config lookups, so a base url on a website and a custom admin url now work too.
+  A store view is matched by its exact code instead of any part of the text, an unknown one lists the codes there are, and the url is printed when there is no open command.
+- **`mage watch`:** The cache-clean of the project now runs in the environment, so in the container with Warden and DDEV.
+  Without any cache-clean it stops with an error and how to add it.
 - **`mage set csp`:** No longer needs magerun, it writes the values to `app/etc/env.php` with Magento's own `config:set --lock-env`, and cleans the config cache.
-- **`mage set fpc`:** Refuses an unknown cache instead of using the builtin one, and shows errors instead of hiding them. The builtin cache is used when none is given, and can be named `builtin` or `default`.
-- **`mage log`:** Also accepts the log name with `.log`. `mage log show` is now `mage show logs`, which also shows the size of each log, and `mage log clear` is now `mage clean logs`.
-- **`mage enable` and `mage disable` by term:** Read the modules from `app/etc/config.php` instead of `module:status`, so only one Magento boot is left, and only match modules that can change. The matches are listed and confirmed first, `-y` skips it, terms match as plain text, and options such as `--clear-static-content` go to Magento.
-- **`mage info`:** Reads everything from Magento in one boot instead of about eight, so it is much faster. It now also shows the Redis the caches and sessions use, with their databases and cache prefix. The PHP version is now the one that runs Magento, also inside a container, the admin url counts a custom admin url, and the module count only counts enabled modules.
-- **`mage add sample [magento|hyva]`:** Asks which sample data to add: the Luma sample data of Magento, or the new Koti sample data of Hyvä, which also works without a Hyvä license, such as for Hyvä from the GitLab or from `package-source`. The Magento set now uses `sampledata:deploy`, so it fits the installed version of every edition, Mage-OS included, and works in Warden and DDEV. The old clones in `~/.magento-sampledata` can be deleted. The version argument is gone, the installed version is used.
+- **`mage set fpc`:** Refuses an unknown cache instead of using the builtin one, and shows errors instead of hiding them.
+  The builtin cache is used when none is given, and can be named `builtin` or `default`.
+- **`mage log`:** Also accepts the log name with `.log`.
+  `mage log show` is now `mage show logs`, which also shows the size of each log, and `mage log clear` is now `mage clean logs`.
+- **`mage enable` and `mage disable` by term:** Read the modules from `app/etc/config.php` instead of `module:status`, so only one Magento boot is left, and only match modules that can change.
+  The matches are listed and confirmed first, `-y` skips it, terms match as plain text, and options such as `--clear-static-content` go to Magento.
+- **`mage info`:** Reads everything from Magento in one boot instead of about eight, so it is much faster.
+  It now also shows the Redis the caches and sessions use, with their databases and cache prefix.
+  The PHP version is now the one that runs Magento, also inside a container, the admin url counts a custom admin url, and the module count only counts enabled modules.
+- **`mage add sample [magento|hyva]`:** Asks which sample data to add: the Luma sample data of Magento, or the new Koti sample data of Hyvä, which also works without a Hyvä license, such as for Hyvä from the GitLab or from `package-source`.
+  The Magento set now uses `sampledata:deploy`, so it fits the installed version of every edition, Mage-OS included, and works in Warden and DDEV.
+  The old clones in `~/.magento-sampledata` can be deleted.
+  The version argument is gone, the installed version is used.
 - **Output:** Errors go to stderr, and colors are left out when `NO_COLOR` is set or the output is not a terminal.
 
 ### Removed
@@ -66,8 +111,12 @@ Anything mage does not know still runs `bin/magento`.
 - **`mage cleanup [TYPE]`:** Use `mage clean [OPTION]`, where `sample` is now `sample-files`.
 
 ### Fixed
-- **Cloning a project created by mage:** `package-source` now gets a `.gitkeep`, so the folder survives a clone. Without it `composer install` aborted with "the url supplied for the path (package-source/*/*) repository does not exist". Thanks to [@allrude](https://github.com/allrude), see [#52](https://github.com/GrimLink/mage/pull/52).
-- **Stale static files with Valet:** Valet serves static files without `Cache-Control`, so browsers kept old JS and CSS in developer mode until a hard reload. `mage setup` now adds a `LocalValetDriver.php` that makes them revalidate, and the gitignore template ignores it. See [#55](https://github.com/GrimLink/mage/issues/55).
+- **Cloning a project created by mage:** `package-source` now gets a `.gitkeep`, so the folder survives a clone.
+  Without it `composer install` aborted with "the url supplied for the path (package-source/*/*) repository does not exist".
+  Thanks to [@allrude](https://github.com/allrude), see [#52](https://github.com/GrimLink/mage/pull/52).
+- **Stale static files with Valet:** Valet serves static files without `Cache-Control`, so browsers kept old JS and CSS in developer mode until a hard reload.
+  `mage setup` now adds a `LocalValetDriver.php` that makes them revalidate, and the gitignore template ignores it.
+  See [#55](https://github.com/GrimLink/mage/issues/55).
 - **`mage add store` with Valet:** The store is linked and added to `.valet-env.php` by its site name, instead of the full domain, which Valet served with a second tld.
 - **Module location:** A module in `app/code` is now created as `Vendor/MyModule`, the path Magento autoloads it from, instead of `Vendor/my-module`.
 - **`mage create` with Warden:** The project folder is now created before moving into it.
@@ -222,7 +271,8 @@ Anything mage does not know still runs `bin/magento`.
 ### Changed
 
 - Improve way how `add hyva` works for Licenses and development cases
-  - license addition is now optional. It will prompt for the license if `auth.json` is missing.
+  - license addition is now optional.
+    It will prompt for the license if `auth.json` is missing.
   - Both versions don't install the Luma fallback checkout by default
   - Added support for Hyvä Commerce
 
