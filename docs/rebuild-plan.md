@@ -164,7 +164,7 @@ Without arguments it errors with its own help page, listing the composer and git
 ### `add patch` and `add bfcache`
 
 * One command, the input decides: a package alone creates a patch from your changes in its vendor folder (the old `new patch`), a GitHub or GitLab repository url adds all its patches (downloads `main`, merges its `patches.json`, copies its patches), and a package with a name and source adds that patch (source last, so the name can be several words). All run `patches-relock` and `patches-repatch`.
-* Creating tracks the vendor folder with a temporary git repository and uses `git add -A` with `git diff --cached`, so new files are part of the patch. A second local patch of a package is numbered. A package that is a git repository is refused.
+* Creating tracks the vendor folder with a temporary git repository and uses `git add -A` with `git diff --cached`, so new files are part of the patch. A second local patch of a package is numbered. A package that is a git repository, or a symlink from a path repository, is refused, as it is managed by the user.
 * What depends on the patch tool is in `mage_patch_check_tool`, `mage_patch_register`, `mage_patch_merge` and `mage_patch_apply`, now for `cweagans/composer-patches`, so `vaimo/composer-patches` can be added as another tool. Edits `patches.json` with jq.
 * `add bfcache` is `add patch` with the BFCache patch repository.
 

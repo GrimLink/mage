@@ -19,7 +19,7 @@ With only a package:
 3. The changes, new files included, are saved as `patches/<package>/LOCAL-<vendor>-<name>.patch`, and the temporary repository is removed.
 4. The patch is added as `Local: <vendor>-<name>`.
 
-A second local patch for the same package gets a number, so the first stays. Without changes no patch is created. A package that is itself a git repository, such as one from `package-source`, is refused, change it there instead.
+A second local patch for the same package gets a number, so the first stays. Without changes no patch is created. A package you manage yourself is refused, change it directly instead: one that is a git repository, or one linked from a path repository such as `package-source`.
 
 ## A patch repository
 

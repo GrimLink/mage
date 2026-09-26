@@ -92,9 +92,15 @@ function mage_add_patch_create() {
     return 1
   fi
 
-  # A git folder means a clone, such as a path repository package, which is changed directly
+  # A git repository or a symlinked path repository package is managed by you,
+  # so change it directly instead of patching it
   if [[ -e "${package_dir}/.git" ]]; then
     mage_error "${package_dir} is a git repository, change it there instead of patching it"
+    return 1
+  fi
+
+  if [[ -L "$package_dir" ]]; then
+    mage_error "${package_dir} links to a local package, change it there instead of patching it"
     return 1
   fi
 

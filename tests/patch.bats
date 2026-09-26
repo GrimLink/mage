@@ -76,6 +76,16 @@ function setup() {
   [ -d vendor/vendor/package/.git ]
 }
 
+@test "refuses a package linked from a path repository" {
+  mkdir -p package-source/vendor/package vendor/vendor
+  ln -s ../../package-source/vendor/package vendor/vendor/package
+
+  run mage_cmd_add patch vendor/package
+  [ "$status" -eq 1 ]
+  [[ "$output" == *"links to a local package"* ]]
+  [ ! -e package-source/vendor/package/.git ]
+}
+
 @test "keeps the existing patches" {
   echo '{ "patches": { "vendor/package": { "Old": "patches/old.patch" } } }' > patches.json
 
