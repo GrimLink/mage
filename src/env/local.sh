@@ -42,8 +42,14 @@ function env_local_setup_prepare() {
     env_local_mysql -e "CREATE DATABASE \`${db_name}\`;"
 }
 
+# The database comes from app/etc/env.php, falling back to the project name and the config
 function env_local_nuke() {
-  local db_name="$2"
+  local db_name
+  db_name="$(mage_env_php db/connection/default/dbname)"
+  db_name="${db_name:-$1}"
+  MAGE_DB_HOST="$(mage_env_php db/connection/default/host || echo "$MAGE_DB_HOST")"
+  MAGE_DB_USER="$(mage_env_php db/connection/default/username || echo "$MAGE_DB_USER")"
+  MAGE_DB_PASS="$(mage_env_php db/connection/default/password || echo "$MAGE_DB_PASS")"
 
   mage_clean_opensearch "$db_name"
   env_local_clean_redis

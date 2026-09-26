@@ -107,7 +107,7 @@ tests/             bats suite
 
 ### `nuke [--keep-files]`
 
-* Reads the database name and credentials from `app/etc/env.php`, falling back to the folder name and the `MAGE_DB_*` settings.
+* Local and Valet read the database name and credentials from `app/etc/env.php` in their nuke hook, falling back to the folder name and the `MAGE_DB_*` settings. Warden and DDEV need neither, they remove the whole environment.
 * The OpenSearch host, port and prefix come from `config:show catalog/search`, before the database is dropped.
 * The Redis prefix, host, port and database of each cache come from `app/etc/env.php`. Only keys matching `zc:*:<prefix>*` are deleted, never `flushall`, so other projects on a shared Redis keep their cache.
 * Runs the env hook (Valet unsecures and unlinks its stores, Warden runs `env down -v`).

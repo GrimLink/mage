@@ -36,14 +36,7 @@ function mage_cmd_nuke() {
     exit 1
   fi
 
-  local db_name
-  db_name="$(mage_env_php db/connection/default/dbname)"
-  db_name="${db_name:-$name}"
-  MAGE_DB_HOST="$(mage_env_php db/connection/default/host || echo "$MAGE_DB_HOST")"
-  MAGE_DB_USER="$(mage_env_php db/connection/default/username || echo "$MAGE_DB_USER")"
-  MAGE_DB_PASS="$(mage_env_php db/connection/default/password || echo "$MAGE_DB_PASS")"
-
-  env_call nuke "$name" "$db_name"
+  env_call nuke "$name"
 
   if [[ $keep_files == 0 ]]; then
     cd .. || exit 1
