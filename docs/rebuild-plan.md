@@ -145,6 +145,12 @@ Without arguments it errors with its own help page, listing the composer and git
 * Creates the module in `app/code/Vendor/MyModule`, which Magento autoloads by namespace (the old script wrongly used the kebab-case name), or when chosen in `package-source/<vendor>/magento2-my-module`, required as `@dev` like a theme.
 * The files come from `templates/module`, a Hyvä module also gets `templates/module-hyva` and sequences `Hyva_Theme` instead of `Magento_Theme`.
 
+### `add hyva [--dev]`
+
+* Applies `templates/composer-hyva.json` (license), or with `--dev` `templates/composer-hyva-dev.json` (the Hyvä GitLab repositories as `vcs` repositories over ssh, no token needed).
+* Then runs `setup:upgrade`, disables the Magento captcha (not supported by the Hyvä default theme), switches to `Hyva/default` when `yireo/magento2-theme-commands` is installed, and builds the default theme styles (the CSP variant when installed).
+* Checkout and commerce return as subcommands, such as `add hyva checkout`.
+
 ## Templates
 
 * `templates/` is synced to `~/.config/mage/templates` on first use, and again by every `self-update`. Commands never fetch them otherwise.
@@ -186,6 +192,6 @@ A minimal bats suite covering root detection, env selection (with a fake `.env` 
 
 * Aliases and the remaining old commands.
 * The `create` extras (BFCache, Hyvä, sample data).
-* `add` handlers, one per commit: patch and bfcache, sample, hyva, and the other old `new` commands.
+* `add` handlers, one per commit: patch and bfcache, sample, hyva checkout and commerce, and the other old `new` commands.
 * `import`: run groups of actions from a json file.
 * Global packages shared between projects (the old `add dev` and `upd dev`), in a more optimized form.
