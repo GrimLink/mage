@@ -150,6 +150,11 @@ Without arguments it errors with its own help page, listing the composer and git
 * Otherwise each argument is a term, matched the same way as `del` through `mage_composer_matches`, and all matches (dev included) are updated in one run. Options among the terms go to composer.
 * No confirmation, an update is undone with the `composer.lock` in git.
 
+### `enable` / `disable [MODULE|TERM] [-y]`
+
+* A name with an underscore is passed as is to `module:enable` or `module:disable`.
+* Otherwise the terms match, plain and case-insensitive, the modules in `app/etc/config.php` that can change (disabled for enable, enabled for disable), without booting Magento. Listed and confirmed once, `-y` skips it, other options go to Magento. Only options without a term is refused, as the empty pattern would match every module.
+
 ### `outdated [ARGS]`
 
 * Runs `composer outdated --direct --no-dev`, ignoring the packages in `MAGE_OUTDATED_IGNORE` (default the symfony packages Magento pins). Further arguments go to composer.

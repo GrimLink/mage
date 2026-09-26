@@ -54,6 +54,7 @@ Run `mage help` for the full list. Anything mage does not know runs `bin/magento
 | [`add i18n`](docs/commands/add-i18n.md)                        | Collect the phrases of a module or theme                           |
 | [`del`](docs/commands/remove.md)                               | Remove packages by name or term                                    |
 | [`upd`](docs/commands/update.md)                               | Update packages by name or term                                    |
+| [`enable`, `disable`](docs/commands/enable.md)                 | Enable or disable modules by name or term                          |
 | [`outdated`](docs/commands/outdated.md)                        | List the direct dependencies with a newer version                  |
 | [`watch`](docs/commands/watch.md)                              | Clean only the caches a file change affects                        |
 | [`log`](docs/commands/log.md)                                  | Follow a log in `var/log`                                          |

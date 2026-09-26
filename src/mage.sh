@@ -37,6 +37,7 @@ source "${MAGE_SRC}/commands/add-json.sh"
 source "${MAGE_SRC}/commands/remove.sh"
 source "${MAGE_SRC}/commands/update.sh"
 source "${MAGE_SRC}/commands/outdated.sh"
+source "${MAGE_SRC}/commands/module.sh"
 source "${MAGE_SRC}/commands/add/theme.sh"
 source "${MAGE_SRC}/commands/add/module.sh"
 source "${MAGE_SRC}/commands/add/hyva.sh"
@@ -102,6 +103,9 @@ function mage_main() {
       ;;
     "upd" | "update")
       mage_cmd_update "${@:2}"
+      ;;
+    "enable" | "disable")
+      mage_cmd_module "$@"
       ;;
     "outdated")
       mage_cmd_outdated "${@:2}"

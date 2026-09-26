@@ -47,6 +47,7 @@ Version 3 is a rebuild of mage. The commands of version 2 return step by step, u
 - **`mage set csp`:** No longer needs magerun, it writes the values to `app/etc/env.php` with Magento's own `config:set --lock-env`, and flushes the config cache.
 - **`mage set fpc`:** Refuses an unknown cache instead of using the builtin one, and shows errors instead of hiding them. The builtin cache is used when none is given, and can be named `builtin` or `default`.
 - **`mage log`:** Also accepts the log name with `.log`. `mage log show` is now `mage show logs`, which also shows the size of each log, and `mage log clear` is now `mage clean logs`.
+- **`mage enable` and `mage disable` by term:** Read the modules from `app/etc/config.php` instead of `module:status`, so only one Magento boot is left, and only match modules that can change. The matches are listed and confirmed first, `-y` skips it, terms match as plain text, and options such as `--clear-static-content` go to Magento.
 - **Output:** Errors go to stderr, and colors are left out when `NO_COLOR` is set or the output is not a terminal.
 
 ### Removed
