@@ -12,7 +12,7 @@ mage set fpc varnish
 | Option | Does |
 |---|---|
 | `csp` | Enforces a strict Content Security Policy on the storefront |
-| `fpc [builtin\|varnish]` | Sets the full page cache application, `builtin` by default |
+| `fpc [builtin\|varnish]` | Sets the full page cache application, `builtin` (also `default`) when not given |
 
 ## csp
 

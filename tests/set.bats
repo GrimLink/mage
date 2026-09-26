@@ -25,6 +25,9 @@ function setup() {
   run mage_cmd_set fpc
   [ "$output" = "magento config:set system/full_page_cache/caching_application 1" ]
 
+  run mage_cmd_set fpc default
+  [ "$output" = "magento config:set system/full_page_cache/caching_application 1" ]
+
   run mage_cmd_set fpc varnish
   [ "$output" = "magento config:set system/full_page_cache/caching_application 2" ]
 }
