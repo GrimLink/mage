@@ -7,11 +7,11 @@ MAGE_UPDATE_URL="https://raw.githubusercontent.com/GrimLink/mage/main/mage"
 # The templates folder of this archive is synced to the config folder
 MAGE_TEMPLATES_ARCHIVE="https://github.com/GrimLink/mage/tarball/main"
 
-# Empty uses your git user, see mage_system_user
-MAGE_ADMIN_USER=""
-MAGE_ADMIN_FIRSTNAME=""
+# The placeholders are replaced by your git user, see mage_system_user
+MAGE_ADMIN_USER="acme"
+MAGE_ADMIN_FIRSTNAME="acme"
 MAGE_ADMIN_LASTNAME="admin"
-MAGE_ADMIN_EMAIL=""
+MAGE_ADMIN_EMAIL="info@example.com"
 MAGE_ADMIN_PASS="magento_123$"
 
 # The edition 'mage create' defaults to: mage-os, community or enterprise
@@ -79,11 +79,22 @@ if [[ -f "$MAGE_CONFIG_FILE" ]]; then
   source "$MAGE_CONFIG_FILE"
 fi
 
-# Fill the admin user from your git user, the system user, for the commands
-# that create one. Git is only asked for values the config leaves empty, and
-# without a git user, such as on a CI runner, placeholders are used.
+# Replace the placeholders of the admin user with your git user, the system user,
+# for the commands that create one. A value set in the config is kept, and
+# without a git user, such as on a CI runner, the placeholders stay.
 function mage_system_user() {
-  MAGE_ADMIN_FIRSTNAME="${MAGE_ADMIN_FIRSTNAME:-$(git config --global --get user.name 2> /dev/null | head -n1 | cut -d " " -f1 || echo "acme")}"
-  MAGE_ADMIN_USER="${MAGE_ADMIN_USER:-$(echo "$MAGE_ADMIN_FIRSTNAME" | tr '[:upper:]' '[:lower:]')}"
-  MAGE_ADMIN_EMAIL="${MAGE_ADMIN_EMAIL:-$(git config --global --get user.email 2> /dev/null || echo "info@example.com")}"
+  local name
+  local email
+
+  if [[ "$MAGE_ADMIN_FIRSTNAME" == "acme" ]] && name="$(git config --global --get user.name 2> /dev/null)"; then
+    MAGE_ADMIN_FIRSTNAME="${name%% *}"
+  fi
+
+  if [[ "$MAGE_ADMIN_USER" == "acme" ]]; then
+    MAGE_ADMIN_USER="$(echo "$MAGE_ADMIN_FIRSTNAME" | tr '[:upper:]' '[:lower:]')"
+  fi
+
+  if [[ "$MAGE_ADMIN_EMAIL" == "info@example.com" ]] && email="$(git config --global --get user.email 2> /dev/null)"; then
+    MAGE_ADMIN_EMAIL="$email"
+  fi
 }

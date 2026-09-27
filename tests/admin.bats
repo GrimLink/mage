@@ -31,16 +31,31 @@ function setup() {
   [ "$output" = "magerun customer:create me@example.com secret123 Me Customer base" ]
 }
 
-@test "fills the admin user from git, keeping configured values" {
+@test "keeps the placeholders without a git user, and configured values" {
   export HOME="$BATS_TEST_TMPDIR"
   export XDG_CONFIG_HOME="$BATS_TEST_TMPDIR/config"
   MAGE_ADMIN_USER="configured"
-  MAGE_ADMIN_FIRSTNAME=""
-  MAGE_ADMIN_EMAIL=""
+  MAGE_ADMIN_FIRSTNAME="acme"
+  MAGE_ADMIN_EMAIL="info@example.com"
 
   mage_system_user
 
   [ "$MAGE_ADMIN_USER" = "configured" ]
   [ "$MAGE_ADMIN_FIRSTNAME" = "acme" ]
   [ "$MAGE_ADMIN_EMAIL" = "info@example.com" ]
+}
+
+@test "replaces the placeholders with the git user" {
+  export HOME="$BATS_TEST_TMPDIR"
+  export XDG_CONFIG_HOME="$BATS_TEST_TMPDIR/config"
+  printf '[user]\n\tname = Sean Grim\n\temail = sean@example.org\n' > "$HOME/.gitconfig"
+  MAGE_ADMIN_USER="acme"
+  MAGE_ADMIN_FIRSTNAME="acme"
+  MAGE_ADMIN_EMAIL="info@example.com"
+
+  mage_system_user
+
+  [ "$MAGE_ADMIN_FIRSTNAME" = "Sean" ]
+  [ "$MAGE_ADMIN_USER" = "sean" ]
+  [ "$MAGE_ADMIN_EMAIL" = "sean@example.org" ]
 }
