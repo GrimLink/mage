@@ -27,13 +27,13 @@ MAGE_VAR_HYVA_PROJECT="acme"
 
 Used by `mage create` and `mage setup` to create the admin user, and as the defaults of `mage add admin`.
 
-| Setting                | Default                                      |
-| ---------------------- | -------------------------------------------- |
-| `MAGE_ADMIN_USER`      | Your git first name, in lowercase, or `acme` |
-| `MAGE_ADMIN_FIRSTNAME` | Your git first name, or `acme`               |
-| `MAGE_ADMIN_LASTNAME`  | `admin`                                      |
-| `MAGE_ADMIN_EMAIL`     | Your git email, or `info@example.com`        |
-| `MAGE_ADMIN_PASS`      | `magento_123$`                               |
+| Setting                | Default                               |
+| ---------------------- | ------------------------------------- |
+| `MAGE_ADMIN_USER`      | The first name, in lowercase          |
+| `MAGE_ADMIN_FIRSTNAME` | Your git first name, or `acme`        |
+| `MAGE_ADMIN_LASTNAME`  | `admin`                               |
+| `MAGE_ADMIN_EMAIL`     | Your git email, or `info@example.com` |
+| `MAGE_ADMIN_PASS`      | `magento_123$`                        |
 
 ### New projects
 
