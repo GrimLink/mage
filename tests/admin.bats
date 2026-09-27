@@ -31,15 +31,14 @@ function setup() {
   [ "$output" = "magerun customer:create me@example.com secret123 Me Customer base" ]
 }
 
-@test "fills the git defaults only when needed, keeping configured values" {
+@test "fills the admin user from git, keeping configured values" {
   export HOME="$BATS_TEST_TMPDIR"
   export XDG_CONFIG_HOME="$BATS_TEST_TMPDIR/config"
-  GIT_EMAIL=""
   MAGE_ADMIN_USER="configured"
   MAGE_ADMIN_FIRSTNAME=""
   MAGE_ADMIN_EMAIL=""
 
-  mage_git_defaults
+  mage_system_user
 
   [ "$MAGE_ADMIN_USER" = "configured" ]
   [ "$MAGE_ADMIN_FIRSTNAME" = "acme" ]

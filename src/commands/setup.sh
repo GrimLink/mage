@@ -33,7 +33,7 @@ function mage_setup() {
   local url="https://${name}.${MAGE_DOMAIN}/"
   local admin_url="${name//-/}_admin"
 
-  mage_git_defaults
+  mage_system_user
   env_call setup_prepare "$name" "$db_name" || return 1
 
   mage_info "Running Magento setup install..."

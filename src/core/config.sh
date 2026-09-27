@@ -7,7 +7,7 @@ MAGE_UPDATE_URL="https://raw.githubusercontent.com/GrimLink/mage/main/mage"
 # The templates folder of this archive is synced to the config folder
 MAGE_TEMPLATES_ARCHIVE="https://github.com/GrimLink/mage/tarball/main"
 
-# Empty uses your git user, see mage_git_defaults
+# Empty uses your git user, see mage_system_user
 MAGE_ADMIN_USER=""
 MAGE_ADMIN_FIRSTNAME=""
 MAGE_ADMIN_LASTNAME="admin"
@@ -79,18 +79,20 @@ if [[ -f "$MAGE_CONFIG_FILE" ]]; then
   source "$MAGE_CONFIG_FILE"
 fi
 
-# Fill the defaults that come from your git user, only for the commands that
-# need them, as each git call costs time on every start. Values set in the
-# config are kept. Without a git user, such as on a CI runner, placeholders are used.
-function mage_git_defaults() {
-  if [[ -n "$GIT_EMAIL" ]]; then
+# Fill the admin user from your git user, the system user, for the commands
+# that create one. Values set in the config are kept, and when all are set
+# git is not asked. Without a git user, such as on a CI runner, placeholders are used.
+function mage_system_user() {
+  if [[ -n "$MAGE_ADMIN_USER" ]] && [[ -n "$MAGE_ADMIN_FIRSTNAME" ]] && [[ -n "$MAGE_ADMIN_EMAIL" ]]; then
     return
   fi
 
-  GIT_NAME="$(git config --global --get user.name 2> /dev/null | head -n1 | cut -d " " -f1 || echo "acme")"
-  GIT_EMAIL="$(git config --global --get user.email 2> /dev/null || echo "info@example.com")"
+  local name
+  local email
+  name="$(git config --global --get user.name 2> /dev/null | head -n1 | cut -d " " -f1 || echo "acme")"
+  email="$(git config --global --get user.email 2> /dev/null || echo "info@example.com")"
 
-  MAGE_ADMIN_USER="${MAGE_ADMIN_USER:-$(echo "$GIT_NAME" | tr '[:upper:]' '[:lower:]')}"
-  MAGE_ADMIN_FIRSTNAME="${MAGE_ADMIN_FIRSTNAME:-$GIT_NAME}"
-  MAGE_ADMIN_EMAIL="${MAGE_ADMIN_EMAIL:-$GIT_EMAIL}"
+  MAGE_ADMIN_USER="${MAGE_ADMIN_USER:-$(echo "$name" | tr '[:upper:]' '[:lower:]')}"
+  MAGE_ADMIN_FIRSTNAME="${MAGE_ADMIN_FIRSTNAME:-$name}"
+  MAGE_ADMIN_EMAIL="${MAGE_ADMIN_EMAIL:-$email}"
 }

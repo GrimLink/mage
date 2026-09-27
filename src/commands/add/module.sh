@@ -59,13 +59,12 @@ function mage_add_module() {
     sequence="Hyva_Theme"
   fi
 
-  mage_git_defaults
   local template_vars=(
     "VENDOR=${MAGE_NEW_VENDOR}"
     "MODULE=${MAGE_NEW_NAME}"
     "VENDOR_PKG=${MAGE_NEW_VENDOR_PKG}"
     "MODULE_PKG=${MAGE_NEW_NAME_PKG}"
-    "EMAIL=${GIT_EMAIL}"
+    "EMAIL=security@example.com"
     "SEQUENCE=${sequence}"
   )
 

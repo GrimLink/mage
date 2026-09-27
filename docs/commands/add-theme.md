@@ -30,7 +30,7 @@ An existing folder is never overwritten.
 
 ## Files
 
-From the [template](../templates.md) `theme`: `theme.xml`, `registration.php`, `composer.json` (named `vendor/magento2-theme-my-theme`), `README.md`, `CHANGELOG.md`, `SECURITY.md` (with your git email), `.editorconfig` and `.gitignore`.
+From the [template](../templates.md) `theme`: `theme.xml`, `registration.php`, `composer.json` (named `vendor/magento2-theme-my-theme`), `README.md`, `CHANGELOG.md`, `SECURITY.md` (with `security@example.com` to replace), `.editorconfig` and `.gitignore`.
 
 A child theme of a Hyvä theme also gets a copy of the `web/tailwind` folder of the Hyvä default theme, without `node_modules`, to build its own styles.
 

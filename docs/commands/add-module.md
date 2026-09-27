@@ -29,7 +29,7 @@ An existing folder is never overwritten.
 
 ## Files
 
-From the [template](../templates.md) `module`: `registration.php`, `etc/module.xml`, `composer.json` (named `vendor/magento2-my-module`), `README.md`, `CHANGELOG.md`, `SECURITY.md` (with your git email), `.editorconfig` and `.gitignore`.
+From the [template](../templates.md) `module`: `registration.php`, `etc/module.xml`, `composer.json` (named `vendor/magento2-my-module`), `README.md`, `CHANGELOG.md`, `SECURITY.md` (with `security@example.com` to replace), `.editorconfig` and `.gitignore`.
 The module sequences `Magento_Theme`.
 
 A Hyvä module sequences `Hyva_Theme` instead, and gets the files of the template `module-hyva`: an observer with its `etc/frontend/events.xml` that registers the module in the Hyvä tailwind config, and the tailwind sources in `view/frontend/tailwind`.
