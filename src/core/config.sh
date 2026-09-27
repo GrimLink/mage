@@ -80,13 +80,9 @@ if [[ -f "$MAGE_CONFIG_FILE" ]]; then
 fi
 
 # Fill the admin user from your git user, the system user, for the commands
-# that create one. Values set in the config are kept, and when all are set
-# git is not asked. Without a git user, such as on a CI runner, placeholders are used.
+# that create one. Values set in the config are kept. Without a git user,
+# such as on a CI runner, placeholders are used.
 function mage_system_user() {
-  if [[ -n "$MAGE_ADMIN_USER" ]] && [[ -n "$MAGE_ADMIN_FIRSTNAME" ]] && [[ -n "$MAGE_ADMIN_EMAIL" ]]; then
-    return
-  fi
-
   local name
   local email
   name="$(git config --global --get user.name 2> /dev/null | head -n1 | cut -d " " -f1 || echo "acme")"
