@@ -26,6 +26,13 @@ function mage_cmd_help() {
   mage_help_cmd "setup [NAME]"                "Reinstall Magento in an existing project"
   mage_help_cmd "nuke"                        "Permanently delete the project (database, environment, files)"
   mage_help_cmd "  --keep-files"              "Keep the project files"
+  mage_help_cmd "backup"                      "Back up the database, and optionally the media, to ${MAGE_BACKUP_DIR}"
+  mage_help_cmd "  --media, --no-media"       "Include pub/media or not, instead of asking"
+  mage_help_cmd "  --strip=[GROUPS]"          "Magerun2 table groups to leave out (default: ${MAGE_BACKUP_STRIP})"
+  mage_help_cmd "restore [FILE]"              "Replace the database with a backup, the latest by default, and set it up for this device"
+  mage_help_cmd "  --media, --no-media"       "Unpack the media backup or not, instead of asking"
+  mage_help_cmd "sync HOST [PATH]"            "Pull pub/media from a server, from PATH or ${MAGE_SYNC_PATH}"
+  mage_help_cmd "  --db"                      "Also pull the latest backup of the server, for restore"
 
   mage_help_header "Packages"
   mage_help_cmd "add [PKG|GIT_URL|HANDLER]"   "Add to the project, see 'mage add help' for all options"

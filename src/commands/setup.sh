@@ -73,17 +73,7 @@ function mage_setup() {
   mage_info "Setting default values for Store config"
   $MAGENTO_CLI config:set general/store_information/name "$name" &> /dev/null
 
-  local entry
-  local value
-
-  for entry in "${MAGE_STORE_CONFIG[@]}"; do
-    value=""
-    if [[ "$entry" == *" "* ]]; then
-      value="${entry#* }"
-    fi
-
-    $MAGENTO_CLI config:set "${entry%% *}" "$value" &> /dev/null
-  done
+  mage_set_store_config
 
   $MAGENTO_CLI deploy:mode:set developer
 
@@ -98,6 +88,21 @@ function mage_setup() {
 
   mage_clean_sample_files
   mage_add_gitignore
+}
+
+# Set the store config of MAGE_STORE_CONFIG, where each entry is 'path value'
+function mage_set_store_config() {
+  local entry
+  local value
+
+  for entry in "${MAGE_STORE_CONFIG[@]}"; do
+    value=""
+    if [[ "$entry" == *" "* ]]; then
+      value="${entry#* }"
+    fi
+
+    $MAGENTO_CLI config:set "${entry%% *}" "$value" &> /dev/null
+  done
 }
 
 function mage_add_gitignore() {

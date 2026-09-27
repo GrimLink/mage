@@ -100,6 +100,6 @@ Source the file in `src/mage.sh`, after its command.
 
 1. Add `src/env/<name>.sh` with `env_<name>_available` (the tool is installed) and `env_<name>_detect` (the current folder uses it).
 2. Add `env_<name>_apply` to set the `*_CLI` and `MAGE_DB_*` variables it needs.
-3. Add the hooks that differ from local: `create_project`, `setup_prepare`, `setup_finish`, `clean_redis`, `add_store`, `open_mail`, `watch_cli` and `nuke`.
+3. Add the hooks that differ from local: `create_project`, `setup_prepare`, `setup_finish`, `clean_redis`, `add_store`, `open_mail`, `watch_cli`, `backup_db`, `restore_db` and `nuke`.
    A hook it does not define falls back to the local one.
 4. Add the name to `MAGE_ENVS` in `src/core/env.sh`, in order of priority, and source the file in `src/mage.sh`.

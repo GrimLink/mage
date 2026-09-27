@@ -66,6 +66,25 @@ function env_warden_add_store() {
   mage_notice "Route ${1} in .warden/warden-env.yml and map it to store ${2} in app/etc/stores.php, see https://docs.warden.dev/configuration/multipledomains.html"
 }
 
+# The magerun of the container, without a tty so the dump stays intact
+function env_warden_backup_db() {
+  local args=(db:dump --stdout)
+
+  if [[ -n "$2" ]]; then
+    args+=("--strip=${2}")
+  fi
+
+  warden env exec -T php-fpm n98-magerun "${args[@]}" | gzip > "$1"
+}
+
+# Stream the dump into the mysql of the db container, as the file may not be synced into it yet
+function env_warden_restore_db() {
+  local mysql="warden env exec -T db mysql -u${MAGE_DB_USER} -p${MAGE_DB_PASS}"
+
+  $mysql -e "DROP DATABASE IF EXISTS \`${MAGE_DB_NAME}\`; CREATE DATABASE \`${MAGE_DB_NAME}\`;" &&
+    gzip -dc "$1" | $mysql "$MAGE_DB_NAME"
+}
+
 # Mailpit is a global Warden service, shared by all environments
 function env_warden_open_mail() {
   mage_open_browser "https://webmail.warden.test/"

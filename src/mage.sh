@@ -28,6 +28,9 @@ source "${MAGE_SRC}/commands/meta.sh"
 source "${MAGE_SRC}/commands/create.sh"
 source "${MAGE_SRC}/commands/setup.sh"
 source "${MAGE_SRC}/commands/nuke.sh"
+source "${MAGE_SRC}/commands/backup.sh"
+source "${MAGE_SRC}/commands/restore.sh"
+source "${MAGE_SRC}/commands/sync.sh"
 source "${MAGE_SRC}/commands/run.sh"
 source "${MAGE_SRC}/commands/open.sh"
 source "${MAGE_SRC}/commands/info.sh"
@@ -99,6 +102,15 @@ function mage_main() {
       ;;
     "nuke" | "destroy")
       mage_cmd_nuke "${@:2}"
+      ;;
+    "backup")
+      mage_cmd_backup "${@:2}"
+      ;;
+    "restore")
+      mage_cmd_restore "${@:2}"
+      ;;
+    "sync")
+      mage_cmd_sync "${@:2}"
       ;;
     "add")
       mage_cmd_add "${@:2}"

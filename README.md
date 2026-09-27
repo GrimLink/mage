@@ -44,6 +44,9 @@ Anything mage does not know runs `bin/magento`, so `mage cache:clean` works as e
 | [`create`](docs/commands/create.md)                            | Create, install and set up a new project                           |
 | [`setup`](docs/commands/create.md#mage-setup)                  | Reinstall Magento in an existing project                           |
 | [`nuke`](docs/commands/nuke.md)                                | Permanently delete a project (database, environment, files)        |
+| [`backup`](docs/commands/backup.md)                            | Back up the database, and optionally the media                     |
+| [`restore`](docs/commands/restore.md)                          | Restore a backup, and set it up for this device                    |
+| [`sync`](docs/commands/sync.md)                                | Pull the media, and optionally the latest backup, from a server    |
 | [`add`](docs/commands/add.md)                                  | Add a package, git repository, composer fragment or generated code |
 | [`add theme`](docs/commands/add-theme.md)                      | Create a child theme                                               |
 | [`add module`](docs/commands/add-module.md)                    | Create a module                                                    |

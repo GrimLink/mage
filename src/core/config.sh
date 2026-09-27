@@ -55,6 +55,14 @@ MAGE_OUTDATED_IGNORE=(
 # The handlers 'mage clean all' and 'mage purge' run, in order
 MAGE_CLEAN_ALL="files redis varnish"
 
+# Where 'mage backup' writes to, relative to the Magento root
+MAGE_BACKUP_DIR="var/backups"
+# The magerun2 table groups 'mage backup' leaves out of the dump, empty for none
+MAGE_BACKUP_STRIP="@stripped"
+
+# The Magento root on the server 'mage sync' pulls from, the one of Hypernode by default
+MAGE_SYNC_PATH="/data/web/magento2"
+
 # Each entry is 'path value', an entry without a value sets it empty
 MAGE_STORE_CONFIG=(
   "currency/options/base EUR"

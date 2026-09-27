@@ -62,6 +62,20 @@ function env_ddev_nuke() {
   ddev delete --omit-snapshot --yes
 }
 
+# The magerun on the host can not reach the DDEV database, so ddev exports it, as a whole
+function env_ddev_backup_db() {
+  if [[ -n "$2" ]]; then
+    mage_notice "DDEV exports the whole database, the strip groups do not apply"
+  fi
+
+  ddev export-db --gzip --file="$1"
+}
+
+# ddev drops the database before the import on its own
+function env_ddev_restore_db() {
+  ddev import-db --file="$1"
+}
+
 function env_ddev_add_store() {
   mage_notice "Add ${1} to additional_fqdns or additional_hostnames in .ddev/config.yaml, run 'ddev restart', and set MAGE_RUN_CODE=${2} with MAGE_RUN_TYPE=store for it"
 }

@@ -25,6 +25,8 @@ The connection settings come from the [configuration](config.md), by default `ro
 - **Add store:** tells you to point the new domain to the project yourself.
 - **Open mail:** opens `MAGE_MAIL_URL`, Mailpit on `http://localhost:8025` by default.
 - **Watch:** without cache-clean in the project, uses `cache-clean.js` from your `PATH`.
+- **Backup:** dumps the database with magerun2, or with `mysqldump` and the credentials of `app/etc/env.php`.
+- **Restore:** imports with magerun2, or with `mysql`.
 - **Redis:** projects share one Redis, so every project gets its own cache prefix and only its own keys are cleaned.
   Use `cache:clean` rather than `cache:flush`: flushing empties the whole Redis database, so it also clears the cache of every other project.
   Mage itself only cleans, and [`mage watch`](commands/watch.md) cleans just the affected cache types.
@@ -49,6 +51,8 @@ Works like local, and adds:
 - **Add store:** signs the certificate, and tells you how to route the domain.
 - **Open mail:** opens the global Mailpit at `https://webmail.warden.test/`.
 - **Watch:** without cache-clean in the project, uses the one in the global composer folder of the container.
+- **Backup:** dumps the database with the magerun of the container.
+- **Restore:** streams the dump into `mysql` of the `db` container.
 
 ## DDEV
 
@@ -61,5 +65,7 @@ Works like local, and adds:
 - **Add store:** tells you how to add the domain to DDEV.
 - **Open mail:** `ddev launch -m`.
 - **Watch:** needs cache-clean in the project.
+- **Backup:** `ddev export-db`, which always exports the whole database.
+- **Restore:** `ddev import-db`.
 
 Note that `mage run` uses the magerun on your machine for DDEV, which cannot reach the DDEV database.

@@ -28,10 +28,7 @@ function mage_cmd_nuke() {
     mage_warn "This permanently deletes the Magento project in ${root}, including all files"
   fi
 
-  local answer=""
-  read -r -p "Type '${name}' to confirm: " answer
-
-  if [[ "$answer" != "$name" ]]; then
+  if ! mage_confirm_name "$name"; then
     mage_info "Aborting nuke.."
     exit 1
   fi

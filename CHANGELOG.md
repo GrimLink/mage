@@ -36,6 +36,14 @@ Anything mage does not know still runs `bin/magento`.
 - **Templates:** Generated files, such as those of a new theme or module, and the bundled composer fragments come from the `templates` folder of mage.
   They are synced to `~/.config/mage/templates` on first use, and updated by `mage self-update`.
 - **`.gitignore` for Magento:** `mage setup` adds a Magento aware `.gitignore` when the project has none.
+- **`mage backup` command:** Backs up the database, and optionally `pub/media`, to `var/backups`, to set the project up on another device.
+  It uses `db:dump` of magerun2, leaving out the logs and sessions by default, and falls back to `mysqldump`.
+  Works on a server such as Hypernode too.
+- **`mage restore` command:** Replaces the database with a backup, the latest by default, and unpacks its media.
+  Then moves every store to the domain of this device, so `b2b.store.nl` becomes `b2b.store.test`, and makes each domain reachable like `mage add store`.
+  It also resets the cookie domain, admin url and search engine, sets the store config and developer mode, and reindexes.
+- **`mage sync` command:** Pulls `pub/media` from a server with rsync, and with `--db` also its latest backup, for `mage restore`.
+  The host is required, the Magento root defaults to the one of Hypernode, and can be given or set with `MAGE_SYNC_PATH`.
 - **`mage nuke --keep-files`:** Removes the database and environment, but keeps the project files.
 - **Config file:** The defaults, such as the admin user, database credentials, store config and default composer packages, can be overridden in `~/.config/mage/config`.
 - **DDEV support:** Projects with a `.ddev/config.yaml` run their commands through DDEV.

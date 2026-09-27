@@ -57,6 +57,34 @@ function mage_env_php() {
   ' -- "$1" 2> /dev/null
 }
 
+# Set the MAGE_DB_* settings from app/etc/env.php, keeping the current ones for what it lacks.
+# The database name falls back to MAGE_DB_NAME, then the project folder.
+function mage_env_php_db() {
+  MAGE_DB_NAME="$(mage_env_php db/connection/default/dbname || echo "${MAGE_DB_NAME:-$(basename "$PWD")}")"
+  MAGE_DB_HOST="$(mage_env_php db/connection/default/host || echo "$MAGE_DB_HOST")"
+  MAGE_DB_USER="$(mage_env_php db/connection/default/username || echo "$MAGE_DB_USER")"
+  MAGE_DB_PASS="$(mage_env_php db/connection/default/password || echo "$MAGE_DB_PASS")"
+}
+
+# Set MAGE_DB_ARGS to the connection arguments of mysql and mysqldump. The host
+# can hold a port or a socket, such as localhost:3307 or localhost:/tmp/mysql.sock
+function mage_db_args() {
+  MAGE_DB_ARGS=(-h"${MAGE_DB_HOST%%:*}" -u"$MAGE_DB_USER")
+
+  if [[ "$MAGE_DB_HOST" == *:/* ]]; then
+    MAGE_DB_ARGS+=(--socket="${MAGE_DB_HOST#*:}")
+  elif [[ "$MAGE_DB_HOST" == *:* ]]; then
+    MAGE_DB_ARGS+=(-P"${MAGE_DB_HOST#*:}")
+  fi
+}
+
+# Ask to type the name to confirm something that can not be undone
+function mage_confirm_name() {
+  local answer=""
+  read -r -p "Type '${1}' to confirm: " answer
+  [[ "$answer" == "$1" ]]
+}
+
 # Download a url to a given path, using curl or wget
 function mage_download_file() {
   local url="$1"

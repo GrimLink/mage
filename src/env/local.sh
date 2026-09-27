@@ -15,7 +15,8 @@ function env_local_apply() {
 
 # Run mysql with the MAGE_DB_* credentials
 function env_local_mysql() {
-  MYSQL_PWD="$MAGE_DB_PASS" $MYSQL_CLI -h"$MAGE_DB_HOST" -u"$MAGE_DB_USER" "$@"
+  mage_db_args
+  MYSQL_PWD="$MAGE_DB_PASS" $MYSQL_CLI "${MAGE_DB_ARGS[@]}" "$@"
 }
 
 # Create the composer project in a new folder, and move into it
@@ -42,14 +43,10 @@ function env_local_setup_prepare() {
     env_local_mysql -e "CREATE DATABASE \`${db_name}\`;"
 }
 
-# The database comes from app/etc/env.php, falling back to the project name and the config
+# The database comes from app/etc/env.php, falling back to the config and the project name
 function env_local_nuke() {
-  local db_name
-  db_name="$(mage_env_php db/connection/default/dbname)"
-  db_name="${db_name:-$1}"
-  MAGE_DB_HOST="$(mage_env_php db/connection/default/host || echo "$MAGE_DB_HOST")"
-  MAGE_DB_USER="$(mage_env_php db/connection/default/username || echo "$MAGE_DB_USER")"
-  MAGE_DB_PASS="$(mage_env_php db/connection/default/password || echo "$MAGE_DB_PASS")"
+  mage_env_php_db
+  local db_name="$MAGE_DB_NAME"
 
   mage_clean_opensearch "$db_name"
   env_local_clean_redis
@@ -59,6 +56,48 @@ function env_local_nuke() {
   else
     mage_check 1 "Could not drop database '${db_name}'"
   fi
+}
+
+# Dump the database gzipped to the file, leaving out the magerun2 table groups
+# of the second argument. Without magerun2 it falls back to mysqldump.
+function env_local_backup_db() {
+  local file="$1"
+  local strip="$2"
+
+  set_magerun_cli
+
+  if [[ -z "$MAGERUN_CLI" ]]; then
+    mage_backup_mysqldump "$file"
+    return
+  fi
+
+  local args=(db:dump --stdout)
+
+  if [[ -n "$strip" ]]; then
+    args+=("--strip=${strip}")
+  fi
+
+  $MAGERUN_CLI "${args[@]}" | gzip > "$file"
+}
+
+# Replace the database with the gzipped dump, with magerun2 or mysql
+function env_local_restore_db() {
+  local file="$1"
+
+  set_magerun_cli
+
+  if [[ -n "$MAGERUN_CLI" ]]; then
+    $MAGERUN_CLI db:import --no-interaction --drop --compression=gzip "$file"
+    return
+  fi
+
+  if ! command -v "${MYSQL_CLI%% *}" &> /dev/null; then
+    mage_error "Neither magerun2 nor mysql found, install one of them"
+    return 1
+  fi
+
+  env_local_mysql -e "DROP DATABASE IF EXISTS \`${MAGE_DB_NAME}\`; CREATE DATABASE \`${MAGE_DB_NAME}\`;" &&
+    gzip -dc "$file" | env_local_mysql "$MAGE_DB_NAME"
 }
 
 # Delete the cache keys of the project from Redis, by the id prefix of each
