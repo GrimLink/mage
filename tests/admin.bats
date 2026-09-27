@@ -30,3 +30,18 @@ function setup() {
   run mage_cmd_add customer me@example.com secret123 Me Customer base
   [ "$output" = "magerun customer:create me@example.com secret123 Me Customer base" ]
 }
+
+@test "fills the git defaults only when needed, keeping configured values" {
+  export HOME="$BATS_TEST_TMPDIR"
+  export XDG_CONFIG_HOME="$BATS_TEST_TMPDIR/config"
+  GIT_EMAIL=""
+  MAGE_ADMIN_USER="configured"
+  MAGE_ADMIN_FIRSTNAME=""
+  MAGE_ADMIN_EMAIL=""
+
+  mage_git_defaults
+
+  [ "$MAGE_ADMIN_USER" = "configured" ]
+  [ "$MAGE_ADMIN_FIRSTNAME" = "acme" ]
+  [ "$MAGE_ADMIN_EMAIL" = "info@example.com" ]
+}

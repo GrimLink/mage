@@ -43,6 +43,7 @@ function mage_add_theme() {
     exit 1
   fi
 
+  mage_git_defaults
   mage_copy_template "theme" "$dest" \
     "AREA=${area}" \
     "PATH=${theme_path}" \

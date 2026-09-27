@@ -1,6 +1,8 @@
 MAGE_ADD_HANDLERS+=("admin|Create an admin user, the MAGE_ADMIN_* settings are the defaults, -y uses them without asking")
 
 function mage_add_admin() {
+  mage_git_defaults
+
   local email="$MAGE_ADMIN_EMAIL"
   local firstname="$MAGE_ADMIN_FIRSTNAME"
   local lastname="$MAGE_ADMIN_LASTNAME"

@@ -59,6 +59,7 @@ function mage_add_module() {
     sequence="Hyva_Theme"
   fi
 
+  mage_git_defaults
   local template_vars=(
     "VENDOR=${MAGE_NEW_VENDOR}"
     "MODULE=${MAGE_NEW_NAME}"
