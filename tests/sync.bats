@@ -4,7 +4,9 @@ function setup() {
   load_mage
   cd "$BATS_TEST_TMPDIR"
   SYNC_RSYNC_CLI="echo rsync"
-  SSH_CLI="echo /data/web/magento2/var/backups/store-20260927-101500.sql.gz"
+  # The server answers the latest backup
+  function ssh() { echo "/data/web/magento2/var/backups/store-20260927-101500.sql.gz"; }
+  SSH_CLI="ssh"
 }
 
 @test "needs the host" {
@@ -33,6 +35,7 @@ function setup() {
   run mage_cmd_sync store --db
   [ "$status" -eq 0 ]
   [[ "$output" == *"rsync -aP store:/data/web/magento2/var/backups/store-20260927-101500.sql.gz var/backups/"* ]]
+  [[ "$output" == *"Backup in var/backups/store-20260927-101500.sql.gz"* ]]
   [[ "$output" == *"/pub/media pub/"* ]]
 }
 

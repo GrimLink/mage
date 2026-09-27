@@ -127,12 +127,14 @@ function setup() {
 }
 
 @test "streams the dump into the warden db container" {
-  function warden() { echo "warden $*"; }
+  # Read the stream like mysql does, or gzip fails on a closed pipe
+  function warden() { cat > /dev/null; echo "warden $*"; }
   mage_env_use warden
   MAGENTO_CLI="echo magento"
 
   run mage_cmd_restore --no-media <<< "shop"
   [[ "$output" == *"warden env exec -T db mysql -umagento -pmagento -e DROP DATABASE IF EXISTS \`magento\`"* ]]
+  [[ "$output" == *"warden env exec -T db mysql -umagento -pmagento magento"* ]]
   [[ "$output" == *"php https://shop.test/ test magento opensearch 9200"* ]]
 }
 
