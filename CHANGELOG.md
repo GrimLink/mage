@@ -61,7 +61,7 @@ Anything mage does not know still runs `bin/magento`.
   Mage-OS is now the default edition, set `MAGE_EDITION="community"` in the config to change it.
   Asks which environment to use, defaulting to the first one installed (Warden, DDEV, Valet, then local).
 - **`mage setup`:** Asks for confirmation before reinstalling a project that is already installed, and now cleans the database as part of the install, so reinstalling also works in Warden and DDEV.
-  On Mage-OS it also disables `MageOS_ThemeOptimization`, whose bfcache conflicts with the BFCache patches and does not work with Hyvä.
+  On Mage-OS it also disables `MageOS_ThemeOptimization`, whose bfcache conflicts with the BFCache patches and does not work with Hyvä, see [mage-os/module-theme-optimization#28](https://github.com/mage-os/module-theme-optimization/issues/28).
   The modules it disables can be set with `MAGE_DISABLE_MODULES`.
 - **`mage nuke`:** Asks to type the folder name to confirm.
   The database name and credentials are read from `app/etc/env.php`, and the local environment now also drops its database, not only Valet.
