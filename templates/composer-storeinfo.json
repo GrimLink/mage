@@ -1,0 +1,9 @@
+{
+  "description": "Siteation StoreInfo",
+  "require": {
+    "siteation/magento2-storeinfo": "*",
+    "siteation/magento2-storeinfo-menus": "*",
+    "siteation/magento2-storeinfo-usps": "*",
+    "siteation/magento2-storeinfo-payments": "*"
+  }
+}
