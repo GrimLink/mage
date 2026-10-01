@@ -46,6 +46,14 @@ MAGE_DEV_PACKAGES=(
   siteation/magento2-debugbar
 )
 
+# The modules mage setup disables, when the install has them: two factor auth,
+# and the bfcache of Mage-OS, which conflicts with the BFCache patches and Hyva
+MAGE_DISABLE_MODULES=(
+  Magento_AdminAdobeImsTwoFactorAuth
+  Magento_TwoFactorAuth
+  MageOS_ThemeOptimization
+)
+
 # Magento pins these, so they would always show as outdated
 MAGE_OUTDATED_IGNORE=(
   symfony/finder

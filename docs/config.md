@@ -79,13 +79,14 @@ Warden and DDEV always use the values of their containers, see [environments](en
 
 ### Commands
 
-| Setting                | Default                             | Used for                                                |
-| ---------------------- | ----------------------------------- | ------------------------------------------------------- |
-| `MAGE_CLEAN_ALL`       | `files redis varnish`               | The options `mage clean` and `mage purge` run, in order |
-| `MAGE_OUTDATED_IGNORE` | `symfony/finder`, `symfony/process` | Packages `mage outdated` leaves out, Magento pins these |
-| `MAGE_BACKUP_DIR`      | `var/backups`                       | Where `mage backup` writes to, relative to the root     |
-| `MAGE_BACKUP_STRIP`    | `@stripped`                         | The magerun2 table groups `mage backup` leaves out      |
-| `MAGE_SYNC_PATH`       | `/data/web/magento2`                | The Magento root on the server `mage sync` pulls from   |
+| Setting                | Default                                     | Used for                                                     |
+| ---------------------- | ------------------------------------------- | ------------------------------------------------------------ |
+| `MAGE_DISABLE_MODULES` | Two factor auth, `MageOS_ThemeOptimization` | The modules `mage setup` disables, when the install has them |
+| `MAGE_CLEAN_ALL`       | `files redis varnish`                       | The options `mage clean` and `mage purge` run, in order      |
+| `MAGE_OUTDATED_IGNORE` | `symfony/finder`, `symfony/process`         | Packages `mage outdated` leaves out, Magento pins these      |
+| `MAGE_BACKUP_DIR`      | `var/backups`                               | Where `mage backup` writes to, relative to the root          |
+| `MAGE_BACKUP_STRIP`    | `@stripped`                                 | The magerun2 table groups `mage backup` leaves out           |
+| `MAGE_SYNC_PATH`       | `/data/web/magento2`                        | The Magento root on the server `mage sync` pulls from        |
 
 ### Placeholders in json files
 

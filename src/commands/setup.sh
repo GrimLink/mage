@@ -77,12 +77,7 @@ function mage_setup() {
 
   $MAGENTO_CLI deploy:mode:set developer
 
-  mage_info "Disabling 2FA"
-  local tfa_modules="Magento_TwoFactorAuth"
-  if grep -q 'Magento_AdminAdobeImsTwoFactorAuth' app/etc/config.php; then
-    tfa_modules="Magento_AdminAdobeImsTwoFactorAuth ${tfa_modules}"
-  fi
-  $MAGENTO_CLI module:disable $tfa_modules
+  mage_setup_disable_modules
 
   env_call setup_finish "$name"
 
@@ -103,6 +98,24 @@ function mage_set_store_config() {
 
     $MAGENTO_CLI config:set "${entry%% *}" "$value" &> /dev/null
   done
+}
+
+# Disable the modules of MAGE_DISABLE_MODULES that the install has, as not
+# every edition has all of them, such as MageOS_ThemeOptimization
+function mage_setup_disable_modules() {
+  local modules=()
+  local module
+
+  for module in "${MAGE_DISABLE_MODULES[@]}"; do
+    if grep -q "'${module}'" app/etc/config.php; then
+      modules+=("$module")
+    fi
+  done
+
+  if [[ ${#modules[@]} -gt 0 ]]; then
+    mage_info "Disabling ${modules[*]}"
+    $MAGENTO_CLI module:disable "${modules[@]}"
+  fi
 }
 
 function mage_add_gitignore() {

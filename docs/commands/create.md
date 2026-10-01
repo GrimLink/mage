@@ -48,7 +48,7 @@ When Magento is already installed, it asks first, as this drops the database.
    The admin url is `<project>_admin`, the store url `https://<project>.<MAGE_DOMAIN>/`.
 3. Gives OpenSearch and the Redis caches a prefix named after the database, so projects sharing a service stay apart.
 4. Sets the store name and the store config from `MAGE_STORE_CONFIG`.
-5. Sets the developer mode and disables two factor authentication.
+5. Sets the developer mode, and disables the modules in `MAGE_DISABLE_MODULES` the install has: two factor authentication, and on Mage-OS `MageOS_ThemeOptimization`, whose bfcache conflicts with the BFCache patches and does not work with Hyvä.
 6. Writes the `.valet-env.php` with Valet.
 7. Moves the `*.sample` files of the root to `dev/sample-files`, and adds a `.gitignore` when the project has none.
 
