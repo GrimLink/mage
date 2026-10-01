@@ -18,7 +18,7 @@ function mage_cmd_info() {
   local search=""
   local redis=""
   local php=""
-  local modules=0
+  local module_count=0
   local key
   local value
 
@@ -34,7 +34,7 @@ function mage_cmd_info() {
       search) search="$value" ;;
       redis) redis="$value" ;;
       php) php="$value" ;;
-      modules) modules="$value" ;;
+      modules) module_count="$value" ;;
     esac
   done <<< "$info"
 
@@ -77,12 +77,12 @@ function mage_cmd_info() {
   fi
 
   # Every module adds to each request, so many of them is worth a warning
-  if [[ $modules -lt 50 ]]; then
-    mage_info "- Modules: ${GREEN}${modules}${RESET}"
-  elif [[ $modules -lt 100 ]]; then
-    mage_info "- Modules: ${YELLOW}${modules}${RESET}"
+  if [[ $module_count -lt 50 ]]; then
+    mage_info "- Modules: ${GREEN}${module_count}${RESET}"
+  elif [[ $module_count -lt 100 ]]; then
+    mage_info "- Modules: ${YELLOW}${module_count}${RESET}"
   else
-    mage_info "- Modules: ${RED}${modules}${RESET} (consider removing some for performance)"
+    mage_info "- Modules: ${RED}${module_count}${RESET} (consider removing some for performance)"
   fi
 }
 
