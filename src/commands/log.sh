@@ -5,7 +5,7 @@ function mage_cmd_log() {
 
   if [[ ! -f "$file" ]]; then
     mage_error "${file} not found, the logs are:"
-    mage_show_logs >&2
+    mage_cmd_show logs >&2
     exit 1
   fi
 

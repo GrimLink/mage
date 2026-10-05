@@ -22,10 +22,9 @@ function mage_show_logs() {
   fi
 
   local name
-  local bytes
   local size
 
-  while IFS=$'\t' read -r name bytes size; do
+  while IFS=$'\t' read -r name _ size; do
     printf '%-30s %s\n' "$name" "$size"
   done <<< "${lines%$'\n'}"
 }
