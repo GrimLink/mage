@@ -12,7 +12,7 @@ function setup() {
 }
 
 @test "adds Hyva with a license" {
-  run mage_cmd_add hyva <<< "$(printf '\n\n')"
+  run mage_cmd_add hyva <<< $'\n'
   [ "$status" -eq 0 ]
   [[ "$output" == *"hyva-themes.repo.packagist.com/acme/"* ]]
   [[ "$output" == *"magento setup:upgrade"* ]]

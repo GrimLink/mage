@@ -17,7 +17,7 @@ function setup() {
 }
 
 @test "asks for the admin, where empty answers use the defaults" {
-  run mage_cmd_add admin <<< "$(printf 'other@example.com\n\n\nother\n')"
+  run mage_cmd_add admin <<< $'other@example.com\n\n\nother\n'
   [[ "$output" == *"--admin-user=other --admin-password=secret123 --admin-email=other@example.com --admin-firstname=Me"* ]]
 }
 

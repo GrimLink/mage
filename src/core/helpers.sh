@@ -11,10 +11,15 @@ function mage_ask() {
   local default="$2"
   local answer=""
 
+  if [[ $MAGE_YES == 1 ]] && [[ -n "$default" ]]; then
+    echo "$default"
+    return
+  fi
+
   if [[ -n "$default" ]]; then
-    read -r -e -p "${question} (${default}): " answer
+    read -r -e -p "${question} (${default}): " answer || mage_no_answer "$question"
   else
-    read -r -e -p "${question}: " answer
+    read -r -e -p "${question}: " answer || mage_no_answer "$question"
   fi
 
   echo "${answer:-$default}"
@@ -30,7 +35,12 @@ function mage_confirm() {
     options="Y/n"
   fi
 
-  read -r -e -p "${question} [${options}] "
+  if [[ $MAGE_YES == 1 ]]; then
+    [[ $default == "y" ]]
+    return $?
+  fi
+
+  read -r -e -p "${question} [${options}] " || mage_no_answer "$question"
 
   if [[ -z "$REPLY" ]]; then
     [[ $default == "y" ]]
@@ -81,8 +91,17 @@ function mage_db_args() {
 # Ask to type the name to confirm something that can not be undone
 function mage_confirm_name() {
   local answer=""
-  read -r -p "Type '${1}' to confirm: " answer
+  read -r -p "Type '${1}' to confirm: " answer || mage_no_answer "Type '${1}' to confirm"
   [[ "$answer" == "$1" ]]
+}
+
+# Stop when a question gets no answer, such as without a terminal for a script or
+# agent, instead of quietly taking a default
+function mage_no_answer() {
+  echo "" >&2
+  mage_error "No answer for: ${1}"
+  mage_error "Run it in a terminal, or pass the answer as an option or -y, see docs/automation.md"
+  exit 1
 }
 
 # Download a url to a given path, using curl or wget
@@ -134,7 +153,7 @@ function mage_ask_vendor_name() {
   local vendor=""
 
   if [[ -z "$name" ]]; then
-    name="$(mage_ask "${label} name (Vendor/Name)")"
+    name="$(mage_ask "${label} name (Vendor/Name)")" || return 1
   fi
 
   if [[ "$name" == */* ]]; then
@@ -143,7 +162,7 @@ function mage_ask_vendor_name() {
   fi
 
   if [[ -z "$vendor" ]]; then
-    vendor="$(mage_ask "${label} vendor")"
+    vendor="$(mage_ask "${label} vendor")" || return 1
   fi
 
   MAGE_NEW_VENDOR="$(echo "$vendor" | tr -d '[:blank:]')"
@@ -197,4 +216,9 @@ function mage_set_theme() {
 
   mage_notice "Select the $1 theme in the admin, under Content, Design, Configuration"
   return 1
+}
+
+# Check whether the arguments ask for json output
+function mage_wants_json() {
+  [[ " $* " == *" --json "* ]]
 }

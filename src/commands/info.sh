@@ -1,4 +1,4 @@
-# Show the main facts of the project, read from Magento in one boot
+# Show the main facts of the project, read from Magento in one boot, --json for json
 function mage_cmd_info() {
   local info
   info="$(mage_info_read 2> /dev/null | grep '^INFO:')"
@@ -38,6 +38,26 @@ function mage_cmd_info() {
     esac
   done <<< "$info"
 
+  local node
+  node="$($NODE_CLI --version 2> /dev/null)"
+  node="${node#v}"
+
+  if mage_wants_json "$@"; then
+    mage_require_jq "The info as json"
+    jq -n \
+      --arg product "$product" --arg hyva "$hyva" --arg mode "$mode" \
+      --arg maintenance "$maintenance" --arg base_url "$base_url" --arg admin_url "$admin_url" \
+      --arg database "$database" --arg search "$search" --arg redis "$redis" \
+      --arg php "$php" --arg node "$node" --arg modules "$module_count" \
+      'def empty_null: if . == "" then null else . end; {
+        product: $product, hyva: ($hyva | empty_null), mode: $mode, maintenance: ($maintenance == "1"),
+        base_url: $base_url, admin_url: $admin_url, database: $database,
+        search: ($search | empty_null), redis: ($redis | empty_null),
+        php: $php, node: ($node | empty_null), modules: ($modules | tonumber)
+      }'
+    return
+  fi
+
   if [[ -n "$hyva" ]]; then
     mage_info "${BOLD}${product}${RESET} (Hyvä ${GREEN}${hyva}${RESET})"
   else
@@ -70,10 +90,8 @@ function mage_cmd_info() {
 
   mage_info "- PHP: ${GREEN}${php}${RESET}"
 
-  local node
-  node="$($NODE_CLI --version 2> /dev/null)"
   if [[ -n "$node" ]]; then
-    mage_info "- Node: ${GREEN}${node#v}${RESET}"
+    mage_info "- Node: ${GREEN}${node}${RESET}"
   fi
 
   # Every module adds to each request, so many of them is worth a warning

@@ -14,6 +14,9 @@ MAGE_ADMIN_LASTNAME="admin"
 MAGE_ADMIN_EMAIL="info@example.com"
 MAGE_ADMIN_PASS="magento_123$"
 
+# Take the defaults and confirm without asking, as -y does, such as for scripts and agents
+MAGE_YES="${MAGE_YES:-0}"
+
 # The edition 'mage create' defaults to: mage-os, community or enterprise
 MAGE_EDITION="mage-os"
 

@@ -15,14 +15,13 @@ function mage_cmd_module() {
     return
   fi
 
-  local assume_yes=0
   local terms=()
   local options=()
   local arg
 
   for arg in "$@"; do
     case "$arg" in
-      -y | --yes) assume_yes=1 ;;
+      -y | --yes) MAGE_YES=1 ;;
       -*) options+=("$arg") ;;
       *) terms+=("$arg") ;;
     esac
@@ -56,7 +55,7 @@ function mage_cmd_module() {
     mage_info "  ${module}"
   done
 
-  if [[ $assume_yes == 0 ]] && ! mage_confirm "Run module:${action} for these modules?"; then
+  if [[ $MAGE_YES != 1 ]] && ! mage_confirm "Run module:${action} for these modules?"; then
     exit 0
   fi
 

@@ -24,7 +24,7 @@ function mage_sample_hyva() {
 
   # Next to the Luma sample data, Koti needs to know whether to keep or replace it
   if mage_is_luma_sample_installed && [[ " $* " != *" --keep-luma "* ]] && [[ " $* " != *" --replace-luma "* ]]; then
-    if mage_confirm "Replace the Luma sample data? This removes all products, orders and customers, otherwise Koti gets its own website"; then
+    if [[ $MAGE_YES != 1 ]] && mage_confirm "Replace the Luma sample data? This removes all products, orders and customers, otherwise Koti gets its own website"; then
       args+=(--replace-luma)
     else
       args+=(--keep-luma)

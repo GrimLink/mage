@@ -1,8 +1,22 @@
 # Install Magento in an existing project, optionally in the given folder
 function mage_cmd_setup() {
-  if [[ -n "$1" ]]; then
-    if ! cd "$1" 2> /dev/null; then
-      mage_error "Directory '$1' not found"
+  local folder=""
+  local arg
+
+  for arg in "$@"; do
+    case "$arg" in
+      -y | --yes) MAGE_YES=1 ;;
+      -*)
+        mage_error "Unknown option '${arg}'"
+        exit 1
+        ;;
+      *) folder="$arg" ;;
+    esac
+  done
+
+  if [[ -n "$folder" ]]; then
+    if ! cd "$folder" 2> /dev/null; then
+      mage_error "Directory '${folder}' not found"
       exit 1
     fi
   fi
@@ -13,7 +27,7 @@ function mage_cmd_setup() {
   local name
   name="$(basename "$PWD")"
 
-  if [[ -f app/etc/env.php ]] && ! mage_confirm "This drops the database of '${name}' and installs Magento again, continue?"; then
+  if [[ -f app/etc/env.php ]] && [[ $MAGE_YES != 1 ]] && ! mage_confirm "This drops the database of '${name}' and installs Magento again, continue?"; then
     exit 0
   fi
 

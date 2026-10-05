@@ -1,4 +1,4 @@
-MAGE_ADD_HANDLERS+=("theme|Create a child theme, options: [Vendor/Name] [--parent=THEME] [--admin]")
+MAGE_ADD_HANDLERS+=("theme|Create a child theme, options: [Vendor/Name] [--parent=THEME] [--admin] [-y]")
 
 MAGE_HYVA_THEME_DIR="vendor/hyva-themes/magento2-default-theme"
 
@@ -14,6 +14,7 @@ function mage_add_theme() {
     case "$arg" in
       --parent=*) parent="${arg#*=}" ;;
       --admin) area="adminhtml" ;;
+      -y | --yes) MAGE_YES=1 ;;
       -*)
         mage_error "Unknown option '${arg}'"
         exit 1
@@ -25,7 +26,7 @@ function mage_add_theme() {
   mage_ask_vendor_name "Theme" "$name" || exit 1
 
   if [[ -z "$parent" ]]; then
-    parent="$(mage_ask "Parent theme" "$(mage_theme_default_parent "$area")")"
+    parent="$(mage_ask "Parent theme" "$(mage_theme_default_parent "$area")")" || exit 1
   fi
 
   local theme_path="${MAGE_NEW_VENDOR}/${MAGE_NEW_NAME_PKG}"

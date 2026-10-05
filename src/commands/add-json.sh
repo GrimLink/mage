@@ -69,14 +69,14 @@ function mage_add_json_fill() {
 
     if [[ "$secrets" == *" $name "* ]]; then
       if [[ -n "${!default_var}" ]]; then
-        read -r -s -p "${name} (set in config): " value
+        read -r -s -p "${name} (set in config): " value || mage_no_answer "$name"
       else
-        read -r -s -p "${name}: " value
+        read -r -s -p "${name}: " value || mage_no_answer "$name"
       fi
       echo "" >&2
       value="${value:-${!default_var}}"
     else
-      value="$(mage_ask "$name" "${!default_var}")"
+      value="$(mage_ask "$name" "${!default_var}")" || exit 1
     fi
 
     if [[ -z "$value" ]]; then

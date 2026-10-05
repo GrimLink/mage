@@ -7,7 +7,6 @@ function mage_cmd_create() {
   local edition=""
   local version=""
   local env=""
-  local assume_yes=0
   local arg
 
   for arg in "$@"; do
@@ -15,7 +14,7 @@ function mage_cmd_create() {
       --edition=*) edition="${arg#*=}" ;;
       --version=*) version="${arg#*=}" ;;
       --env=*) env="${arg#*=}" ;;
-      -y | --yes) assume_yes=1 ;;
+      -y | --yes) MAGE_YES=1 ;;
       -*)
         mage_error "Unknown option '${arg}'"
         exit 1
@@ -43,22 +42,16 @@ function mage_cmd_create() {
   available_envs="$(mage_env_available)"
   local default_env="${available_envs%% *}"
 
-  if [[ $assume_yes == 1 ]]; then
-    edition="${edition:-$MAGE_EDITION}"
-    version="${version:-latest}"
-    env="${env:-$default_env}"
-  fi
-
   if [[ -z "$edition" ]]; then
-    edition="$(mage_ask "Edition [${MAGE_EDITIONS}]" "$MAGE_EDITION")"
+    edition="$(mage_ask "Edition [${MAGE_EDITIONS}]" "$MAGE_EDITION")" || exit 1
   fi
 
   if [[ -z "$version" ]]; then
-    version="$(mage_ask "Magento version" "latest")"
+    version="$(mage_ask "Magento version" "latest")" || exit 1
   fi
 
   if [[ -z "$env" ]]; then
-    env="$(mage_ask "Environment [${available_envs}]" "$default_env")"
+    env="$(mage_ask "Environment [${available_envs}]" "$default_env")" || exit 1
   fi
 
   if [[ " $available_envs " != *" $env "* ]]; then

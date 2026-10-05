@@ -13,7 +13,7 @@ function mage_add_patch() {
   local input="$1"
 
   if [[ -z "$input" ]]; then
-    input="$(mage_ask "Package to patch (vendor/name), or a patch repository url")"
+    input="$(mage_ask "Package to patch (vendor/name), or a patch repository url")" || exit 1
   fi
 
   if [[ "$input" =~ ^https://(github|gitlab)\.com/ ]]; then
@@ -66,7 +66,7 @@ function mage_add_patch_entry() {
   local source="${!#}"
 
   if [[ -z "$name" ]]; then
-    name="$(mage_ask "Patch name")"
+    name="$(mage_ask "Patch name")" || exit 1
   fi
 
   if [[ -z "$name" ]]; then
@@ -141,7 +141,7 @@ function mage_add_patch_create() {
 }
 
 function mage_patch_wait_for_changes() {
-  read -r -s -n 1 -p "Make your changes in $1, then press any key to continue"
+  read -r -s -n 1 -p "Make your changes in $1, then press any key to continue" || mage_no_answer "Make your changes in $1, then press any key"
   echo "" >&2
 }
 

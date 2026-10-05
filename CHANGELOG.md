@@ -112,6 +112,10 @@ Anything mage does not know still runs `bin/magento`.
   It no longer runs `setup:static-content:deploy`, use `mage setup:static-content:deploy` for that.
   `mage build hyva` still builds the Hyvä theme in `vendor`.
   The script names can be set with `MAGE_BUILD_SCRIPT` and `MAGE_WATCH_SCRIPT`.
+- **Scripts and agents:** Without a terminal, a question now stops with an error instead of quietly taking a default.
+  `-y` takes the defaults for `create`, `setup`, `add theme`, `add module`, `add sample`, `add admin`, `del`, `enable` and `disable`, and `MAGE_YES=1` does the same for every command.
+  `mage info` and `mage show modules`, `themes` and `logs` print json with `--json`.
+  See `docs/automation.md`.
 - **Output:** Errors go to stderr, and colors are left out when `NO_COLOR` is set or the output is not a terminal.
 
 ### Removed

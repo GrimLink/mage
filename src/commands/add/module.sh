@@ -1,4 +1,4 @@
-MAGE_ADD_HANDLERS+=("module|Create a module, options: [Vendor/Name] [--hyva|--no-hyva]")
+MAGE_ADD_HANDLERS+=("module|Create a module, options: [Vendor/Name] [--hyva|--no-hyva] [-y]")
 
 # Create a module in app/code, or as a composer package in package-source.
 # A Hyva module also registers its tailwind sources with the Hyva config.
@@ -11,6 +11,7 @@ function mage_add_module() {
   for arg in "$@"; do
     case "$arg" in
       --hyva) hyva=1 ;;
+      -y | --yes) MAGE_YES=1 ;;
       --no-hyva) hyva=0 ;;
       -*)
         mage_error "Unknown option '${arg}'"

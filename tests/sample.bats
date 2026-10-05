@@ -8,7 +8,7 @@ function setup() {
 }
 
 @test "installs the Magento sample data and cleans up after it" {
-  run mage_cmd_add sample magento
+  run mage_cmd_add sample magento <<< "y"
   [ "$status" -eq 0 ]
   [ "${lines[0]}" = "magento sampledata:deploy" ]
   [ "${lines[1]}" = "magento setup:upgrade" ]
@@ -24,12 +24,12 @@ function setup() {
 @test "asks which set, defaulting to hyva when Hyva is installed" {
   mkdir -p vendor/hyva-themes/magento2-theme-module
 
-  run mage_cmd_add sample <<< ""
+  run mage_cmd_add sample <<< $'\n'
   [[ "$output" == *"magento hyva:sampledata:deploy"* ]]
 }
 
 @test "defaults to magento without Hyva" {
-  run mage_cmd_add sample <<< ""
+  run mage_cmd_add sample <<< $'\n'
   [[ "$output" == *"magento sampledata:deploy"* ]]
 }
 
@@ -51,12 +51,12 @@ function setup() {
   MAGE_CALL_DIR="$BATS_TEST_TMPDIR"
 
   echo '{ "repositories": { "local-packages": { "type": "path", "url": "package-source/*/*" } } }' > composer.json
-  run mage_cmd_add sample hyva
+  run mage_cmd_add sample hyva <<< "y"
   [[ "$output" == *"composer config repositories.koti-sample-data-catalog"*"gitlab.hyva.io:hyva-themes/sample-data/koti/koti-sample-data-catalog.git"* ]]
   [[ "$output" == *"magento hyva:sampledata:deploy"* ]]
 
   echo '{ "repositories": { "private-packagist": { "type": "composer", "url": "https://hyva-themes.repo.packagist.com/acme/" } } }' > composer.json
-  run mage_cmd_add sample hyva
+  run mage_cmd_add sample hyva <<< "y"
   [[ "$output" != *"koti-sample-data"* ]]
   [[ "$output" == *"magento hyva:sampledata:deploy"* ]]
 }
@@ -65,12 +65,12 @@ function setup() {
   mkdir -p vendor/hyva-themes/magento2-theme-module vendor/magento/module-catalog-sample-data
   echo '{ "repositories": { "private-packagist": { "type": "composer", "url": "https://hyva-themes.repo.packagist.com/acme/" } } }' > composer.json
 
-  run mage_cmd_add sample hyva <<< "n"
+  run mage_cmd_add sample hyva <<< $'n\ny'
   [[ "$output" == *"magento hyva:sampledata:deploy --keep-luma"* ]]
 
-  run mage_cmd_add sample hyva <<< "y"
+  run mage_cmd_add sample hyva <<< $'y\ny'
   [[ "$output" == *"magento hyva:sampledata:deploy --replace-luma"* ]]
 
-  run mage_cmd_add sample hyva --reinstall --keep-luma
+  run mage_cmd_add sample hyva --reinstall --keep-luma <<< "y"
   [[ "$output" == *"magento hyva:sampledata:deploy --reinstall --keep-luma"* ]]
 }

@@ -6,7 +6,7 @@ function mage_add_store() {
   local url="$1"
 
   if [[ -z "$url" ]]; then
-    url="$(mage_ask "Store prefix or domain, such as luma or b2b.example.test")"
+    url="$(mage_ask "Store prefix or domain, such as luma or b2b.example.test")" || exit 1
   fi
 
   if [[ -z "$url" ]]; then

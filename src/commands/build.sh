@@ -117,7 +117,7 @@ function mage_build_pick() {
   done
 
   local choice
-  choice="$(mage_ask "Which one to watch [1-$#]")"
+  choice="$(mage_ask "Which one to watch [1-$#]")" || return 1
 
   if [[ ! "$choice" =~ ^[0-9]+$ ]] || [[ $choice -lt 1 ]] || [[ $choice -gt $# ]]; then
     mage_error "Pick a number from 1 to $#"

@@ -104,7 +104,7 @@ EOF
   MAGE_VAR_HYVA_PROJECT="acme"
   MAGE_VAR_HYVA_LICENSE_KEY="key"
 
-  run mage_cmd_add "${MAGE_REPO}/templates/composer-hyva.json" <<< "$(printf '\n\n')"
+  run mage_cmd_add "${MAGE_REPO}/templates/composer-hyva.json" <<< $'\n'
   [ "$status" -eq 0 ]
   [[ "$output" == *"--auth http-basic.hyva-themes.repo.packagist.com token key"* ]]
   [[ "$output" == *'"url":"https://hyva-themes.repo.packagist.com/acme/"'* ]]

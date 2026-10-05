@@ -81,6 +81,11 @@ Mage looks for the Magento root (the folder with `bin/magento` and `app/etc/di.x
 So `mage cache:clean` works from `app/code/Vendor/Module` too.
 Outside a project only `create`, `setup`, `help`, `version` and `self-update` work.
 
+## Scripts and agents
+
+Without a terminal, questions stop with an error instead of taking a default, `-y` or `MAGE_YES=1` takes the defaults, and `info` and `show` can print json.
+See [scripts and agents](docs/automation.md).
+
 ## Configuration
 
 Mage runs with sensible defaults, all of which can be changed in `~/.config/mage/config`.

@@ -135,7 +135,7 @@ function mage_main() {
       mage_cmd_show "${@:2}"
       ;;
     "info")
-      mage_cmd_info
+      mage_cmd_info "${@:2}"
       ;;
     "open")
       mage_cmd_open "${@:2}"

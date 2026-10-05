@@ -11,13 +11,12 @@ function mage_cmd_remove() {
     return
   fi
 
-  local assume_yes=0
   local terms=()
   local arg
 
   for arg in "$@"; do
     case "$arg" in
-      -y | --yes) assume_yes=1 ;;
+      -y | --yes) MAGE_YES=1 ;;
       -*)
         mage_error "Unknown option '${arg}'"
         exit 1
@@ -53,7 +52,7 @@ function mage_cmd_remove() {
     mage_info "  ${package} (dev)"
   done
 
-  if [[ $assume_yes == 0 ]] && ! mage_confirm "Remove these packages?"; then
+  if [[ $MAGE_YES != 1 ]] && ! mage_confirm "Remove these packages?"; then
     exit 0
   fi
 
