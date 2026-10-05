@@ -83,6 +83,8 @@ Warden and DDEV always use the values of their containers, see [environments](en
 | ---------------------- | ------------------------------------------- | ------------------------------------------------------------ |
 | `MAGE_DISABLE_MODULES` | Two factor auth, `MageOS_ThemeOptimization` | The modules `mage setup` disables, when the install has them |
 | `MAGE_CLEAN_ALL`       | `files redis varnish`                       | The options `mage clean` and `mage purge` run, in order      |
+| `MAGE_BUILD_SCRIPT`    | `build`                                     | The npm script `mage build` runs                             |
+| `MAGE_WATCH_SCRIPT`    | `watch`                                     | The npm script `mage build --watch` runs                     |
 | `MAGE_OUTDATED_IGNORE` | `symfony/finder`, `symfony/process`         | Packages `mage outdated` leaves out, Magento pins these      |
 | `MAGE_BACKUP_DIR`      | `var/backups`                               | Where `mage backup` writes to, relative to the root          |
 | `MAGE_BACKUP_STRIP`    | `@stripped`                                 | The magerun2 table groups `mage backup` leaves out           |

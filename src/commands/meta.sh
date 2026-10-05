@@ -50,6 +50,8 @@ function mage_cmd_help() {
   mage_help_cmd "show [OPTION]"               "Show project information, see 'mage show help' for all options"
   mage_help_cmd "run [ARGS]"                  "Run n98-magerun2"
   mage_help_cmd "watch"                       "Clean only the caches a file change affects, with cache-clean"
+  mage_help_cmd "build [TARGET]"              "Build every theme, or the npm packages matching the target"
+  mage_help_cmd "  -w, --watch"               "Watch the one target instead"
   mage_help_cmd "log [FILE]"                  "Follow a log in var/log, debug by default"
   mage_help_cmd "reindex"                     "Reindex everything, then clean the cache"
   mage_help_cmd "clean/purge [OPTION]"        "Clean caches and files, see 'mage clean help' for all options"

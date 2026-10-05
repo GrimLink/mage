@@ -35,6 +35,7 @@ source "${MAGE_SRC}/commands/run.sh"
 source "${MAGE_SRC}/commands/open.sh"
 source "${MAGE_SRC}/commands/info.sh"
 source "${MAGE_SRC}/commands/watch.sh"
+source "${MAGE_SRC}/commands/build.sh"
 source "${MAGE_SRC}/commands/reindex.sh"
 source "${MAGE_SRC}/commands/log.sh"
 source "${MAGE_SRC}/commands/add.sh"
@@ -141,6 +142,9 @@ function mage_main() {
       ;;
     "watch")
       mage_cmd_watch
+      ;;
+    "build")
+      mage_cmd_build "${@:2}"
       ;;
     "reindex")
       mage_cmd_reindex

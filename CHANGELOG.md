@@ -108,6 +108,10 @@ Anything mage does not know still runs `bin/magento`.
   The Magento set now uses `sampledata:deploy`, so it fits the installed version of every edition, Mage-OS included, and works in Warden and DDEV.
   The old clones in `~/.magento-sampledata` can be deleted.
   The version argument is gone, the installed version is used.
+- **`mage build`:** Now builds themes with their npm scripts, every theme in `app/design` and `package-source` without a target, or what matches the target, and `--watch` watches one.
+  It no longer runs `setup:static-content:deploy`, use `mage setup:static-content:deploy` for that.
+  `mage build hyva` still builds the Hyvä theme in `vendor`.
+  The script names can be set with `MAGE_BUILD_SCRIPT` and `MAGE_WATCH_SCRIPT`.
 - **Output:** Errors go to stderr, and colors are left out when `NO_COLOR` is set or the output is not a terminal.
 
 ### Removed
@@ -117,7 +121,7 @@ Anything mage does not know still runs `bin/magento`.
 - **`mage new theme`, `mage new module`, `mage new patch`, `mage new admin`, `mage new customer`, `mage new store` and `mage new i18n`:** Use `mage add` with the same name.
 - **`mage add hyva checkout` and `mage add hyva commerce`:** Add their repositories with `mage add <url>.git`.
 - **`mage set theme` and `mage set mage-os`:** For the theme, use `mage theme:change`.
-- **`mage build`, `mage build hyva`, `mage browser-sync` and `mage get`:** Use their `bin/magento`, npm or composer commands directly.
+- **`mage browser-sync` and `mage get`:** Use their npm or composer commands directly.
 - **`mage cleanup [TYPE]`:** Use `mage clean [OPTION]`, where `sample` is now `sample-files`.
 
 ### Fixed

@@ -64,6 +64,7 @@ Anything mage does not know runs `bin/magento`, so `mage cache:clean` works as e
 | [`enable`, `disable`](docs/commands/enable.md)                 | Enable or disable modules by name or term                          |
 | [`outdated`](docs/commands/outdated.md)                        | List the direct dependencies with a newer version                  |
 | [`watch`](docs/commands/watch.md)                              | Clean only the caches a file change affects                        |
+| [`build`](docs/commands/build.md)                              | Build themes with their npm scripts, or watch one                  |
 | [`log`](docs/commands/log.md)                                  | Follow a log in `var/log`                                          |
 | [`reindex`](docs/commands/reindex.md)                          | Reindex, then clean the cache                                      |
 | [`clean`](docs/commands/clean.md)                              | Clean caches and generated files (alias: `purge`)                  |

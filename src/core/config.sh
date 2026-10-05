@@ -54,6 +54,10 @@ MAGE_DISABLE_MODULES=(
   MageOS_ThemeOptimization
 )
 
+# The npm scripts 'mage build' runs, and with --watch
+MAGE_BUILD_SCRIPT="build"
+MAGE_WATCH_SCRIPT="watch"
+
 # Magento pins these, so they would always show as outdated
 MAGE_OUTDATED_IGNORE=(
   symfony/finder

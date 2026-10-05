@@ -15,6 +15,7 @@ function env_warden_apply() {
   PHP_CLI="warden env exec php-fpm php"
   COMPOSER_CLI="warden env exec php-fpm composer"
   NODE_CLI="warden env exec php-fpm node"
+  NPM_CLI="warden env exec php-fpm npm"
   REDIS_CLI="warden env exec redis redis-cli"
   VARNISH_CLI="warden env exec -T varnish varnishadm"
   RSYNC_CLI="warden env exec -T php-fpm rsync"
