@@ -94,6 +94,7 @@ Warden and DDEV always use the values of their containers, see [environments](en
 
 A json file for `mage add` can hold `{{NAME}}` placeholders, which mage asks for.
 Set `MAGE_VAR_<NAME>` to give an answer as default, then an empty answer uses it.
+Mage also adds it on its own after the first answer to a placeholder, except for secrets.
 See [composer fragments](composer-fragments.md).
 
 ```bash

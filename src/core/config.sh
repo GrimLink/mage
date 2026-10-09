@@ -121,3 +121,10 @@ function mage_system_user() {
     MAGE_ADMIN_EMAIL="$email"
   fi
 }
+
+# Add a setting to the config file, quoted so the file stays valid bash
+function mage_config_save() {
+  mkdir -p "$MAGE_CONFIG_DIR"
+  printf '%s=%q\n' "$1" "$2" >> "$MAGE_CONFIG_FILE"
+  mage_notice "Saved ${1} in ${MAGE_CONFIG_FILE}"
+}

@@ -23,6 +23,7 @@ Anything mage does not know still runs `bin/magento`.
 - **`mage add [FILE].json`:** Applies a composer fragment, a json file with the `repositories`, `config`, `auth`, `require` and `require-dev` keys of a composer.json.
   Its repositories are appended after the existing ones, so the `package-source` path repository keeps priority.
   Credentials the global composer auth already has are kept and not asked again.
+  The first answer to a placeholder that is not a secret is saved as its `MAGE_VAR_<NAME>` default.
   `{{NAME}}` placeholders are asked, with defaults from `MAGE_VAR_<NAME>` in the config, and credentials go to the global composer auth, so they never end up in the project.
   Requires jq.
   `templates/composer-hyva.json` is an example that adds Hyvä with a license.

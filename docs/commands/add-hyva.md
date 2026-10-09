@@ -26,7 +26,8 @@ Hyvä Checkout and Hyvä Commerce are not either, add their repositories with [`
   When the global auth already has a key for that host, it is used and not asked.
 - `HYVA_PROJECT`: your project name, the part of your packagist url `https://hyva-themes.repo.packagist.com/<project>/`.
 
-Set `MAGE_VAR_HYVA_LICENSE_KEY` and `MAGE_VAR_HYVA_PROJECT` in the [configuration](../config.md) to answer them with an enter.
+Your first answer for `HYVA_PROJECT` is saved as `MAGE_VAR_HYVA_PROJECT` in the [configuration](../config.md), so next time an enter is enough.
+The license key is never saved there, only in the composer auth.
 
 ## For development
 

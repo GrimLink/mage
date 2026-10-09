@@ -129,3 +129,23 @@ EOF
   run mage_cmd_add fragment.json <<< "key"
   [[ "$output" == *"composer config --global --auth http-basic.repo.example.com token key"* ]]
 }
+
+@test "saves an answer as the default for next time" {
+  echo '{ "repositories": { "private": { "type": "composer", "url": "https://repo/{{PROJECT}}/" } } }' > fragment.json
+
+  run mage_cmd_add fragment.json <<< "my project"
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"Saved MAGE_VAR_PROJECT"* ]]
+
+  source "$MAGE_CONFIG_FILE"
+  [ "$MAGE_VAR_PROJECT" = "my project" ]
+}
+
+@test "keeps the config when a default was set, and never saves a secret" {
+  echo '{ "auth": { "gitlab-token": { "gitlab.example.com": "{{TOKEN}}" } }, "repositories": { "private": { "type": "composer", "url": "https://repo/{{PROJECT}}/" } } }' > fragment.json
+  MAGE_VAR_PROJECT="configured"
+
+  run mage_cmd_add fragment.json <<< $'secret\nother'
+  [ "$status" -eq 0 ]
+  [ ! -e "$MAGE_CONFIG_FILE" ]
+}

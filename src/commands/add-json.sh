@@ -106,6 +106,11 @@ function mage_add_json_fill() {
       value="${value:-${!default_var}}"
     else
       value="$(mage_ask "$name" "${!default_var}")" || exit 1
+
+      # Saved as the default for next time, secrets never are
+      if [[ -z "${!default_var}" ]] && [[ -n "$value" ]]; then
+        mage_config_save "$default_var" "$value"
+      fi
     fi
 
     if [[ -z "$value" ]]; then

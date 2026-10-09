@@ -95,6 +95,8 @@ The answer to each is used everywhere it occurs.
 
 - Placeholders inside `auth` are secrets, their input is hidden.
 - `MAGE_VAR_<NAME>` in the [configuration](config.md) gives the default answer, so an empty answer uses it.
+- An answer to a placeholder without a default is saved in the configuration as `MAGE_VAR_<NAME>`, so next time it is the default.
+  Secrets are never saved, and an existing default is never changed.
 - An empty answer without a default stops the command.
 - Answers are escaped for json, so quotes are safe.
 
