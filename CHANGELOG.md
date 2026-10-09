@@ -49,6 +49,7 @@ Anything mage does not know still runs `bin/magento`.
   The host is required, the Magento root defaults to the one of Hypernode, and can be given or set with `MAGE_SYNC_PATH`.
 - **`mage nuke --keep-files`:** Removes the database and environment, but keeps the project files.
 - **Config file:** The defaults, such as the admin user, database credentials, store config and default composer packages, can be overridden in `~/.config/mage/config`.
+  Mage only loads it when it is owned by you and others can not change it.
 - **DDEV support:** Projects with a `.ddev/config.yaml` run their commands through DDEV.
   `mage create` can set up a new DDEV project, with the OpenSearch and Redis add-ons, and `mage nuke` removes it with `ddev delete`.
 - **Tests and CI:** A bats test suite, and a GitHub Action that runs it together with ShellCheck on every push and pull request to main.

@@ -97,7 +97,16 @@ MAGE_STORE_CONFIG=(
 # Defaults for the {{NAME}} placeholders in json files for 'mage add' go in the
 # config as MAGE_VAR_<NAME>, such as MAGE_VAR_HYVA_PROJECT="my-project"
 
+# The config runs as code, so like ssh with its config, refuse one that someone
+# else could have changed: not owned by you, or writable by group or others
 if [[ -f "$MAGE_CONFIG_FILE" ]]; then
+  if [[ ! -O "$MAGE_CONFIG_FILE" ]] || [[ ! -O "$MAGE_CONFIG_DIR" ]] ||
+    [[ -n "$(find "$MAGE_CONFIG_DIR" "$MAGE_CONFIG_FILE" -maxdepth 0 \( -perm -g=w -o -perm -o=w \) 2> /dev/null)" ]]; then
+    mage_error "Not loading ${MAGE_CONFIG_FILE}, it is not owned by you or others can change it"
+    mage_error "Fix it with: chmod 600 \"${MAGE_CONFIG_FILE}\" && chmod go-w \"${MAGE_CONFIG_DIR}\""
+    exit 1
+  fi
+
   # shellcheck source=/dev/null
   source "$MAGE_CONFIG_FILE"
 fi
@@ -125,6 +134,12 @@ function mage_system_user() {
 # Add a setting to the config file, quoted so the file stays valid bash
 function mage_config_save() {
   mkdir -p "$MAGE_CONFIG_DIR"
+
+  if [[ ! -f "$MAGE_CONFIG_FILE" ]]; then
+    touch "$MAGE_CONFIG_FILE"
+    chmod 600 "$MAGE_CONFIG_FILE"
+  fi
+
   printf '%s=%q\n' "$1" "$2" >> "$MAGE_CONFIG_FILE"
   mage_notice "Saved ${1} in ${MAGE_CONFIG_FILE}"
 }

@@ -104,6 +104,15 @@ MAGE_VAR_HYVA_LICENSE_KEY="..."
 
 Mind that the config is a plain file, keep secrets out of it when others can read it.
 
+## Security
+
+The config is plain bash, so it runs as code each time mage starts.
+Mage only loads it when it is owned by you and neither the file nor the `mage` folder can be changed by others, the same rule ssh has for its config.
+Otherwise it stops and shows the `chmod` that fixes it.
+A config mage creates itself is readable by you only.
+
+Mage never loads a config from a project, so cloning a repository can not run code through it.
+
 ## Other files in the config folder
 
 - `templates/`: the templates for new themes, modules and the bundled json files, see [templates](templates.md).
