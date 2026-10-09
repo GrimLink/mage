@@ -22,8 +22,19 @@ function mage_add_json() {
 
   mage_add_json_check_keys "$file"
 
+  # Without the credentials that are already set, so their placeholders are not asked
+  local fragment
+  fragment="$(mktemp)"
+  mage_add_json_without_known_auth "$file" > "$fragment" || exit 1
+
   local json
-  json="$(mage_add_json_fill "$file")" || exit 1
+  json="$(mage_add_json_fill "$fragment")"
+  local status=$?
+  rm -f "$fragment"
+
+  if [[ $status != 0 ]]; then
+    exit 1
+  fi
 
   local description
   description="$(jq -r '.description // empty' <<< "$json")"
@@ -47,6 +58,24 @@ function mage_add_json_check_keys() {
       mage_warn "Skipping the unknown key '${key}', use one of: ${MAGE_ADD_JSON_KEYS}"
     fi
   done
+}
+
+# Echo the json without the auth entries the global composer auth already has
+function mage_add_json_without_known_auth() {
+  local json
+  json="$(cat "$1")"
+
+  local type
+  local host
+
+  while IFS=$'\t' read -r type host; do
+    if $COMPOSER_CLI config --global --auth "${type}.${host}" &> /dev/null; then
+      mage_notice "Using the ${type} credentials for ${host} from the global composer auth"
+      json="$(jq --arg type "$type" --arg host "$host" 'del(.auth[$type][$host]) | if (.auth[$type] | length) == 0 then del(.auth[$type]) else . end' <<< "$json")"
+    fi
+  done < <(jq -r '.auth // {} | to_entries[] | .key as $type | .value | keys[] | [$type, .] | @tsv' "$1")
+
+  printf '%s\n' "$json"
 }
 
 # Echo the json with each {{NAME}} replaced by its answer, where MAGE_VAR_<NAME>

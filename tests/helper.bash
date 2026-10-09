@@ -26,3 +26,13 @@ function use_stub_bins() {
 
   PATH="${stub_dir}:/usr/bin:/bin"
 }
+
+# Echo the composer commands, where a lookup in the global auth only finds the keys in FAKE_AUTH
+function fake_composer() {
+  if [[ $# -eq 4 ]] && [[ "$1 $2 $3" == "config --global --auth" ]]; then
+    [[ " ${FAKE_AUTH:-} " == *" $4 "* ]]
+    return
+  fi
+
+  echo "composer $*"
+}

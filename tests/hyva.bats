@@ -3,7 +3,7 @@ load helper
 function setup() {
   load_mage
   cd "$BATS_TEST_TMPDIR"
-  COMPOSER_CLI="echo composer"
+  COMPOSER_CLI="fake_composer"
   MAGENTO_CLI="echo magento"
   MAGE_ROOT="$BATS_TEST_TMPDIR"
   MAGE_CALL_DIR="$BATS_TEST_TMPDIR"
@@ -43,4 +43,14 @@ function setup() {
 @test "rejects unknown options" {
   run mage_cmd_add hyva checkout
   [ "$status" -eq 1 ]
+}
+
+@test "uses a license key from the global auth, only asking for the project" {
+  FAKE_AUTH="http-basic.hyva-themes.repo.packagist.com"
+  MAGE_VAR_HYVA_PROJECT=""
+
+  run mage_cmd_add hyva <<< "acme"
+  [ "$status" -eq 0 ]
+  [[ "$output" != *"--auth http-basic.hyva-themes.repo.packagist.com token"* ]]
+  [[ "$output" == *"hyva-themes.repo.packagist.com/acme/"* ]]
 }

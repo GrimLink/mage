@@ -3,7 +3,7 @@ load helper
 function setup() {
   load_mage
   cd "$BATS_TEST_TMPDIR"
-  COMPOSER_CLI="echo composer"
+  COMPOSER_CLI="fake_composer"
   MAGE_ROOT="$BATS_TEST_TMPDIR"
   MAGE_CALL_DIR="$BATS_TEST_TMPDIR"
 }
@@ -109,4 +109,23 @@ EOF
   [[ "$output" == *"--auth http-basic.hyva-themes.repo.packagist.com token key"* ]]
   [[ "$output" == *'"url":"https://hyva-themes.repo.packagist.com/acme/"'* ]]
   [[ "$output" == *"composer require hyva-themes/magento2-theme-module:* hyva-themes/magento2-default-theme:*"* ]]
+}
+
+@test "skips credentials the global auth already has, without asking for them" {
+  FAKE_AUTH="http-basic.repo.example.com"
+  echo '{ "auth": { "http-basic": { "repo.example.com": { "username": "token", "password": "{{SECRET}}" } } }, "require": { "vendor/a": "*" } }' > fragment.json
+
+  run mage_cmd_add fragment.json < /dev/null
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"Using the http-basic credentials for repo.example.com from the global composer auth"* ]]
+  [[ "$output" != *"composer config --global --auth http-basic.repo.example.com"* ]]
+  [[ "$output" == *"composer require vendor/a:*"* ]]
+}
+
+@test "still asks for credentials of other hosts" {
+  FAKE_AUTH="http-basic.other.example.com"
+  echo '{ "auth": { "http-basic": { "repo.example.com": { "username": "token", "password": "{{SECRET}}" } } } }' > fragment.json
+
+  run mage_cmd_add fragment.json <<< "key"
+  [[ "$output" == *"composer config --global --auth http-basic.repo.example.com token key"* ]]
 }

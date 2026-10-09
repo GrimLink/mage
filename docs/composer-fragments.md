@@ -84,6 +84,8 @@ The same format as composer's `auth.json`.
 ```
 
 Credentials go to the global composer auth, never to the project, as the `auth.json` of a project is easily committed.
+A credential the global auth already has for that type and host is kept, and its placeholders are not asked.
+To change one, run `composer config --global --auth <type>.<host> ...` yourself.
 Composer keeps one credential per host, so projects with different keys for the same host overwrite each other.
 
 ## Placeholders
