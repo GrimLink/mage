@@ -112,7 +112,8 @@ function mage_add_json_auth() {
   done < <(jq -r '.auth // {} | to_entries[] | .key as $type | .value | to_entries[] | [$type, .key] + (if (.value | type) == "object" then [.value.username, .value.password] else [.value] end) | @tsv' <<< "$1")
 }
 
-# Repositories are keyed by name, as composer config needs a name for each
+# Repositories are keyed by name, as composer config needs a name for each.
+# They are appended, so the local-packages path repository stays in front of them.
 function mage_add_json_repositories() {
   local json="$1"
   local name
@@ -123,7 +124,7 @@ function mage_add_json_repositories() {
   fi
 
   for name in $(jq -r '.repositories // {} | keys_unsorted[]' <<< "$json"); do
-    $COMPOSER_CLI config "repositories.${name}" "$(jq -c --arg name "$name" '.repositories[$name]' <<< "$json")" || return 1
+    $COMPOSER_CLI config --append "repositories.${name}" "$(jq -c --arg name "$name" '.repositories[$name]' <<< "$json")" || return 1
     mage_check 0 "Repository ${name}"
   done
 }

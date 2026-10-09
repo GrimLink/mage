@@ -21,6 +21,7 @@ Anything mage does not know still runs `bin/magento`.
   Without an option it cleans all, which options that runs can be set with `MAGE_CLEAN_ALL`.
   `mage purge` stays as an alias for `mage clean`.
 - **`mage add [FILE].json`:** Applies a composer fragment, a json file with the `repositories`, `config`, `auth`, `require` and `require-dev` keys of a composer.json.
+  Its repositories are appended after the existing ones, so the `package-source` path repository keeps priority.
   `{{NAME}}` placeholders are asked, with defaults from `MAGE_VAR_<NAME>` in the config, and credentials go to the global composer auth, so they never end up in the project.
   Requires jq.
   `templates/composer-hyva.json` is an example that adds Hyvä with a license.

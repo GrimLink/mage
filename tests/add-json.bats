@@ -24,7 +24,7 @@ EOF
   [ "$status" -eq 0 ]
   [ "${lines[0]}" = "Adding Example" ]
   [[ "${lines[1]}" == "composer config --global --auth http-basic.repo.example.com user secret" ]]
-  [[ "$output" == *'composer config repositories.example {"type":"composer","url":"https://repo.example.com/"}'* ]]
+  [[ "$output" == *'composer config --append repositories.example {"type":"composer","url":"https://repo.example.com/"}'* ]]
   [[ "$output" == *"composer config allow-plugins.vendor/plugin true"* ]]
   [[ "$output" == *"composer require vendor/a:* vendor/b:^1.0"* ]]
   [[ "$output" == *"composer require --dev vendor/c:dev-main"* ]]

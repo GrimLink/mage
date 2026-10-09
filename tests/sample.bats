@@ -52,7 +52,7 @@ function setup() {
 
   echo '{ "repositories": { "local-packages": { "type": "path", "url": "package-source/*/*" } } }' > composer.json
   run mage_cmd_add sample hyva <<< "y"
-  [[ "$output" == *"composer config repositories.koti-sample-data-catalog"*"gitlab.hyva.io:hyva-themes/sample-data/koti/koti-sample-data-catalog.git"* ]]
+  [[ "$output" == *"composer config --append repositories.koti-sample-data-catalog"*"gitlab.hyva.io:hyva-themes/sample-data/koti/koti-sample-data-catalog.git"* ]]
   [[ "$output" == *"magento hyva:sampledata:deploy"* ]]
 
   echo '{ "repositories": { "private-packagist": { "type": "composer", "url": "https://hyva-themes.repo.packagist.com/acme/" } } }' > composer.json

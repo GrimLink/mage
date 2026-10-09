@@ -49,7 +49,7 @@ Other keys are skipped with a warning, which catches a typo such as `requires`.
 | -------------- | ----------------------------------------------------------------------------------------------------- |
 | `description`  | Shown when applying                                                                                   |
 | `auth`         | `composer config --global --auth`, see below                                                          |
-| `repositories` | `composer config repositories.<name> <json>`, one per repository                                      |
+| `repositories` | `composer config --append repositories.<name> <json>`, one per repository                             |
 | `config`       | `composer config <key> <value>`, nested keys become dotted keys such as `allow-plugins.vendor/plugin` |
 | `require`      | One `composer require` with all packages                                                              |
 | `require-dev`  | One `composer require --dev` with all packages                                                        |
@@ -61,6 +61,7 @@ The first failure stops the rest.
 
 An object keyed by the repository name, as `composer config` needs a name for each.
 A list of repositories, as allowed in a `composer.json`, is refused.
+They are appended after the existing repositories, so the `local-packages` path repository of `package-source` stays in front and local packages keep priority.
 
 ### config
 
