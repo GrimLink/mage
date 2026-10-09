@@ -1,0 +1,118 @@
+# Configuration
+
+Mage runs with defaults that suit most projects.
+To change them, create the file `~/.config/mage/config`, where `~` is your home folder (`$HOME`).
+This is the same on macOS and Linux, mage does not use `~/Library` on macOS.
+When `XDG_CONFIG_HOME` is set, the file is `$XDG_CONFIG_HOME/mage/config` instead.
+
+The file is plain bash, sourced after the defaults.
+So set only what you want to change, and use the same syntax as below, arrays included.
+
+```bash
+# ~/.config/mage/config
+MAGE_EDITION="community"
+MAGE_ADMIN_PASS="my_own_password1"
+MAGE_DB_PASS=""
+
+MAGE_PACKAGES+=(
+  vendor/my-default-module
+)
+
+MAGE_VAR_HYVA_PROJECT="acme"
+```
+
+## Settings
+
+### Admin user
+
+Used by `mage create` and `mage setup` to create the admin user, and as the defaults of `mage add admin`.
+
+| Setting                | Default                                         |
+| ---------------------- | ----------------------------------------------- |
+| `MAGE_ADMIN_USER`      | `acme`, replaced by the first name in lowercase |
+| `MAGE_ADMIN_FIRSTNAME` | `acme`, replaced by your git first name         |
+| `MAGE_ADMIN_LASTNAME`  | `admin`                                         |
+| `MAGE_ADMIN_EMAIL`     | `info@example.com`, replaced by your git email  |
+| `MAGE_ADMIN_PASS`      | `magento_123$`                                  |
+
+### New projects
+
+| Setting             | Default                                                              | Used for                                                                   |
+| ------------------- | -------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| `MAGE_EDITION`      | `mage-os`                                                            | The edition `mage create` suggests: `mage-os`, `community` or `enterprise` |
+| `MAGE_DOMAIN`       | `test`                                                               | Stores are served as `https://<project>.<MAGE_DOMAIN>/`                    |
+| `MAGE_MAIL_URL`     | `http://localhost:8025`                                              | The mail catcher `mage open mail` opens, locally and with Valet            |
+| `MAGE_PACKAGES`     | See below                                                            | Packages `mage create` requires in every new project                       |
+| `MAGE_DEV_PACKAGES` | `avstudnitz/scopehint2`, `spatie/ray`, `siteation/magento2-debugbar` | Dev packages `mage create` requires in every new project                   |
+| `MAGE_STORE_CONFIG` | See below                                                            | Store config `mage setup` sets after the install                           |
+
+`MAGE_PACKAGES` defaults to `cweagans/composer-patches`, `yireo/magento2-theme-commands` (used to switch themes, see [`mage add hyva`](commands/add-hyva.md)), `swissup/module-ignition` and `community-engineering/language-nl_nl`.
+Set it to `()` to add none.
+
+`MAGE_STORE_CONFIG` holds one `path value` entry per config value.
+An entry without a value sets it empty.
+The defaults use the Euro (with Pounds allowed), the Netherlands as the default country with the European countries allowed, turn off the admin usage tracking and forced password changes, keep the admin session for a day, enable the canonical tags for categories and products, and enable the Siteation Debug Bar.
+
+```bash
+MAGE_STORE_CONFIG=(
+  "currency/options/base USD"
+  "currency/options/default USD"
+  "currency/options/allow USD"
+  "general/country/default US"
+)
+```
+
+### Services
+
+The connection settings for the local environment and Valet.
+Warden and DDEV always use the values of their containers, see [environments](environments.md).
+
+| Setting            | Default                                   |
+| ------------------ | ----------------------------------------- |
+| `MAGE_DB_HOST`     | `localhost`                               |
+| `MAGE_DB_NAME`     | Empty, which uses the project folder name |
+| `MAGE_DB_USER`     | `root`                                    |
+| `MAGE_DB_PASS`     | `root`                                    |
+| `MAGE_SEARCH_HOST` | `localhost`                               |
+| `MAGE_SEARCH_PORT` | `9200`                                    |
+| `MAGE_REDIS_HOST`  | `127.0.0.1`                               |
+
+### Commands
+
+| Setting                | Default                                     | Used for                                                     |
+| ---------------------- | ------------------------------------------- | ------------------------------------------------------------ |
+| `MAGE_DISABLE_MODULES` | Two factor auth, `MageOS_ThemeOptimization` | The modules `mage setup` disables, when the install has them |
+| `MAGE_CLEAN_ALL`       | `files redis varnish`                       | The options `mage clean` and `mage purge` run, in order      |
+| `MAGE_BUILD_SCRIPT`    | `build`                                     | The npm script `mage build` runs                             |
+| `MAGE_WATCH_SCRIPT`    | `watch`                                     | The npm script `mage build --watch` runs                     |
+| `MAGE_OUTDATED_IGNORE` | `symfony/finder`, `symfony/process`         | Packages `mage outdated` leaves out, Magento pins these      |
+| `MAGE_BACKUP_DIR`      | `var/backups`                               | Where `mage backup` writes to, relative to the root          |
+| `MAGE_BACKUP_STRIP`    | `@stripped`                                 | The magerun2 table groups `mage backup` leaves out           |
+| `MAGE_SYNC_PATH`       | `/data/web/magento2`                        | The Magento root on the server `mage sync` pulls from        |
+
+### Placeholders in json files
+
+A json file for `mage add` can hold `{{NAME}}` placeholders, which mage asks for.
+Set `MAGE_VAR_<NAME>` to give an answer as default, then an empty answer uses it.
+Mage also adds it on its own after the first answer to a placeholder, except for secrets.
+See [composer fragments](composer-fragments.md).
+
+```bash
+MAGE_VAR_HYVA_PROJECT="acme"
+MAGE_VAR_HYVA_LICENSE_KEY="..."
+```
+
+Mind that the config is a plain file, keep secrets out of it when others can read it.
+
+## Security
+
+The config is plain bash, so it runs as code each time mage starts.
+Mage only loads it when it is owned by you and neither the file nor the `mage` folder can be changed by others, the same rule ssh has for its config.
+Otherwise it stops and shows the `chmod` that fixes it.
+A config mage creates itself is readable by you only.
+
+Mage never loads a config from a project, so cloning a repository can not run code through it.
+
+## Other files in the config folder
+
+- `templates/`: the templates for new themes, modules and the bundled json files, see [templates](templates.md).

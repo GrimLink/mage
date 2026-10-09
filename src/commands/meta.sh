@@ -1,0 +1,99 @@
+function mage_cmd_version() {
+  mage_info "${BOLD}Mage ${GREEN}${MAGE_VERSION}${RESET}, ${ITALIC}See https://github.com/GrimLink/mage for the latest version${RESET}"
+}
+
+function mage_help_header() {
+  mage_info ""
+  mage_info "${BOLD}$1${RESET}"
+}
+
+function mage_help_cmd() {
+  printf "  %s%-30s%s %s\n" "$GREEN" "$1" "$RESET" "$2"
+}
+
+function mage_cmd_help() {
+  mage_help_header "General"
+  mage_help_cmd "help"                        "Show this help"
+  mage_help_cmd "version"                     "Show the mage version"
+  mage_help_cmd "self-update"                 "Update mage"
+
+  mage_help_header "Project"
+  mage_help_cmd "create [NAME]"               "Create, install and set up a new Magento 2 project"
+  mage_help_cmd "  --edition=[EDITION]"       "mage-os, community or enterprise (default: ${MAGE_EDITION})"
+  mage_help_cmd "  --version=[VERSION]"       "Magento version (default: latest)"
+  mage_help_cmd "  --env=[ENV]"               "warden, ddev, valet or local (default: first one installed)"
+  mage_help_cmd "  -y, --yes"                 "Use the defaults instead of asking"
+  mage_help_cmd "setup [NAME] [-y]"           "Install Magento on an existing codebase, -y skips the confirmation"
+  mage_help_cmd "nuke"                        "Permanently delete the project (database, environment, files)"
+  mage_help_cmd "  --keep-files"              "Keep the project files"
+  mage_help_cmd "backup"                      "Back up the database, and optionally the media, to ${MAGE_BACKUP_DIR}"
+  mage_help_cmd "  --media, --no-media"       "Include pub/media or not, instead of asking"
+  mage_help_cmd "  --strip=[GROUPS]"          "Magerun2 table groups to leave out (default: ${MAGE_BACKUP_STRIP})"
+  mage_help_cmd "restore [FILE]"              "Replace the database with a backup, the latest by default, and set it up for this device"
+  mage_help_cmd "  --media, --no-media"       "Unpack the media backup or not, instead of asking"
+  mage_help_cmd "sync HOST [PATH]"            "Pull pub/media from a server, from PATH or ${MAGE_SYNC_PATH}"
+  mage_help_cmd "  --db"                      "Also pull the latest backup of the server, for restore"
+
+  mage_help_header "Packages"
+  mage_help_cmd "add [PKG|GIT_URL|HANDLER]"   "Add to the project, see 'mage add help' for all options"
+  mage_help_cmd "del/remove [PKG|TERM]"       "Remove a package, or every direct dependency matching the terms"
+  mage_help_cmd "  -y, --yes"                 "Remove the matches without asking"
+  mage_help_cmd "enable/disable [MOD|TERM]"   "Enable or disable a module, or every module matching the terms"
+  mage_help_cmd "outdated [ARGS]"             "Write the direct dependencies with a newer version to composer-outdated.json"
+  mage_help_cmd "  --terminal"                "Show them in the terminal instead"
+  mage_help_cmd "upd/update [PKG|TERM]"       "Update all, a package, or every direct dependency matching the terms"
+
+  mage_help_header "Development"
+  mage_help_cmd "info [--json]"               "Show the version, mode, urls, database and more of the project"
+  mage_help_cmd "open [STORE|admin|mail]"     "Open the default store view, a store view by its code, the admin or the mail catcher"
+  mage_help_cmd "set [OPTION]"                "Change a setting, see 'mage set help' for all options"
+  mage_help_cmd "show [OPTION]"               "Show project information, see 'mage show help' for all options"
+  mage_help_cmd "run [ARGS]"                  "Run n98-magerun2"
+  mage_help_cmd "watch"                       "Clean only the caches a file change affects, keeps running"
+  mage_help_cmd "build [TARGET]"              "Build every theme, or the npm packages matching the target"
+  mage_help_cmd "  -w, --watch"               "Watch the one target instead, keeps running"
+  mage_help_cmd "log [FILE]"                  "Follow a log in var/log, debug by default, keeps running"
+  mage_help_cmd "reindex"                     "Reindex everything, then clean the cache"
+  mage_help_cmd "clean/purge [OPTION]"        "Clean caches and files, see 'mage clean help' for all options"
+
+  mage_info ""
+  mage_info "${ITALIC}Without a terminal, questions stop with an error, -y or MAGE_YES=1 takes the defaults${RESET}"
+  mage_info "${ITALIC}Anything else will run ${GREEN}bin/magento${RESET}"
+  mage_info "${ITALIC}From a nested folder, mage runs from the Magento root${RESET}"
+}
+
+# Replace this script and the templates with the latest release, following any symlinks to the script
+function mage_cmd_self_update() {
+  if [[ "$MAGE_VERSION" == "dev" ]]; then
+    mage_error "self-update only works for the built mage script"
+    exit 1
+  fi
+
+  local target="$MAGE_SELF"
+  local link
+
+  while [[ -L "$target" ]]; do
+    link="$(readlink "$target")"
+
+    if [[ "$link" == /* ]]; then
+      target="$link"
+    else
+      target="$(dirname "$target")/${link}"
+    fi
+  done
+
+  if ! mage_download_file "$MAGE_UPDATE_URL" "$target"; then
+    mage_error "Could not download ${MAGE_UPDATE_URL}"
+    exit 1
+  fi
+
+  chmod +x "$target"
+
+  if mage_sync_templates "$(mage_config_dir)/templates"; then
+    mage_check 0 "Templates updated"
+  else
+    mage_check 1 "Could not update the templates, the previous ones are kept"
+  fi
+
+  "$target" version
+}

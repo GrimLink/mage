@@ -1,0 +1,56 @@
+load helper
+
+function setup() {
+  load_mage
+  cd "$BATS_TEST_TMPDIR"
+  COMPOSER_CLI="fake_composer"
+  MAGENTO_CLI="echo magento"
+  MAGE_ROOT="$BATS_TEST_TMPDIR"
+  MAGE_CALL_DIR="$BATS_TEST_TMPDIR"
+  MAGE_VAR_HYVA_PROJECT="acme"
+  MAGE_VAR_HYVA_LICENSE_KEY="key"
+}
+
+@test "adds Hyva with a license" {
+  run mage_cmd_add hyva <<< $'\n'
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"hyva-themes.repo.packagist.com/acme/"* ]]
+  [[ "$output" == *"magento setup:upgrade"* ]]
+  [[ "$output" == *"Select the Hyva/default theme in the admin"* ]]
+}
+
+@test "adds Hyva from the GitLab with --dev" {
+  run mage_cmd_add hyva --dev
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"git@gitlab.hyva.io:hyva-themes/magento2-theme-module.git"* ]]
+  [[ "$output" != *"--auth"* ]]
+}
+
+@test "sets the theme with the yireo theme commands" {
+  mkdir -p vendor/yireo/magento2-theme-commands
+
+  run mage_set_theme Hyva/default
+  [ "$status" -eq 0 ]
+  [ "$output" = "$(printf 'magento theme:change Hyva/default\nmagento cache:clean')" ]
+}
+
+@test "points to the admin without the yireo theme commands" {
+  run mage_set_theme Hyva/default
+  [ "$status" -eq 1 ]
+  [[ "$output" == *"Select the Hyva/default theme in the admin"* ]]
+}
+
+@test "rejects unknown options" {
+  run mage_cmd_add hyva checkout
+  [ "$status" -eq 1 ]
+}
+
+@test "uses a license key from the global auth, only asking for the project" {
+  FAKE_AUTH="http-basic.hyva-themes.repo.packagist.com"
+  MAGE_VAR_HYVA_PROJECT=""
+
+  run mage_cmd_add hyva <<< "acme"
+  [ "$status" -eq 0 ]
+  [[ "$output" != *"--auth http-basic.hyva-themes.repo.packagist.com token"* ]]
+  [[ "$output" == *"hyva-themes.repo.packagist.com/acme/"* ]]
+}

@@ -1,0 +1,21 @@
+{
+  "description": "Hyvä Theme",
+  "auth": {
+    "http-basic": {
+      "hyva-themes.repo.packagist.com": {
+        "username": "token",
+        "password": "{{HYVA_LICENSE_KEY}}"
+      }
+    }
+  },
+  "repositories": {
+    "private-packagist": {
+      "type": "composer",
+      "url": "https://hyva-themes.repo.packagist.com/{{HYVA_PROJECT}}/"
+    }
+  },
+  "require": {
+    "hyva-themes/magento2-theme-module": "*",
+    "hyva-themes/magento2-default-theme": "*"
+  }
+}

@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  shellcheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Built in place, so ShellCheck picks up the .shellcheckrc
+      - name: Build
+        run: src/build.sh
+
+      - name: ShellCheck
+        run: shellcheck mage src/build.sh
+
+  test:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install bats
+        run: |
+          if [[ "$RUNNER_OS" == "macOS" ]]; then
+            brew install bats-core
+          else
+            sudo apt-get update && sudo apt-get install -y bats
+          fi
+
+      # On macOS /bin comes first, so the tests run on the bash 3.2 that macOS ships
+      - name: Test
+        run: |
+          if [[ "$RUNNER_OS" == "macOS" ]]; then
+            export PATH="/bin:$PATH"
+          fi
+          bash --version | head -n1
+          bats tests
