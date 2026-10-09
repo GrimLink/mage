@@ -112,6 +112,7 @@ Otherwise it stops and shows the `chmod` that fixes it.
 A config mage creates itself is readable by you only.
 
 Mage never loads a config from a project, so cloning a repository can not run code through it.
+What you put in the config is your own to manage, see the [security policy](../SECURITY.md).
 
 ## Other files in the config folder
 

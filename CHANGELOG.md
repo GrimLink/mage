@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.0.0] - 2026-10-09
+
 Version 3 is a rebuild of mage.
 Most commands of version 2 are back, the ones that are not are listed under Removed.
 Anything mage does not know still runs `bin/magento`.
@@ -540,6 +542,9 @@ Anything mage does not know still runs `bin/magento`.
 Initial Release 🎉
 
 [unreleased]: https://github.com/GrimLink/mage/compare/2.8.0...HEAD
+[Unreleased]: https://github.com/GrimLink/mage/compare/3.0.0...HEAD
+[3.0.0]: https://github.com/GrimLink/mage/compare/2.8.1...3.0.0
+[2.8.1]: https://github.com/GrimLink/mage/compare/2.8.0...2.8.1
 [2.8.0]: https://github.com/GrimLink/mage/compare/2.7.0...2.8.0
 [2.7.0]: https://github.com/GrimLink/mage/compare/2.6.0...2.7.0
 [2.6.0]: https://github.com/GrimLink/mage/compare/2.5.2...2.6.0

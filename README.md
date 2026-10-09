@@ -1,5 +1,11 @@
 # Mage
 
+[![CI](https://img.shields.io/github/actions/workflow/status/GrimLink/mage/ci.yml?branch=main&style=for-the-badge&label=CI)](https://github.com/GrimLink/mage/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/GrimLink/mage?style=for-the-badge)](https://github.com/GrimLink/mage/releases)
+[![License](https://img.shields.io/github/license/GrimLink/mage?style=for-the-badge)](LICENSE)
+[![Bash 3.2+](https://img.shields.io/badge/bash-3.2%2B-4EAA25?style=for-the-badge&logo=gnubash&logoColor=white)](#requirements)
+[![Mage-OS and Magento 2](https://img.shields.io/badge/for-Mage--OS%20%7C%20Magento%202-F26322?style=for-the-badge)](#supported-platforms)
+
 **Mage** is a simple tool built on top of `bin/magento` to enhance your Magento 2 development experience.
 It provides shortcuts and custom functions to save you time and effort.
 
@@ -105,6 +111,11 @@ Mage works on **macOS** and **most Linux platforms**, and detects these environm
 We welcome contributions to Mage!
 Fork the repository, make your changes, and submit a pull request.
 See [development](docs/development.md) for how the source is organised, built and tested.
+
+## Security
+
+Mage runs as your own user, and its config is code you manage yourself.
+See the [security policy](SECURITY.md) for what mage does to stay safe, what is up to you, and how to report a vulnerability.
 
 ## License
 
