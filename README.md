@@ -9,7 +9,8 @@
 **Mage** is a simple tool built on top of `bin/magento` to enhance your Magento 2 development experience.
 It provides shortcuts and custom functions to save you time and effort.
 
-> [!NOTE] Mage is a wrapper around your dev setup and [n98-magerun2], not a replacement for them.
+> [!NOTE]
+> Mage is a wrapper around your dev setup and [n98-magerun2], not a replacement for them.
 > See the [FAQ](docs/faq.md).
 
 ## Benefits of Using Mage
