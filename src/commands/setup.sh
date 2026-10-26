@@ -50,6 +50,8 @@ function mage_setup() {
   mage_system_user
   env_call setup_prepare "$name" "$db_name" || return 1
 
+  env_call setup_session_args
+
   mage_info "Running Magento setup install..."
   $MAGENTO_CLI setup:install \
     --backend-frontname="${admin_url}" \
@@ -66,10 +68,7 @@ function mage_setup() {
     --opensearch-index-prefix="${db_name}" \
     --opensearch-enable-auth=0 \
     --opensearch-timeout=15 \
-    --session-save=redis \
-    --session-save-redis-host="${MAGE_REDIS_HOST}" \
-    --session-save-redis-db=2 \
-    --session-save-redis-max-concurrency=20 \
+    "${MAGE_SETUP_SESSION_ARGS[@]}" \
     --cache-backend=redis \
     --cache-backend-redis-server="${MAGE_REDIS_HOST}" \
     --cache-backend-redis-db=0 \

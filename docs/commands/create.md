@@ -46,6 +46,7 @@ When Magento is already installed, it asks first, as this drops the database.
 1. Prepares the services, depending on the environment: creates the database for local and Valet, secures the site with Valet or signs the certificate with Warden.
 2. Runs `setup:install`, with the database, OpenSearch and Redis of the environment.
    The admin url is `<project>_admin`, the store url `https://<project>.<MAGE_DOMAIN>/`.
+   Sessions go to the database for local and Valet, so they are dropped with it on nuke, and to Redis for DDEV and Warden, which each run their own.
 3. Gives OpenSearch and the Redis caches a prefix named after the database, so projects sharing a service stay apart.
 4. Sets the store name and the store config from `MAGE_STORE_CONFIG`.
 5. Sets the developer mode, and disables the modules in `MAGE_DISABLE_MODULES` the install has: two factor authentication, and on Mage-OS `MageOS_ThemeOptimization`, whose bfcache conflicts with the BFCache patches and does not work with Hyvä, see [mage-os/module-theme-optimization#28](https://github.com/mage-os/module-theme-optimization/issues/28).

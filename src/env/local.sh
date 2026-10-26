@@ -13,6 +13,12 @@ function env_local_apply() {
   return 0
 }
 
+# Sessions live in the database, so they are dropped with it on nuke. Services
+# run on the host and share one Redis, which has no per-project session db.
+function env_local_setup_session_args() {
+  MAGE_SETUP_SESSION_ARGS=(--session-save=db)
+}
+
 # Run mysql with the MAGE_DB_* credentials
 function env_local_mysql() {
   mage_db_args

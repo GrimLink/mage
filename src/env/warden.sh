@@ -51,6 +51,16 @@ function env_warden_setup_prepare() {
   warden sign-certificate "${1}.${MAGE_DOMAIN}"
 }
 
+# Redis runs per project here, so its sessions are dropped with it on nuke
+function env_warden_setup_session_args() {
+  MAGE_SETUP_SESSION_ARGS=(
+    --session-save=redis
+    --session-save-redis-host="${MAGE_REDIS_HOST}"
+    --session-save-redis-db=2
+    --session-save-redis-max-concurrency=20
+  )
+}
+
 # Redis runs per project, so it can be flushed as a whole
 function env_warden_clean_redis() {
   $REDIS_CLI flushall > /dev/null
