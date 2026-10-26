@@ -20,8 +20,8 @@ When creating a project, there is nothing to detect yet.
 Everything runs on your machine: `bin/magento`, composer, and the services MySQL, OpenSearch and Redis.
 The connection settings come from the [configuration](config.md), by default `root`/`root` on `localhost`.
 
-- **Setup:** creates the database with `mysql`, named after the project folder.
-- **Nuke:** clears the OpenSearch indices and Redis keys of the project, and drops its database.
+- **Setup:** creates the database with `mysql`, named after the project folder. Sessions are stored in the database, as Redis has no per-project session db.
+- **Nuke:** clears the OpenSearch indices and Redis cache keys of the project, and drops its database, which also removes the sessions.
 - **Add store:** tells you to point the new domain to the project yourself.
 - **Open mail:** opens `MAGE_MAIL_URL`, Mailpit on `http://localhost:8025` by default.
 - **Watch:** without cache-clean in the project, uses `cache-clean.js` from your `PATH`.

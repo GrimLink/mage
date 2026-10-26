@@ -51,6 +51,13 @@ function setup() {
   [ "$MAGE_DB_NAME" = "db" ]
 }
 
+@test "sets up sessions in its own redis for ddev" {
+  mage_env_use ddev
+  env_call setup_session_args
+
+  [[ "${MAGE_SETUP_SESSION_ARGS[*]}" == "--session-save=redis"* ]]
+}
+
 @test "ignores warden without its .env" {
   use_stub_bins warden
 
@@ -70,6 +77,23 @@ function setup() {
   [ "$MAGE_ENV" = "warden" ]
   [ "$MAGENTO_CLI" = "warden env exec php-fpm bin/magento" ]
   [ "$MAGE_DB_HOST" = "db" ]
+}
+
+@test "sets up sessions in its own redis for warden" {
+  mage_env_use warden
+  env_call setup_session_args
+
+  [[ "${MAGE_SETUP_SESSION_ARGS[*]}" == "--session-save=redis"* ]]
+}
+
+@test "sets up sessions in the database for local and valet, dropped with it on nuke" {
+  mage_env_use local
+  env_call setup_session_args
+  [ "${MAGE_SETUP_SESSION_ARGS[*]}" = "--session-save=db" ]
+
+  mage_env_use valet
+  env_call setup_session_args
+  [ "${MAGE_SETUP_SESSION_ARGS[*]}" = "--session-save=db" ]
 }
 
 @test "falls back to the local hook" {
