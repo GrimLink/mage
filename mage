@@ -5,7 +5,7 @@
 
 set -o pipefail
 
-MAGE_VERSION="3.0.0"
+MAGE_VERSION="3.0.1"
 MAGE_SELF="${BASH_SOURCE[0]}"
 
 # --- core/output.sh
@@ -506,6 +506,13 @@ function mage_composer_name() {
   fi
 }
 
+# Echo the version pinned in a composer.json, empty when it has none
+function mage_composer_version() {
+  if [[ -f "$1" ]]; then
+    grep -E '"version"[[:space:]]*:' "$1" | head -n 1 | sed -E 's/.*"version"[[:space:]]*:[[:space:]]*"([^"]+)".*/\1/'
+  fi
+}
+
 # Convert a string to kebab-case, such as MyTheme to my-theme
 function mage_kebab_case() {
   echo "$*" | sed 's/\([A-Z]\)/-\1/g' | tr '[:upper:]' '[:lower:]' | sed -e 's/^-*//' -e 's/-*$//' | tr -s '[:blank:]' '-'
@@ -763,6 +770,12 @@ function env_local_detect() {
 
 function env_local_apply() {
   return 0
+}
+
+# Sessions live in the database, so they are dropped with it on nuke. Services
+# run on the host and share one Redis, which has no per-project session db.
+function env_local_setup_session_args() {
+  MAGE_SETUP_SESSION_ARGS=(--session-save=db)
 }
 
 # Run mysql with the MAGE_DB_* credentials
@@ -1070,6 +1083,16 @@ function env_warden_setup_prepare() {
   warden sign-certificate "${1}.${MAGE_DOMAIN}"
 }
 
+# Redis runs per project here, so its sessions are dropped with it on nuke
+function env_warden_setup_session_args() {
+  MAGE_SETUP_SESSION_ARGS=(
+    --session-save=redis
+    --session-save-redis-host="${MAGE_REDIS_HOST}"
+    --session-save-redis-db=2
+    --session-save-redis-max-concurrency=20
+  )
+}
+
 # Redis runs per project, so it can be flushed as a whole
 function env_warden_clean_redis() {
   $REDIS_CLI flushall > /dev/null
@@ -1171,6 +1194,16 @@ function env_ddev_create_project() {
 # The database already exists in its container, and ddev provides the certificate
 function env_ddev_setup_prepare() {
   return 0
+}
+
+# Redis runs per project here, so its sessions are dropped with it on nuke
+function env_ddev_setup_session_args() {
+  MAGE_SETUP_SESSION_ARGS=(
+    --session-save=redis
+    --session-save-redis-host="${MAGE_REDIS_HOST}"
+    --session-save-redis-db=2
+    --session-save-redis-max-concurrency=20
+  )
 }
 
 # Redis runs per project, so it can be flushed as a whole
@@ -1490,6 +1523,8 @@ function mage_setup() {
   mage_system_user
   env_call setup_prepare "$name" "$db_name" || return 1
 
+  env_call setup_session_args
+
   mage_info "Running Magento setup install..."
   $MAGENTO_CLI setup:install \
     --backend-frontname="${admin_url}" \
@@ -1506,10 +1541,7 @@ function mage_setup() {
     --opensearch-index-prefix="${db_name}" \
     --opensearch-enable-auth=0 \
     --opensearch-timeout=15 \
-    --session-save=redis \
-    --session-save-redis-host="${MAGE_REDIS_HOST}" \
-    --session-save-redis-db=2 \
-    --session-save-redis-max-concurrency=20 \
+    "${MAGE_SETUP_SESSION_ARGS[@]}" \
     --cache-backend=redis \
     --cache-backend-redis-server="${MAGE_REDIS_HOST}" \
     --cache-backend-redis-db=0 \
@@ -2650,11 +2682,20 @@ function mage_add_clone() {
 }
 
 # Echo the require constraint for a clone, 'dev-<branch> as <latest tag>'
-# so dependencies on a version still resolve, or '@dev' without any tag
+# so dependencies on a version still resolve, or '@dev' without any tag.
+# A composer.json with an explicit "version" is exposed as that version by the
+# path repository, not as its branch, so it is required by that version instead.
 function mage_git_constraint() {
   local dir="$1"
   local branch
   local tag
+  local version
+
+  version="$(mage_composer_version "${dir}/composer.json")"
+  if [[ -n "$version" ]]; then
+    echo "$version"
+    return
+  fi
 
   branch="$(git -C "$dir" rev-parse --abbrev-ref HEAD 2> /dev/null)"
   tag="$(git -C "$dir" describe --tags --abbrev=0 2> /dev/null)"
