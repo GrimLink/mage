@@ -110,11 +110,20 @@ function mage_add_clone() {
 }
 
 # Echo the require constraint for a clone, 'dev-<branch> as <latest tag>'
-# so dependencies on a version still resolve, or '@dev' without any tag
+# so dependencies on a version still resolve, or '@dev' without any tag.
+# A composer.json with an explicit "version" is exposed as that version by the
+# path repository, not as its branch, so it is required by that version instead.
 function mage_git_constraint() {
   local dir="$1"
   local branch
   local tag
+  local version
+
+  version="$(mage_composer_version "${dir}/composer.json")"
+  if [[ -n "$version" ]]; then
+    echo "$version"
+    return
+  fi
 
   branch="$(git -C "$dir" rev-parse --abbrev-ref HEAD 2> /dev/null)"
   tag="$(git -C "$dir" describe --tags --abbrev=0 2> /dev/null)"

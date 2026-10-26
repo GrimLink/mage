@@ -71,6 +71,19 @@ function make_git_package() {
   [[ "$output" == *"composer require vendor/example:dev-main as 1.2.0 --dev"* ]]
 }
 
+@test "requires a clone with a pinned version as that version" {
+  local url
+  url="$(make_git_package v1.2.0)"
+  git clone --quiet "$url" "${BATS_TEST_TMPDIR}/pinned"
+  echo '{ "name": "vendor/example", "version": "1.2.0" }' > "${BATS_TEST_TMPDIR}/pinned/composer.json"
+  git -C "${BATS_TEST_TMPDIR}/pinned" -c user.name=test -c user.email=test@example.com commit --quiet -am pin
+  git -C "${BATS_TEST_TMPDIR}/pinned" push --quiet origin main
+
+  run mage_cmd_add "$url"
+  [[ "$output" == *"composer require vendor/example:1.2.0"* ]]
+  [[ "$output" != *"dev-main"* ]]
+}
+
 @test "requires a clone without tags as @dev" {
   local url
   url="$(make_git_package)"

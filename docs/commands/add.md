@@ -51,6 +51,8 @@ For ssh urls ending in `.git`:
 2. Registers `package-source` as a composer path repository, when the project does not have it yet.
 3. Requires it as `<name>:dev-<branch> as <latest tag>`, so packages that depend on a version of it still resolve.
    Without tags it requires `<name>:@dev`.
+   When the `composer.json` of the clone pins an explicit `version`, that version is required instead
+   (the path repository exposes that pinned version, not the branch).
 
 Further arguments, such as `--dev`, go to composer.
 

@@ -134,6 +134,13 @@ function mage_composer_name() {
   fi
 }
 
+# Echo the version pinned in a composer.json, empty when it has none
+function mage_composer_version() {
+  if [[ -f "$1" ]]; then
+    grep -E '"version"[[:space:]]*:' "$1" | head -n 1 | sed -E 's/.*"version"[[:space:]]*:[[:space:]]*"([^"]+)".*/\1/'
+  fi
+}
+
 # Convert a string to kebab-case, such as MyTheme to my-theme
 function mage_kebab_case() {
   echo "$*" | sed 's/\([A-Z]\)/-\1/g' | tr '[:upper:]' '[:lower:]' | sed -e 's/^-*//' -e 's/-*$//' | tr -s '[:blank:]' '-'
