@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.0.1] - 2026-10-26
+
+### Fixed
+- **`mage add [GIT_URL]`:** A clone whose `composer.json` pins an explicit `version` is now required by that version instead of `dev-<branch> as <tag>`.
+  The path repository exposes a pinned version as is, not the branch, so the generated constraint could become unsatisfiable once Composer picked the path repository as canonical over a Packagist copy of the same package. See [#59](https://github.com/GrimLink/mage/issues/59).
+- **`mage nuke`:** Local and Valet no longer leave stale sessions behind in the shared Redis.
+  Sessions now go to the project database for local and Valet, so they are dropped with it on nuke, instead of staying in the Redis session db shared by every project, where a recreated project with the same name could pick up a stale admin session and break the admin. DDEV and Warden keep Redis, each with their own. See [#58](https://github.com/GrimLink/mage/issues/58).
+
 ## [3.0.0] - 2026-10-09
 
 Version 3 is a rebuild of mage.
@@ -541,8 +549,8 @@ Anything mage does not know still runs `bin/magento`.
 
 Initial Release 🎉
 
-[unreleased]: https://github.com/GrimLink/mage/compare/2.8.0...HEAD
-[Unreleased]: https://github.com/GrimLink/mage/compare/3.0.0...HEAD
+[Unreleased]: https://github.com/GrimLink/mage/compare/3.0.1...HEAD
+[3.0.1]: https://github.com/GrimLink/mage/compare/3.0.0...3.0.1
 [3.0.0]: https://github.com/GrimLink/mage/compare/2.8.1...3.0.0
 [2.8.1]: https://github.com/GrimLink/mage/compare/2.8.0...2.8.1
 [2.8.0]: https://github.com/GrimLink/mage/compare/2.7.0...2.8.0
