@@ -205,6 +205,8 @@ MAGENTO_CLI="bin/magento"
 PHP_CLI="php"
 COMPOSER_CLI="composer"
 NODE_CLI="node"
+# Runs vendor/bin/cache-clean.js, DDEV needs it as an executable
+CACHE_CLEAN_CLI="node"
 NPM_CLI="npm"
 MYSQL_CLI="mysql"
 MYSQLDUMP_CLI="mysqldump"
@@ -1047,6 +1049,7 @@ function env_warden_apply() {
   PHP_CLI="warden env exec php-fpm php"
   COMPOSER_CLI="warden env exec php-fpm composer"
   NODE_CLI="warden env exec php-fpm node"
+  CACHE_CLEAN_CLI="warden env exec php-fpm node"
   NPM_CLI="warden env exec php-fpm npm"
   REDIS_CLI="warden env exec redis redis-cli"
   VARNISH_CLI="warden env exec -T varnish varnishadm"
@@ -1158,6 +1161,7 @@ function env_ddev_apply() {
   PHP_CLI="ddev php"
   COMPOSER_CLI="ddev composer"
   NODE_CLI="ddev exec node"
+  CACHE_CLEAN_CLI="ddev exec"
   NPM_CLI="ddev npm"
   REDIS_CLI="ddev exec -s redis redis-cli"
   RSYNC_CLI="ddev exec rsync"
@@ -2370,7 +2374,7 @@ function mage_cmd_watch() {
   local cache_clean=""
 
   if [[ -f vendor/bin/cache-clean.js ]]; then
-    cache_clean="$NODE_CLI vendor/bin/cache-clean.js"
+    cache_clean="$CACHE_CLEAN_CLI vendor/bin/cache-clean.js"
   else
     cache_clean="$(env_call watch_cli)"
   fi
