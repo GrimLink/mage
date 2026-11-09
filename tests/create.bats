@@ -38,17 +38,20 @@ function setup() {
   MAGE_VERSION="1.0.0"
   function mage_template_file() { return 1; }
   function mage_sync_templates() { echo "sync $1"; }
+  function env_local_create_project() { return 1; }
 
-  run mage_cmd_create acme -y --edition=mage-os --env=unknown
+  run mage_cmd_create acme -y --edition=mage-os --env=local
   [[ "$output" == *"sync $(mage_config_dir)/templates"* ]]
-  [ ! -e acme ]
+  [[ "$output" == *"Could not create the composer project"* ]]
 }
 
 @test "never syncs the templates for the other editions" {
   MAGE_VERSION="1.0.0"
   function mage_template_file() { return 1; }
   function mage_sync_templates() { echo "sync"; }
+  function env_local_create_project() { return 1; }
 
-  run mage_cmd_create acme -y --edition=community --env=unknown
+  run mage_cmd_create acme -y --edition=community --env=local
+  [[ "$output" == *"Could not create the composer project"* ]]
   [[ "$output" != *"sync"* ]]
 }
