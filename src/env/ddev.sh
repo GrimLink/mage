@@ -14,7 +14,7 @@ function env_ddev_apply() {
   PHP_CLI="ddev php"
   COMPOSER_CLI="ddev composer"
   NODE_CLI="ddev exec node"
-  CACHE_CLEAN_CLI="ddev exec"
+  CACHE_CLEAN_CLI="ddev exec vendor/bin/cache-clean.js"
   NPM_CLI="ddev npm"
   REDIS_CLI="ddev exec -s redis redis-cli"
   RSYNC_CLI="ddev exec rsync"
