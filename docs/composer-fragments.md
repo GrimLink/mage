@@ -118,4 +118,4 @@ Mage ships these fragments in its [templates](templates.md), used by the matchin
 - `composer-hyva-dev.json`: Hyvä from the Hyvä GitLab.
 - `composer-hyva-sample-dev.json`: the repositories of the Koti sample data on the Hyvä GitLab.
 - `composer-storeinfo.json`: the Siteation StoreInfo modules.
-- `composer-create.json`: the development defaults [`mage create`](commands/create.md) applies.
+- `composer-mage-os.json`: the Mage-OS modules [`mage create`](commands/create.md) leaves out.

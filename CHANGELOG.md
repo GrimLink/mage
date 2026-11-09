@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`mage add <file>.json`:** Composer fragments take a `replace`, merged into the `replace` of `composer.json`.
 
 ### Changed
-- **`mage create`:** Applies the new `composer-create.json` template, which allows the composer patches plugin and replaces `mage-os/module-passkey-auth` so it is never installed.
+- **`mage create`:** On Mage-OS, applies the new `composer-mage-os.json` template, which replaces `mage-os/module-passkey-auth` and `mage-os/module-theme-optimization`, so they are never installed.
 
 ### Fixed
 - **`mage watch`:** The cache-clean of the project is run as an executable, as Composer installs `vendor/bin/cache-clean.js` as a shell wrapper, which failed with a `SyntaxError` when run with node.

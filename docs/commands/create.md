@@ -22,12 +22,13 @@ The name is a folder name, and must not exist yet.
 
 1. Creates the composer project, in the chosen [environment](../environments.md).
    Warden and DDEV first set up and start their containers.
-2. Configures composer for development: `minimum-stability` dev with `prefer-stable`.
+2. Configures composer for development: `minimum-stability` dev with `prefer-stable`, and allows the composer patches plugin.
 3. Registers the `package-source` folder as a composer path repository, for your local packages.
    It gets a `.gitkeep`, so the folder survives a clone, which `composer install` needs.
 4. Requires the default packages from `MAGE_PACKAGES` and `MAGE_DEV_PACKAGES`, see [configuration](../config.md).
-5. Applies the [composer fragment](../composer-fragments.md) `composer-create.json` of the [templates](../templates.md).
-   It allows the composer patches plugin, and replaces `mage-os/module-passkey-auth`, so composer never installs it, as its dependencies limit the supported PHP versions.
+5. On Mage-OS, applies the [composer fragment](../composer-fragments.md) `composer-mage-os.json` of the [templates](../templates.md).
+   It replaces modules that Mage-OS ships but mage leaves out, so composer never installs them:
+   `mage-os/module-passkey-auth`, as it pulls in two factor auth, whose dependencies limit the supported PHP versions, and `mage-os/module-theme-optimization`, see the setup below.
    Templates synced before this fragment existed are updated first, and without it, it warns and continues.
 6. Runs `composer install`.
 7. Runs the setup below.

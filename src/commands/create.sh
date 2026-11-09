@@ -38,12 +38,6 @@ function mage_cmd_create() {
     exit 1
   fi
 
-  # Templates synced before composer-create.json was added miss it
-  if [[ "$MAGE_VERSION" != "dev" ]] && ! mage_template_file "composer-create.json" > /dev/null; then
-    mage_info "Updating the templates"
-    mage_sync_templates "$(mage_config_dir)/templates"
-  fi
-
   local available_envs
   available_envs="$(mage_env_available)"
   local default_env="${available_envs%% *}"
@@ -90,6 +84,12 @@ function mage_cmd_create() {
       ;;
   esac
 
+  # Templates synced before composer-mage-os.json was added miss it
+  if [[ "$edition" == "mage-os" ]] && [[ "$MAGE_VERSION" != "dev" ]] && ! mage_template_file "composer-mage-os.json" > /dev/null; then
+    mage_info "Updating the templates"
+    mage_sync_templates "$(mage_config_dir)/templates"
+  fi
+
   if [[ "$version" != "latest" ]]; then
     package="${package}=${version}"
   fi
@@ -102,17 +102,20 @@ function mage_cmd_create() {
     exit 1
   fi
 
-  mage_create_composer_setup || exit 1
+  mage_create_composer_setup "$edition" || exit 1
   MAGE_ROOT="$PWD"
   mage_setup "$name" || exit 1
   mage_getting_started "$name" true
 }
 
-# Configure composer for local development and install the project
+# Configure composer for local development and install the project of the given edition
 function mage_create_composer_setup() {
+  local edition="$1"
+
   mage_info "Adjusting composer settings to allow dev packages"
   $COMPOSER_CLI config minimum-stability dev
   $COMPOSER_CLI config prefer-stable true
+  $COMPOSER_CLI config allow-plugins.cweagans/composer-patches true
 
   mage_add_path_repository
 
@@ -125,15 +128,23 @@ function mage_create_composer_setup() {
     $COMPOSER_CLI require --no-update --dev "${MAGE_DEV_PACKAGES[@]}"
   fi
 
-  local fragment
-  fragment="$(mage_template_file "composer-create.json")"
-
-  if [[ -n "$fragment" ]]; then
-    mage_add_json "$fragment" || return 1
-  else
-    mage_warn "Skipping the development defaults, could not get the 'composer-create.json' template from ${MAGE_TEMPLATES_ARCHIVE}"
+  if [[ "$edition" == "mage-os" ]]; then
+    mage_create_mage_os_replace || return 1
   fi
 
   mage_info "Running installation.. Enjoy a cup of coffee in the meantime"
   $COMPOSER_CLI install
+}
+
+# Replace the Mage-OS modules mage leaves out, so composer never installs them
+function mage_create_mage_os_replace() {
+  local fragment
+  fragment="$(mage_template_file "composer-mage-os.json")"
+
+  if [[ -z "$fragment" ]]; then
+    mage_warn "Keeping all Mage-OS modules, could not get the 'composer-mage-os.json' template from ${MAGE_TEMPLATES_ARCHIVE}"
+    return 0
+  fi
+
+  mage_add_json "$fragment"
 }
