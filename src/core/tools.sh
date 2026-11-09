@@ -4,6 +4,8 @@ MAGENTO_CLI="bin/magento"
 PHP_CLI="php"
 COMPOSER_CLI="composer"
 NODE_CLI="node"
+# Runs vendor/bin/cache-clean.js, DDEV needs it as an executable
+CACHE_CLEAN_CLI="node"
 NPM_CLI="npm"
 MYSQL_CLI="mysql"
 MYSQLDUMP_CLI="mysqldump"

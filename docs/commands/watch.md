@@ -6,7 +6,7 @@ Watch the files of the project, and clean only the caches a change affects, with
 mage watch
 ```
 
-It uses the cache-clean of the project, `vendor/bin/cache-clean.js`, run with node in the [environment](../environments.md), so inside the container with Warden and DDEV.
+It uses the cache-clean of the project, `vendor/bin/cache-clean.js`, run with node in the [environment](../environments.md), so inside the container with Warden, and as an executable inside the container with DDEV.
 Without it, it falls back to a global one:
 
 - **Local and Valet:** `cache-clean.js` in your `PATH`, from `composer global require mage-os/magento-cache-clean`.

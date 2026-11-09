@@ -3,7 +3,7 @@ function mage_cmd_watch() {
   local cache_clean=""
 
   if [[ -f vendor/bin/cache-clean.js ]]; then
-    cache_clean="$NODE_CLI vendor/bin/cache-clean.js"
+    cache_clean="$CACHE_CLEAN_CLI vendor/bin/cache-clean.js"
   else
     cache_clean="$(env_call watch_cli)"
   fi
