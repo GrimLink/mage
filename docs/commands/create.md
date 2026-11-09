@@ -28,7 +28,7 @@ The name is a folder name, and must not exist yet.
 4. Requires the default packages from `MAGE_PACKAGES` and `MAGE_DEV_PACKAGES`, see [configuration](../config.md).
 5. On Mage-OS, applies the [composer fragment](../composer-fragments.md) `composer-mage-os.json` of the [templates](../templates.md).
    It replaces modules that Mage-OS ships but mage leaves out, so composer never installs them:
-   `mage-os/module-passkey-auth`, as it pulls in two factor auth, whose dependencies limit the supported PHP versions, and `mage-os/module-theme-optimization`, see the setup below.
+   `mage-os/module-passkey-auth`, as it depends on two factor auth, which the setup disables, and `mage-os/module-theme-optimization`, see the setup below.
    Templates synced before this fragment existed are updated first, and without it, it warns and continues.
 6. Runs `composer install`.
 7. Runs the setup below.
