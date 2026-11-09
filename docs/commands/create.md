@@ -22,11 +22,15 @@ The name is a folder name, and must not exist yet.
 
 1. Creates the composer project, in the chosen [environment](../environments.md).
    Warden and DDEV first set up and start their containers.
-2. Configures composer for development: `minimum-stability` dev with `prefer-stable`, and allows the composer patches plugin.
+2. Configures composer for development: `minimum-stability` dev with `prefer-stable`.
 3. Registers the `package-source` folder as a composer path repository, for your local packages.
    It gets a `.gitkeep`, so the folder survives a clone, which `composer install` needs.
-4. Requires the default packages from `MAGE_PACKAGES` and `MAGE_DEV_PACKAGES`, see [configuration](../config.md), and runs `composer install`.
-5. Runs the setup below.
+4. Requires the default packages from `MAGE_PACKAGES` and `MAGE_DEV_PACKAGES`, see [configuration](../config.md).
+5. Applies the [composer fragment](../composer-fragments.md) `composer-create.json` of the [templates](../templates.md).
+   It allows the composer patches plugin, and replaces `mage-os/module-passkey-auth`, so composer never installs it, as its dependencies limit the supported PHP versions.
+   Templates synced before this fragment existed are updated first, and without it, it warns and continues.
+6. Runs `composer install`.
+7. Runs the setup below.
 
 Edition `community` and `enterprise` need your Magento marketplace keys in the composer auth.
 
@@ -49,7 +53,7 @@ When Magento is already installed, it asks first, as this drops the database.
    Sessions go to the database for local and Valet, so they are dropped with it on nuke, and to Redis for DDEV and Warden, which each run their own.
 3. Gives OpenSearch and the Redis caches a prefix named after the database, so projects sharing a service stay apart.
 4. Sets the store name and the store config from `MAGE_STORE_CONFIG`.
-5. Sets the developer mode, and disables the modules in `MAGE_DISABLE_MODULES` the install has: two factor authentication, and on Mage-OS `MageOS_ThemeOptimization`, whose bfcache conflicts with the BFCache patches and does not work with Hyvä, see [mage-os/module-theme-optimization#28](https://github.com/mage-os/module-theme-optimization/issues/28).
+5. Sets the developer mode, and disables the modules in `MAGE_DISABLE_MODULES` the install has: two factor authentication (with `MageOS_PasskeyAuth` on Mage-OS, which depends on it), and on Mage-OS `MageOS_ThemeOptimization`, whose bfcache conflicts with the BFCache patches and does not work with Hyvä, see [mage-os/module-theme-optimization#28](https://github.com/mage-os/module-theme-optimization/issues/28).
 6. Writes the `.valet-env.php` with Valet.
 7. Moves the `*.sample` files of the root to `dev/sample-files`, and adds a `.gitignore` when the project has none.
 

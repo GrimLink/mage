@@ -1,0 +1,11 @@
+{
+  "description": "Development defaults",
+  "config": {
+    "allow-plugins": {
+      "cweagans/composer-patches": true
+    }
+  },
+  "replace": {
+    "mage-os/module-passkey-auth": "*"
+  }
+}

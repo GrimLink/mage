@@ -50,8 +50,10 @@ MAGE_DEV_PACKAGES=(
 )
 
 # The modules mage setup disables, when the install has them: two factor auth,
-# and the bfcache of Mage-OS, which conflicts with the BFCache patches and Hyva
+# with the Mage-OS passkeys that depend on it, and the bfcache of Mage-OS,
+# which conflicts with the BFCache patches and Hyva
 MAGE_DISABLE_MODULES=(
+  MageOS_PasskeyAuth
   Magento_AdminAdobeImsTwoFactorAuth
   Magento_TwoFactorAuth
   MageOS_ThemeOptimization

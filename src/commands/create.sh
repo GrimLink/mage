@@ -38,6 +38,12 @@ function mage_cmd_create() {
     exit 1
   fi
 
+  # Templates synced before composer-create.json was added miss it
+  if [[ "$MAGE_VERSION" != "dev" ]] && ! mage_template_file "composer-create.json" > /dev/null; then
+    mage_info "Updating the templates"
+    mage_sync_templates "$(mage_config_dir)/templates"
+  fi
+
   local available_envs
   available_envs="$(mage_env_available)"
   local default_env="${available_envs%% *}"
@@ -107,7 +113,6 @@ function mage_create_composer_setup() {
   mage_info "Adjusting composer settings to allow dev packages"
   $COMPOSER_CLI config minimum-stability dev
   $COMPOSER_CLI config prefer-stable true
-  $COMPOSER_CLI config allow-plugins.cweagans/composer-patches true
 
   mage_add_path_repository
 
@@ -118,6 +123,15 @@ function mage_create_composer_setup() {
 
   if [[ ${#MAGE_DEV_PACKAGES[@]} -gt 0 ]]; then
     $COMPOSER_CLI require --no-update --dev "${MAGE_DEV_PACKAGES[@]}"
+  fi
+
+  local fragment
+  fragment="$(mage_template_file "composer-create.json")"
+
+  if [[ -n "$fragment" ]]; then
+    mage_add_json "$fragment" || return 1
+  else
+    mage_warn "Skipping the development defaults, could not get the 'composer-create.json' template from ${MAGE_TEMPLATES_ARCHIVE}"
   fi
 
   mage_info "Running installation.. Enjoy a cup of coffee in the meantime"
