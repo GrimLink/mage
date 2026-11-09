@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Fixed
-- **`mage watch`:** On DDEV the cache-clean of the project is run as an executable instead of with node, as `vendor/bin/cache-clean.js` is a shell wrapper, which failed with a `SyntaxError`.
+- **`mage watch`:** The cache-clean of the project is run as an executable, as Composer installs `vendor/bin/cache-clean.js` as a shell wrapper, which failed with a `SyntaxError` when run with node.
 
 ## [3.0.1] - 2026-10-26
 
