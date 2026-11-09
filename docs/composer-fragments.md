@@ -35,6 +35,9 @@ It requires [jq](https://jqlang.org/).
       "vendor/plugin": true
     }
   },
+  "replace": {
+    "vendor/unwanted-module": "*"
+  },
   "require": {
     "hyva-themes/magento2-default-theme": "*"
   },
@@ -51,6 +54,7 @@ Other keys are skipped with a warning, which catches a typo such as `requires`.
 | `auth`         | `composer config --global --auth`, see below                                                          |
 | `repositories` | `composer config --append repositories.<name> <json>`, one per repository                             |
 | `config`       | `composer config <key> <value>`, nested keys become dotted keys such as `allow-plugins.vendor/plugin` |
+| `replace`      | Merged into the `replace` of `composer.json`, as `composer config` cannot set it                      |
 | `require`      | One `composer require` with all packages                                                              |
 | `require-dev`  | One `composer require --dev` with all packages                                                        |
 
@@ -88,6 +92,12 @@ A credential the global auth already has for that type and host is kept, and its
 To change one, run `composer config --global --auth <type>.<host> ...` yourself.
 Composer keeps one credential per host, so projects with different keys for the same host overwrite each other.
 
+### replace
+
+Packages in the `replace` of the root `composer.json` are never installed, also when another package requires them.
+Use it to remove a module that comes with Magento, such as `mage-os/module-passkey-auth`.
+Run `composer update` afterwards, as the fragment only changes `composer.json`.
+
 ## Placeholders
 
 `{{NAME}}` placeholders, with uppercase letters, digits and underscores, are asked when the fragment is applied.
@@ -108,3 +118,4 @@ Mage ships these fragments in its [templates](templates.md), used by the matchin
 - `composer-hyva-dev.json`: Hyvä from the Hyvä GitLab.
 - `composer-hyva-sample-dev.json`: the repositories of the Koti sample data on the Hyvä GitLab.
 - `composer-storeinfo.json`: the Siteation StoreInfo modules.
+- `composer-mage-os.json`: the Mage-OS modules [`mage create`](commands/create.md) leaves out.

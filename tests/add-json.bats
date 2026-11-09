@@ -149,3 +149,32 @@ EOF
   [ "$status" -eq 0 ]
   [ ! -e "$MAGE_CONFIG_FILE" ]
 }
+
+@test "merges the replace into composer.json" {
+  echo '{ "name": "acme/project", "replace": { "vendor/a": "*" } }' > composer.json
+  echo '{ "replace": { "vendor/b": "*" } }' > fragment.json
+
+  run mage_cmd_add fragment.json
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"Replace vendor/b"* ]]
+  jq -e '.name == "acme/project" and .replace == { "vendor/a": "*", "vendor/b": "*" }' composer.json
+}
+
+@test "adds the replace to composer.json without one" {
+  echo '{ "name": "acme/project" }' > composer.json
+  echo '{ "replace": { "vendor/b": "*" } }' > fragment.json
+
+  run mage_cmd_add fragment.json
+  [ "$status" -eq 0 ]
+  jq -e '.replace == { "vendor/b": "*" }' composer.json
+}
+
+@test "errors on replace as a list" {
+  echo '{ "name": "acme/project" }' > composer.json
+  echo '{ "replace": [ "vendor/b" ] }' > fragment.json
+
+  run mage_cmd_add fragment.json
+  [ "$status" -ne 0 ]
+  [[ "$output" == *"object keyed by package"* ]]
+  jq -e 'has("replace") | not' composer.json
+}

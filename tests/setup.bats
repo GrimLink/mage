@@ -14,6 +14,13 @@ function setup() {
   [[ "$output" == *"magento module:disable Magento_TwoFactorAuth MageOS_ThemeOptimization" ]]
 }
 
+@test "disables the Mage-OS passkeys along with two factor auth" {
+  printf "<?php\nreturn ['modules' => [\n'MageOS_PasskeyAuth' => 1,\n'Magento_TwoFactorAuth' => 1,\n]];\n" > app/etc/config.php
+
+  run mage_setup_disable_modules
+  [[ "$output" == *"magento module:disable MageOS_PasskeyAuth Magento_TwoFactorAuth" ]]
+}
+
 @test "disables nothing when the install has none of them" {
   printf "<?php\nreturn ['modules' => [\n'Magento_Catalog' => 1,\n]];\n" > app/etc/config.php
 

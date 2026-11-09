@@ -13,6 +13,7 @@ The files mage generates come from the `templates` folder of this repository:
 | `composer-hyva-dev.json`        | [`mage add hyva --dev`](commands/add-hyva.md)                                       |
 | `composer-hyva-sample-dev.json` | [`mage add sample hyva`](commands/add-sample.md), without a Hyvä license   |
 | `composer-storeinfo.json`       | [`mage add storeinfo`](commands/add-storeinfo.md)                                   |
+| `composer-mage-os.json`         | [`mage create`](commands/create.md) with Mage-OS                                    |
 
 ## Sync
 

@@ -1,8 +1,8 @@
 # mage add <file>.json applies a composer fragment: a json file with the
 # composer.json keys below. {{NAME}} placeholders are asked when applied.
-MAGE_ADD_JSON_KEYS="description repositories config auth require require-dev"
+MAGE_ADD_JSON_KEYS="description repositories config auth replace require require-dev"
 
-# Apply a composer fragment, in the order auth, repositories, config and packages,
+# Apply a composer fragment, in the order auth, repositories, config, replace and packages,
 # so the packages can use the repositories and credentials they need
 function mage_add_json() {
   mage_require_jq "Adding from a json file"
@@ -45,6 +45,7 @@ function mage_add_json() {
   mage_add_json_auth "$json" &&
     mage_add_json_repositories "$json" &&
     mage_add_json_config "$json" &&
+    mage_add_json_replace "$json" &&
     mage_add_json_require "$json" require &&
     mage_add_json_require "$json" require-dev --dev
 }
@@ -177,6 +178,29 @@ function mage_add_json_config() {
     $COMPOSER_CLI config "$key" "$value" || return 1
     mage_check 0 "Config ${key}"
   done < <(jq -r '.config // {} | paths(type != "object") as $p | if ($p | all(type == "string")) and (getpath($p) | type != "array") then [($p | join(".")), (getpath($p) | tostring)] | @tsv else empty end' <<< "$json")
+}
+
+# Merge the replace into composer.json, as composer config cannot set it
+function mage_add_json_replace() {
+  local json="$1"
+  local package
+
+  if [[ "$(jq -r '.replace // {} | type' <<< "$json")" != "object" ]]; then
+    mage_error "The replace should be an object keyed by package"
+    return 1
+  fi
+
+  if [[ "$(jq '.replace // {} | length' <<< "$json")" == 0 ]]; then
+    return 0
+  fi
+
+  local composer
+  composer="$(jq --indent 4 --argjson replace "$(jq -c '.replace' <<< "$json")" '.replace += $replace' composer.json)" || return 1
+  printf '%s\n' "$composer" > composer.json
+
+  for package in $(jq -r '.replace | keys_unsorted[]' <<< "$json"); do
+    mage_check 0 "Replace ${package}"
+  done
 }
 
 # Require the packages of the given key in one composer run, with any extra arguments
