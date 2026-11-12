@@ -43,7 +43,7 @@ It exits with 1 when any of them failed, so it also works in a script.
 
 ## Creating the mage.config.json
 
-Without a `mage.config.json`, it offers to create one from the [template](../templates.md), which checks the php syntax of the files in `app`, and runs [`mage lint`](lint.md) on `app/code`.
+Without a `mage.config.json`, it offers to create one from the [template](../templates.md), which runs [`mage lint`](lint.md) on `app/code`.
 With `-y` or `MAGE_YES=1` it creates it without asking.
 Its `docs` key links to this page, mage does not read it.
 The [gitignore template](../templates.md) ignores it, so each developer keeps their own, and a clone never brings actions along that run on your machine.

@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - **`mage lint`:** Check the code of a module or theme with the [Hyvä coding standard](https://github.com/hyva-themes/hyva-coding-standard), and fix what it can with `--fix`.
-- **`mage test`:** Run the test actions of the project, the shell commands listed in its `mage.config.json`, and offer to create one that checks the php syntax and runs `mage lint` on `app/code`.
+- **`mage test`:** Run the test actions of the project, the shell commands listed in its `mage.config.json`, and offer to create one that runs `mage lint` on `app/code`.
   Actions that remove, move or write files, such as `rm`, `mv` or a `>` redirect, are blocked.
   The gitignore template ignores the `mage.config.json`, so it stays on your machine.
 

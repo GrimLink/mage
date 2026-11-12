@@ -47,19 +47,6 @@ function setup() {
   cmp mage.config.json "${MAGE_REPO}/templates/mage.config.json"
 }
 
-@test "the template fails on a php syntax error" {
-  command -v php || skip "needs php"
-  cp "${MAGE_REPO}/templates/mage.config.json" mage.config.json
-  mkdir -p app/code/Acme
-  echo '<?php echo 1;' > app/code/Acme/ok.php
-  echo '<?php echo ;' > app/code/Acme/broken.phtml
-
-  run mage_cmd_test
-  [ "$status" -eq 1 ]
-  [[ "$output" == *"app/code/Acme/broken.phtml"* ]]
-  [[ "$output" != *"ok.php"* ]]
-}
-
 @test "runs nothing when an action changes files" {
   echo '{ "test": ["mage lint app/code", "find app -name x | xargs rm", "echo x > out.txt", "git clean -fd"] }' > mage.config.json
 
