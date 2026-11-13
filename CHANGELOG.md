@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - **`mage add <file>.json`:** Composer fragments take a `replace`, merged into the `replace` of `composer.json`.
+- **`mage add <file>.json`, `mage add hyva`, `mage add storeinfo`:** The option `--keep-wildcard` requires a `*` constraint as is, instead of as the latest version.
 
 ### Changed
 - **`mage create`:** On Mage-OS, applies the new `composer-mage-os.json` template, which replaces `mage-os/module-passkey-auth` and `mage-os/module-theme-optimization`, so they are never installed.
@@ -17,6 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`mage watch`:** The cache-clean of the project is run as an executable, as Composer installs `vendor/bin/cache-clean.js` as a shell wrapper, which failed with a `SyntaxError` when run with node.
 - **`mage setup`:** Disabling two factor auth no longer fails on Mage-OS projects that still have the passkeys.
   `MageOS_PasskeyAuth` depends on `Magento_TwoFactorAuth`, so it is now part of `MAGE_DISABLE_MODULES` and disabled along with it.
+- **`mage add <file>.json`:** A `*` constraint in `require` or `require-dev` lets composer pick the latest version, so `composer.json` gets `^x.y.z` instead of `*`.
+  This fixes `mage add hyva` and `mage add storeinfo`.
 
 ## [3.0.1] - 2026-10-26
 

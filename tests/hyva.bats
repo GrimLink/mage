@@ -26,6 +26,12 @@ function setup() {
   [[ "$output" != *"--auth"* ]]
 }
 
+@test "requires the Hyva packages as * with --keep-wildcard" {
+  run mage_cmd_add hyva --dev --keep-wildcard
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"hyva-themes/magento2-theme-module:* hyva-themes/magento2-default-theme:*"* ]]
+}
+
 @test "sets the theme with the yireo theme commands" {
   mkdir -p vendor/yireo/magento2-theme-commands
 
