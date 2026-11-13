@@ -3,20 +3,36 @@
 MAGE_ADD_JSON_KEYS="description repositories config auth replace require require-dev"
 
 # Apply a composer fragment, in the order auth, repositories, config, replace and packages,
-# so the packages can use the repositories and credentials they need
+# so the packages can use the repositories and credentials they need.
+# With --keep-wildcard a * constraint is required as is, instead of as the latest version.
 function mage_add_json() {
   mage_require_jq "Adding from a json file"
 
+  local path="$1"
   local file
-  file="$(mage_resolve_path "$1")"
+  file="$(mage_resolve_path "$path")"
+  shift
+
+  local wildcard="latest"
+  local arg
+
+  for arg in "$@"; do
+    case "$arg" in
+      --keep-wildcard) wildcard="keep" ;;
+      *)
+        mage_error "Unknown option '${arg}'"
+        exit 1
+        ;;
+    esac
+  done
 
   if [[ ! -f "$file" ]]; then
-    mage_error "File not found: $1"
+    mage_error "File not found: ${path}"
     exit 1
   fi
 
   if ! jq -e 'type == "object"' "$file" &> /dev/null; then
-    mage_error "$1 is not a json object"
+    mage_error "${path} is not a json object"
     exit 1
   fi
 
@@ -46,8 +62,8 @@ function mage_add_json() {
     mage_add_json_repositories "$json" &&
     mage_add_json_config "$json" &&
     mage_add_json_replace "$json" &&
-    mage_add_json_require "$json" require &&
-    mage_add_json_require "$json" require-dev --dev
+    mage_add_json_require "$json" require "$wildcard" &&
+    mage_add_json_require "$json" require-dev "$wildcard" --dev
 }
 
 # Warn about keys that are not applied, such as a typo
@@ -203,18 +219,21 @@ function mage_add_json_replace() {
   done
 }
 
-# Require the packages of the given key in one composer run, with any extra arguments
+# Require the packages of the given key in one composer run, with any extra arguments.
+# With wildcard 'latest' a * constraint is left out, so composer picks the latest version
+# and writes it as ^x.y.z, with 'keep' it is required as *.
 function mage_add_json_require() {
   local json="$1"
   local key="$2"
-  shift 2
+  local wildcard="$3"
+  shift 3
 
   local packages=()
   local package
 
   while IFS= read -r package; do
     packages+=("$package")
-  done < <(jq -r --arg key "$key" '.[$key] // {} | to_entries[] | "\(.key):\(.value)"' <<< "$json")
+  done < <(jq -r --arg key "$key" --arg wildcard "$wildcard" '.[$key] // {} | to_entries[] | if .value == "*" and $wildcard == "latest" then .key else "\(.key):\(.value)" end' <<< "$json")
 
   if [[ ${#packages[@]} -gt 0 ]]; then
     $COMPOSER_CLI require "$@" "${packages[@]}"

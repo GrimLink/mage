@@ -12,8 +12,14 @@ function setup() {
 @test "requires the StoreInfo modules and upgrades" {
   run mage_cmd_add storeinfo
   [ "$status" -eq 0 ]
-  [[ "$output" == *"composer require siteation/magento2-storeinfo:* siteation/magento2-storeinfo-menus:* siteation/magento2-storeinfo-usps:* siteation/magento2-storeinfo-payments:*"* ]]
+  [[ "$output" == *"composer require siteation/magento2-storeinfo siteation/magento2-storeinfo-menus siteation/magento2-storeinfo-usps siteation/magento2-storeinfo-payments"* ]]
   [[ "$output" == *"magento setup:upgrade"* ]]
+}
+
+@test "requires the StoreInfo modules as * with --keep-wildcard" {
+  run mage_cmd_add storeinfo --keep-wildcard
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"composer require siteation/magento2-storeinfo:* siteation/magento2-storeinfo-menus:*"* ]]
 }
 
 @test "rejects options" {
