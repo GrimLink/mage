@@ -38,6 +38,8 @@ LocalValetDriver.php
 docker-compose.yml
 
 # Development
+/mage.config.json
+/hyva-coding-standard
 node_modules
 .cache
 .idea

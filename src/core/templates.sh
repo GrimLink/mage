@@ -43,16 +43,22 @@ function mage_templates_dir() {
   echo "$templates_dir"
 }
 
-# Echo the path to a single template file
+# Echo the path to a single template file. Templates synced by an older mage
+# can miss a newer one, so a missing file syncs the templates before giving up.
 function mage_template_file() {
-  local file
-  file="$(mage_templates_dir)/$1"
+  local dir
+  dir="$(mage_templates_dir)" || return 1
 
-  if [[ ! -f "$file" ]]; then
+  if [[ ! -f "${dir}/$1" ]] && [[ "$MAGE_VERSION" != "dev" ]]; then
+    mage_info "Updating the templates, they miss '$1'" >&2
+    mage_sync_templates "$dir" || return 1
+  fi
+
+  if [[ ! -f "${dir}/$1" ]]; then
     return 1
   fi
 
-  echo "$file"
+  echo "${dir}/$1"
 }
 
 # Copy a template folder to a destination,

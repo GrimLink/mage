@@ -8,12 +8,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **`mage lint`:** Check the code of a module or theme with the [Hyvä coding standard](https://github.com/hyva-themes/hyva-coding-standard), and fix what it can with `--fix`.
+  It is installed stand-alone on your machine, or with Warden and DDEV in the project, so it runs in the container.
+- **`mage test`:** Run the test actions of the project, the shell commands listed in its `mage.config.json`, and offer to create one that runs `mage lint` on `app/code`.
+  Actions that remove, move or write files, such as `rm`, `mv` or a `>` redirect, are blocked.
+  The gitignore template ignores the `mage.config.json`, so it stays on your machine.
 - **`mage add <file>.json`:** Composer fragments take a `replace`, merged into the `replace` of `composer.json`.
 
 ### Changed
 - **`mage create`:** On Mage-OS, applies the new `composer-mage-os.json` template, which replaces `mage-os/module-passkey-auth` and `mage-os/module-theme-optimization`, so they are never installed.
 
 ### Fixed
+- **Templates:** A template the synced templates miss, as they come from an older mage, syncs them first, instead of failing.
 - **`mage watch`:** The cache-clean of the project is run as an executable, as Composer installs `vendor/bin/cache-clean.js` as a shell wrapper, which failed with a `SyntaxError` when run with node.
 - **`mage setup`:** Disabling two factor auth no longer fails on Mage-OS projects that still have the passkeys.
   `MageOS_PasskeyAuth` depends on `Magento_TwoFactorAuth`, so it is now part of `MAGE_DISABLE_MODULES` and disabled along with it.

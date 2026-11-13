@@ -1,0 +1,6 @@
+{
+  "docs": "https://grimlink.com/mage/docs/commands/test/",
+  "test": [
+    "mage lint app/code"
+  ]
+}

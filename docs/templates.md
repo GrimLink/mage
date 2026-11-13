@@ -11,14 +11,17 @@ The files mage generates come from the `templates` folder of this repository:
 | `LocalValetDriver.php`          | [`mage setup`](commands/create.md#mage-setup) with Valet, when the project has none |
 | `composer-hyva.json`            | [`mage add hyva`](commands/add-hyva.md)                                             |
 | `composer-hyva-dev.json`        | [`mage add hyva --dev`](commands/add-hyva.md)                                       |
-| `composer-hyva-sample-dev.json` | [`mage add sample hyva`](commands/add-sample.md), without a Hyvä license   |
+| `composer-hyva-sample-dev.json` | [`mage add sample hyva`](commands/add-sample.md), without a Hyvä license            |
 | `composer-storeinfo.json`       | [`mage add storeinfo`](commands/add-storeinfo.md)                                   |
+| `mage.config.json`              | [`mage test`](commands/test.md), when the project has none                          |
+| `mage-hyva.config.json`         | [`mage test`](commands/test.md), a sample for working on Hyvä, copied by hand       |
 | `composer-mage-os.json`         | [`mage create`](commands/create.md) with Mage-OS                                    |
 
 ## Sync
 
 The first command that needs a template downloads them to `~/.config/mage/templates`.
 After that they are only updated by `mage self-update`, so mage works offline and never fetches templates on a normal command.
+The exception is a template they miss, as they were synced by an older mage, then they are synced first.
 A failed update keeps the previous templates.
 
 Running mage unbuilt, from `src/mage.sh`, uses the `templates` folder of the repository directly, see [development](development.md).

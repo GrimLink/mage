@@ -52,6 +52,9 @@ function mage_cmd_help() {
   mage_help_cmd "watch"                       "Clean only the caches a file change affects, keeps running"
   mage_help_cmd "build [TARGET]"              "Build every theme, or the npm packages matching the target"
   mage_help_cmd "  -w, --watch"               "Watch the one target instead, keeps running"
+  mage_help_cmd "lint PATH"                   "Check the code of a module or theme with the Hyvä coding standard"
+  mage_help_cmd "  --fix"                     "Fix what phpcbf can fix instead"
+  mage_help_cmd "test [-y]"                   "Run the test commands of the project, from its mage.config.json, -y creates it without asking"
   mage_help_cmd "log [FILE]"                  "Follow a log in var/log, debug by default, keeps running"
   mage_help_cmd "reindex"                     "Reindex everything, then clean the cache"
   mage_help_cmd "clean/purge [OPTION]"        "Clean caches and files, see 'mage clean help' for all options"
@@ -93,6 +96,10 @@ function mage_cmd_self_update() {
     mage_check 0 "Templates updated"
   else
     mage_check 1 "Could not update the templates, the previous ones are kept"
+  fi
+
+  if [[ -d "$(mage_lint_dir)" ]] && mage_lint_install; then
+    mage_check 0 "Coding standard updated"
   fi
 
   "$target" version
