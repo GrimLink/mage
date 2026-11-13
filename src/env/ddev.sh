@@ -20,6 +20,9 @@ function env_ddev_apply() {
   RSYNC_CLI="ddev exec rsync"
   SEARCH_CURL_CLI="ddev exec -s opensearch curl"
   PURGE_CLI="ddev exec rm -rf"
+  LINT_PHP_CLI="$PHP_CLI"
+  LINT_COMPOSER_CLI="$COMPOSER_CLI"
+  LINT_IN_PROJECT=1
 
   MAGE_DOMAIN="ddev.site"
   MAGE_DB_HOST="db"

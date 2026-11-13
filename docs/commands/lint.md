@@ -18,7 +18,19 @@ The exit code is that of phpcs, so it also works in a script.
 ## Installation
 
 Hyvä advises against adding the coding standard to the project, as it shares dependencies with Magento, which easily conflict.
-So the first run installs it once, stand-alone, in `~/.config/mage/hyva-coding-standard`, and `mage self-update` updates it.
+So the first run installs it stand-alone, where it runs:
 
-It runs with the `php` and `composer` of your machine, also with Warden and DDEV.
+| Environment   | Installed in                          | Runs with                                 |
+| ------------- | ------------------------------------- | ----------------------------------------- |
+| Local, Valet  | `~/.config/mage/hyva-coding-standard` | The `php` and `composer` of your machine  |
+| Warden, DDEV  | `hyva-coding-standard` in the project | The `php` and `composer` of the container |
+
+The container only sees the project, so with Warden and DDEV the paths to lint have to be in the project.
+The [gitignore template](../templates.md) ignores the `hyva-coding-standard` folder.
+Exclude it in your IDE as well, so it is not indexed.
+It also lets PhpStorm use the coding standard with the PHP interpreter of the container, see the [Hyvä instructions](https://github.com/hyva-themes/hyva-coding-standard#with-php-in-docker-eg-warden).
+
+`mage lint --update` reinstalls the latest version, also without a path.
+`mage self-update` does the same for the one on your machine, as it cannot reach those of the projects.
+
 The sniffs read the PHP version of the project from its `composer.json`.

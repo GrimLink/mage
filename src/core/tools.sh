@@ -15,9 +15,10 @@ RSYNC_CLI="rsync"
 SSH_CLI="ssh"
 SYNC_RSYNC_CLI="rsync"
 SEARCH_CURL_CLI="curl"
-# Always on your machine for lint, as the coding standard is installed in the mage config
-HOST_PHP_CLI="php"
-HOST_COMPOSER_CLI="composer"
+# Lint runs on your machine, Warden and DDEV run it in the container, see lint.sh
+LINT_PHP_CLI="php"
+LINT_COMPOSER_CLI="composer"
+LINT_IN_PROJECT=0
 PURGE_CLI="rm -rf"
 OPEN_CLI="xdg-open"
 

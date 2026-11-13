@@ -36,7 +36,7 @@ wget https://raw.githubusercontent.com/GrimLink/mage/main/mage && chmod +x mage
 ```
 
 Move it to a folder in your `PATH`, such as `~/.local/bin`.
-Update it later with `mage self-update`, which also updates the [templates](docs/templates.md) and the coding standard of [`mage lint`](docs/commands/lint.md).
+Update it later with `mage self-update`, which also updates the [templates](docs/templates.md) and the coding standard of [`mage lint`](docs/commands/lint.md) on your machine.
 
 ### Requirements
 

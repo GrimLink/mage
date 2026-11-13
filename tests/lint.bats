@@ -6,8 +6,8 @@ function setup() {
   make_magento_root "$BATS_TEST_TMPDIR"
   MAGE_ROOT="$BATS_TEST_TMPDIR"
   MAGE_CALL_DIR="$BATS_TEST_TMPDIR"
-  HOST_PHP_CLI="echo php"
-  HOST_COMPOSER_CLI="fake_lint_composer"
+  LINT_PHP_CLI="echo php"
+  LINT_COMPOSER_CLI="fake_lint_composer"
   mkdir -p "$(mage_lint_dir)/vendor/bin"
   touch "$(mage_lint_dir)/vendor/bin/phpcs" "$(mage_lint_dir)/vendor/bin/phpcbf"
 }
@@ -63,4 +63,50 @@ function fake_lint_composer() {
   [[ "$output" == *"Could not install"* ]]
   [ -f "$(mage_lint_dir)/vendor/bin/phpcs" ]
   [ ! -e "$(mage_lint_dir).tmp" ]
+}
+
+@test "reinstalls the coding standard with --update, also without a path" {
+  run mage_cmd_lint --update
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"composer create-project"* ]]
+  [[ "$output" != *"phpcs --standard"* ]]
+}
+
+@test "installs and runs in the project with a container" {
+  LINT_IN_PROJECT=1
+  PURGE_CLI="echo purge"
+  function fake_container_php() {
+    if [[ "$1" == "-r" ]]; then
+      echo "php $*"
+      [[ "$2" != *"is_file"* ]]
+      return
+    fi
+    echo "php $*"
+  }
+  LINT_PHP_CLI="fake_container_php"
+
+  run mage_cmd_lint app/code
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"composer create-project --no-plugins --no-dev --no-interaction hyva-themes/hyva-coding-standard hyva-coding-standard.tmp"* ]]
+  [[ "$output" == *"purge hyva-coding-standard"* ]]
+  [[ "$output" == *"rename('hyva-coding-standard.tmp', 'hyva-coding-standard')"* ]]
+  [[ "${lines[${#lines[@]}-1]}" == "php hyva-coding-standard/vendor/bin/phpcs --standard=HyvaThemes -p app/code" ]]
+}
+
+@test "lints an absolute path in the project relative to it with a container" {
+  LINT_IN_PROJECT=1
+  LINT_PHP_CLI="echo php"
+
+  run mage_cmd_lint "${BATS_TEST_TMPDIR}/app/code"
+  [ "$status" -eq 0 ]
+  [ "${lines[${#lines[@]}-1]}" = "php hyva-coding-standard/vendor/bin/phpcs --standard=HyvaThemes -p app/code" ]
+}
+
+@test "refuses a path outside the project with a container" {
+  LINT_IN_PROJECT=1
+  LINT_PHP_CLI="echo php"
+
+  run mage_cmd_lint /tmp/elsewhere
+  [ "$status" -eq 1 ]
+  [[ "$output" == *"The container only sees the project"* ]]
 }
