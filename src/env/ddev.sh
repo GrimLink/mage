@@ -20,8 +20,11 @@ function env_ddev_apply() {
   RSYNC_CLI="ddev exec rsync"
   SEARCH_CURL_CLI="ddev exec -s opensearch curl"
   PURGE_CLI="ddev exec rm -rf"
-  LINT_PHP_CLI="$PHP_CLI"
-  LINT_COMPOSER_CLI="$COMPOSER_CLI"
+  # ddev composer create-project always installs in the project root, and ddev exec
+  # starts in the docroot, so lint runs plain composer from the project root
+  LINT_PHP_CLI="ddev exec -d /var/www/html php"
+  LINT_COMPOSER_CLI="ddev exec -d /var/www/html composer"
+  LINT_PURGE_CLI="ddev exec -d /var/www/html rm -rf"
   LINT_IN_PROJECT=1
 
   MAGE_DOMAIN="ddev.site"

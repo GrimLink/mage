@@ -67,7 +67,7 @@ function fake_lint_composer() {
 
 @test "installs and runs in the project with a container" {
   LINT_IN_PROJECT=1
-  PURGE_CLI="echo purge"
+  LINT_PURGE_CLI="echo purge"
   function fake_container_php() {
     if [[ "$1" == "-r" ]]; then
       echo "php $*"

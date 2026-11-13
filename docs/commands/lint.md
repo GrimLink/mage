@@ -31,6 +31,11 @@ Exclude it in your IDE as well, so it is not indexed.
 It also lets PhpStorm use the coding standard with the PHP interpreter of the container, see the [Hyvä instructions](https://github.com/hyva-themes/hyva-coding-standard#with-php-in-docker-eg-warden).
 
 `mage self-update` updates the one on your machine.
-The one in a project stays at its version, as part of the project, update it yourself with the composer of the container, such as `ddev composer update -d hyva-coding-standard`.
+The one in a project stays at its version, as part of the project, update it yourself with the composer of the container:
+
+```bash
+warden env exec php-fpm composer update -d hyva-coding-standard
+ddev exec -d /var/www/html/hyva-coding-standard composer update
+```
 
 The sniffs read the PHP version of the project from its `composer.json`.

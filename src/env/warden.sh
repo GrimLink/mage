@@ -25,6 +25,7 @@ function env_warden_apply() {
   PURGE_CLI="warden env exec -T php-fpm rm -rf"
   LINT_PHP_CLI="$PHP_CLI"
   LINT_COMPOSER_CLI="$COMPOSER_CLI"
+  LINT_PURGE_CLI="$PURGE_CLI"
   LINT_IN_PROJECT=1
 
   MAGE_DB_HOST="db"
