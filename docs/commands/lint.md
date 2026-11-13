@@ -12,6 +12,7 @@ mage lint app/code/Acme/Module --fix               # fix what phpcbf can fix
 It needs a path, and never checks the whole project, as that also holds the `vendor` folders of local packages, which take long and show nothing until done.
 It checks `php`, `phtml` and `xml` files, and skips `node_modules`, but not `vendor`, so give the path of the package, not a folder that holds its dependencies.
 It shows its progress with a dot per file, `-q` turns that off.
+Give an option with a value as one argument, such as `--report=summary`, as `--report summary` takes `summary` as a path.
 The exit code is that of phpcs, so it also works in a script.
 
 ## Installation

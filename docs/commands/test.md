@@ -11,7 +11,7 @@ Each action is a shell command, run in order from the root of the project, where
 ```json
 {
   "test": [
-    "mage lint",
+    "mage lint app/code/Acme/Module",
     "composer validate app/code/Acme/Module/composer.json",
     "vendor/bin/phpunit -c dev/tests/unit/phpunit.xml.dist app/code/Acme"
   ]
@@ -47,3 +47,7 @@ Without a `mage.config.json`, it offers to create one from the [template](../tem
 With `-y` or `MAGE_YES=1` it creates it without asking.
 Its `docs` key links to this page, mage does not read it.
 The [gitignore template](../templates.md) ignores it, so each developer keeps their own, and a clone never brings actions along that run on your machine.
+
+For working on the Hyvä theme module and default theme, the template `mage-hyva.config.json` is a sample.
+It validates their `composer.json`, checks the PHP syntax and lints both.
+Copy it from `~/.config/mage/templates` to the root of the project as `mage.config.json`.
