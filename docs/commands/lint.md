@@ -30,7 +30,7 @@ The [gitignore template](../templates.md) ignores the `hyva-coding-standard` fol
 Exclude it in your IDE as well, so it is not indexed.
 It also lets PhpStorm use the coding standard with the PHP interpreter of the container, see the [Hyvä instructions](https://github.com/hyva-themes/hyva-coding-standard#with-php-in-docker-eg-warden).
 
-`mage lint --update` reinstalls the latest version, also without a path.
-`mage self-update` does the same for the one on your machine, as it cannot reach those of the projects.
+`mage self-update` updates the one on your machine.
+The one in a project stays at its version, as part of the project, update it yourself with the composer of the container, such as `ddev composer update -d hyva-coding-standard`.
 
 The sniffs read the PHP version of the project from its `composer.json`.

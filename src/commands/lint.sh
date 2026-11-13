@@ -7,11 +7,9 @@ MAGE_LINT_STANDARD="HyvaThemes"
 MAGE_LINT_PROJECT_DIR="hyva-coding-standard"
 
 # Lint the given paths, never the whole project, as that also holds the vendor folders
-# of local packages. --fix runs phpcbf instead, --update reinstalls the coding standard,
-# other options go to phpcs, such as -s.
+# of local packages. --fix runs phpcbf instead, other options go to phpcs, such as -s.
 function mage_cmd_lint() {
   local bin="phpcs"
-  local update=0
   local options=()
   local paths=()
   local arg
@@ -20,7 +18,6 @@ function mage_cmd_lint() {
   for arg in "$@"; do
     case "$arg" in
       --fix) bin="phpcbf" ;;
-      --update) update=1 ;;
       -*) options+=("$arg") ;;
       *)
         path="$(mage_resolve_path "$arg")"
@@ -39,17 +36,13 @@ function mage_cmd_lint() {
     esac
   done
 
-  if [[ ${#paths[@]} -eq 0 ]] && [[ $update == 0 ]]; then
+  if [[ ${#paths[@]} -eq 0 ]]; then
     mage_error "Give a path to lint, such as 'mage lint app/code/Acme/Module'"
     exit 1
   fi
 
-  if [[ $update == 1 ]] || ! mage_lint_installed "$bin"; then
+  if ! mage_lint_installed "$bin"; then
     mage_lint_install || exit 1
-  fi
-
-  if [[ ${#paths[@]} -eq 0 ]]; then
-    return 0
   fi
 
   # -p shows the progress, as phpcs shows nothing else until it is done

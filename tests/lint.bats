@@ -65,13 +65,6 @@ function fake_lint_composer() {
   [ ! -e "$(mage_lint_dir).tmp" ]
 }
 
-@test "reinstalls the coding standard with --update, also without a path" {
-  run mage_cmd_lint --update
-  [ "$status" -eq 0 ]
-  [[ "$output" == *"composer create-project"* ]]
-  [[ "$output" != *"phpcs --standard"* ]]
-}
-
 @test "installs and runs in the project with a container" {
   LINT_IN_PROJECT=1
   PURGE_CLI="echo purge"
