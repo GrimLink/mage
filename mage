@@ -5,8 +5,8 @@
 
 set -o pipefail
 
-MAGE_VERSION="3.0.1"
-MAGE_SELF="${BASH_SOURCE[0]}"
+MAGE_VERSION="3.1.0"
+MAGE_SELF="$(cd "$(dirname "${BASH_SOURCE[0]}")" > /dev/null 2>&1 && pwd)/$(basename "${BASH_SOURCE[0]}")"
 
 # --- core/output.sh
 RESET=""
@@ -105,12 +105,19 @@ MAGE_DEV_PACKAGES=(
 )
 
 # The modules mage setup disables, when the install has them: two factor auth,
-# and the bfcache of Mage-OS, which conflicts with the BFCache patches and Hyva
+# with the Mage-OS passkeys that depend on it, and the bfcache of Mage-OS,
+# which conflicts with the BFCache patches and Hyva
 MAGE_DISABLE_MODULES=(
+  MageOS_PasskeyAuth
   Magento_AdminAdobeImsTwoFactorAuth
   Magento_TwoFactorAuth
   MageOS_ThemeOptimization
 )
+
+# The phpcs and phpcbf 'mage lint' runs, empty for the coding standard mage installs.
+# Such as the phpcs-docker and phpcbf-docker of the Hyva coding standard, without php on your machine.
+MAGE_LINT_PHPCS=""
+MAGE_LINT_PHPCBF=""
 
 # The npm scripts 'mage build' runs, and with --watch
 MAGE_BUILD_SCRIPT="build"
@@ -205,8 +212,7 @@ MAGENTO_CLI="bin/magento"
 PHP_CLI="php"
 COMPOSER_CLI="composer"
 NODE_CLI="node"
-# Runs vendor/bin/cache-clean.js, DDEV needs it as an executable
-CACHE_CLEAN_CLI="node"
+CACHE_CLEAN_CLI="vendor/bin/cache-clean.js"
 NPM_CLI="npm"
 MYSQL_CLI="mysql"
 MYSQLDUMP_CLI="mysqldump"
@@ -217,6 +223,9 @@ RSYNC_CLI="rsync"
 SSH_CLI="ssh"
 SYNC_RSYNC_CLI="rsync"
 SEARCH_CURL_CLI="curl"
+# Always on your machine for lint, as the coding standard is installed in the mage config
+HOST_PHP_CLI="php"
+HOST_COMPOSER_CLI="composer"
 PURGE_CLI="rm -rf"
 OPEN_CLI="xdg-open"
 
@@ -322,6 +331,8 @@ function env_call() {
 # --- core/root.sh
 MAGE_ROOT=""
 MAGE_CALL_DIR="$PWD"
+# The mage file of a project, in its root, with the test actions and the build themes
+MAGE_PROJECT_FILE="mage.config.json"
 
 # Echo the Magento root at or above the given folder
 function mage_find_root() {
@@ -688,16 +699,22 @@ function mage_templates_dir() {
   echo "$templates_dir"
 }
 
-# Echo the path to a single template file
+# Echo the path to a single template file. Templates synced by an older mage
+# can miss a newer one, so a missing file syncs the templates before giving up.
 function mage_template_file() {
-  local file
-  file="$(mage_templates_dir)/$1"
+  local dir
+  dir="$(mage_templates_dir)" || return 1
 
-  if [[ ! -f "$file" ]]; then
+  if [[ ! -f "${dir}/$1" ]] && [[ "$MAGE_VERSION" != "dev" ]]; then
+    mage_info "Updating the templates, they miss '$1'" >&2
+    mage_sync_templates "$dir" || return 1
+  fi
+
+  if [[ ! -f "${dir}/$1" ]]; then
     return 1
   fi
 
-  echo "$file"
+  echo "${dir}/$1"
 }
 
 # Copy a template folder to a destination,
@@ -1049,7 +1066,7 @@ function env_warden_apply() {
   PHP_CLI="warden env exec php-fpm php"
   COMPOSER_CLI="warden env exec php-fpm composer"
   NODE_CLI="warden env exec php-fpm node"
-  CACHE_CLEAN_CLI="warden env exec php-fpm node"
+  CACHE_CLEAN_CLI="warden env exec php-fpm vendor/bin/cache-clean.js"
   NPM_CLI="warden env exec php-fpm npm"
   REDIS_CLI="warden env exec redis redis-cli"
   VARNISH_CLI="warden env exec -T varnish varnishadm"
@@ -1161,7 +1178,7 @@ function env_ddev_apply() {
   PHP_CLI="ddev php"
   COMPOSER_CLI="ddev composer"
   NODE_CLI="ddev exec node"
-  CACHE_CLEAN_CLI="ddev exec"
+  CACHE_CLEAN_CLI="ddev exec vendor/bin/cache-clean.js"
   NPM_CLI="ddev npm"
   REDIS_CLI="ddev exec -s redis redis-cli"
   RSYNC_CLI="ddev exec rsync"
@@ -1301,8 +1318,11 @@ function mage_cmd_help() {
   mage_help_cmd "show [OPTION]"               "Show project information, see 'mage show help' for all options"
   mage_help_cmd "run [ARGS]"                  "Run n98-magerun2"
   mage_help_cmd "watch"                       "Clean only the caches a file change affects, keeps running"
-  mage_help_cmd "build [TARGET]"              "Build every theme, or the npm packages matching the target"
+  mage_help_cmd "build [TARGET]"              "Build the themes of mage.config.json or every theme, or what matches the target"
   mage_help_cmd "  -w, --watch"               "Watch the one target instead, keeps running"
+  mage_help_cmd "lint PATH"                   "Check the code of a module or theme with the Hyvä coding standard"
+  mage_help_cmd "  --fix"                     "Fix what phpcbf can fix instead"
+  mage_help_cmd "test [-y]"                   "Run the test commands of the project, from its mage.config.json, -y creates it without asking"
   mage_help_cmd "log [FILE]"                  "Follow a log in var/log, debug by default, keeps running"
   mage_help_cmd "reindex"                     "Reindex everything, then clean the cache"
   mage_help_cmd "clean/purge [OPTION]"        "Clean caches and files, see 'mage clean help' for all options"
@@ -1344,6 +1364,10 @@ function mage_cmd_self_update() {
     mage_check 0 "Templates updated"
   else
     mage_check 1 "Could not update the templates, the previous ones are kept"
+  fi
+
+  if [[ -d "$(mage_lint_dir)" ]] && mage_lint_install; then
+    mage_check 0 "Coding standard updated"
   fi
 
   "$target" version
@@ -1447,14 +1471,16 @@ function mage_cmd_create() {
     exit 1
   fi
 
-  mage_create_composer_setup || exit 1
+  mage_create_composer_setup "$edition" || exit 1
   MAGE_ROOT="$PWD"
   mage_setup "$name" || exit 1
   mage_getting_started "$name" true
 }
 
-# Configure composer for local development and install the project
+# Configure composer for local development and install the project of the given edition
 function mage_create_composer_setup() {
+  local edition="$1"
+
   mage_info "Adjusting composer settings to allow dev packages"
   $COMPOSER_CLI config minimum-stability dev
   $COMPOSER_CLI config prefer-stable true
@@ -1471,8 +1497,25 @@ function mage_create_composer_setup() {
     $COMPOSER_CLI require --no-update --dev "${MAGE_DEV_PACKAGES[@]}"
   fi
 
+  if [[ "$edition" == "mage-os" ]]; then
+    mage_create_mage_os_replace || return 1
+  fi
+
   mage_info "Running installation.. Enjoy a cup of coffee in the meantime"
   $COMPOSER_CLI install
+}
+
+# Replace the Mage-OS modules mage leaves out, so composer never installs them
+function mage_create_mage_os_replace() {
+  local fragment
+  fragment="$(mage_template_file "composer-mage-os.json")"
+
+  if [[ -z "$fragment" ]]; then
+    mage_warn "Keeping all Mage-OS modules, could not get the 'composer-mage-os.json' template from ${MAGE_TEMPLATES_ARCHIVE}"
+    return 0
+  fi
+
+  mage_add_json "$fragment"
 }
 # --- commands/setup.sh
 # Install Magento in an existing project, optionally in the given folder
@@ -2374,7 +2417,7 @@ function mage_cmd_watch() {
   local cache_clean=""
 
   if [[ -f vendor/bin/cache-clean.js ]]; then
-    cache_clean="$CACHE_CLEAN_CLI vendor/bin/cache-clean.js"
+    cache_clean="$CACHE_CLEAN_CLI"
   else
     cache_clean="$(env_call watch_cli)"
   fi
@@ -2386,10 +2429,196 @@ function mage_cmd_watch() {
 
   $cache_clean --watch
 }
+# --- commands/lint.sh
+# Check the code with the Hyvä coding standard, which extends the Magento one.
+# Hyvä advises against adding it to the project, as it shares dependencies with
+# Magento, so it is installed once in the mage config and runs on your machine.
+# MAGE_LINT_PHPCS and MAGE_LINT_PHPCBF run it elsewhere, such as in docker.
+MAGE_LINT_PACKAGE="hyva-themes/hyva-coding-standard"
+MAGE_LINT_STANDARD="HyvaThemes"
+
+# Lint the given paths, never the whole project, as that also holds the vendor folders
+# of local packages. --fix runs phpcbf instead, other options go to phpcs, such as -s.
+function mage_cmd_lint() {
+  local bin="phpcs"
+  local options=()
+  local paths=()
+  local arg
+
+  for arg in "$@"; do
+    case "$arg" in
+      --fix) bin="phpcbf" ;;
+      -*) options+=("$arg") ;;
+      *) paths+=("$(mage_resolve_path "$arg")") ;;
+    esac
+  done
+
+  if [[ ${#paths[@]} -eq 0 ]]; then
+    mage_error "Give a path to lint, such as 'mage lint app/code/Acme/Module'"
+    exit 1
+  fi
+
+  local cli="$MAGE_LINT_PHPCS"
+
+  if [[ "$bin" == "phpcbf" ]]; then
+    cli="$MAGE_LINT_PHPCBF"
+  fi
+
+  # -p shows the progress, as phpcs shows nothing else until it is done
+  if [[ -n "$cli" ]]; then
+    $cli --standard="$MAGE_LINT_STANDARD" -p "${options[@]}" "${paths[@]}"
+    return
+  fi
+
+  if [[ ! -f "$(mage_lint_dir)/vendor/bin/${bin}" ]]; then
+    mage_lint_install || exit 1
+  fi
+
+  $HOST_PHP_CLI "$(mage_lint_dir)/vendor/bin/${bin}" --standard="$MAGE_LINT_STANDARD" -p "${options[@]}" "${paths[@]}"
+}
+
+# Echo the folder of the coding standard
+function mage_lint_dir() {
+  echo "$(mage_config_dir)/hyva-coding-standard"
+}
+
+# Install the latest coding standard as a stand-alone composer project.
+# It is installed next to the current one first, so a failure keeps that one.
+function mage_lint_install() {
+  local target
+  target="$(mage_lint_dir)"
+  local temp_dir="${target}.tmp"
+
+  if ! command -v "${HOST_PHP_CLI%% *}" &> /dev/null || ! command -v "${HOST_COMPOSER_CLI%% *}" &> /dev/null; then
+    mage_error "Linting needs php and composer on your machine, or MAGE_LINT_PHPCS and MAGE_LINT_PHPCBF in the config"
+    return 1
+  fi
+
+  mage_info "Installing ${MAGE_LINT_PACKAGE} in ${target}"
+  rm -rf "$temp_dir"
+
+  if ! $HOST_COMPOSER_CLI create-project --no-plugins --no-dev --no-interaction "$MAGE_LINT_PACKAGE" "$temp_dir"; then
+    rm -rf "$temp_dir"
+    mage_error "Could not install ${MAGE_LINT_PACKAGE}"
+    return 1
+  fi
+
+  rm -rf "$target"
+  mv "$temp_dir" "$target"
+}
+# --- commands/test.sh
+# Run each action of the test list in mage.config.json as a shell command from the root,
+# where 'mage' is this mage, such as 'mage lint'. All run, and it fails when any fails.
+function mage_cmd_test() {
+  local arg
+
+  for arg in "$@"; do
+    case "$arg" in
+      -y | --yes) MAGE_YES=1 ;;
+      *)
+        mage_error "Unknown option '${arg}'"
+        exit 1
+        ;;
+    esac
+  done
+
+  mage_require_jq "Testing"
+
+  if [[ ! -f "$MAGE_PROJECT_FILE" ]]; then
+    mage_test_init || exit 1
+  fi
+
+  if ! jq -e '.test | type == "array" and length > 0 and all(type == "string")' "$MAGE_PROJECT_FILE" &> /dev/null; then
+    mage_error "The test of ${MAGE_PROJECT_FILE} should be a list of shell commands, such as [\"mage lint\"]"
+    exit 1
+  fi
+
+  local blocked
+  blocked="$(jq -r --arg re "$(mage_test_blocked_pattern)" '.test[] | select(test($re))' "$MAGE_PROJECT_FILE")"
+
+  if [[ -n "$blocked" ]]; then
+    mage_error "mage test never runs actions that remove, move or write files, such as rm, mv or a > redirect:"
+    while IFS= read -r action; do
+      mage_check 1 "$action" >&2
+    done <<< "$blocked"
+    exit 1
+  fi
+
+  # Read first, so an action that reads stdin cannot take the remaining actions
+  local actions=()
+  local action
+
+  while IFS= read -r action; do
+    actions+=("$action")
+  done < <(jq -r '.test[]' "$MAGE_PROJECT_FILE")
+
+  export MAGE_SELF
+  local failed=()
+
+  for action in "${actions[@]}"; do
+    mage_info ""
+    mage_info "${BOLD}${action}${RESET}"
+
+    if ! bash -c "function mage() { \"\$MAGE_SELF\" \"\$@\"; }; ${action}"; then
+      failed+=("$action")
+    fi
+  done
+
+  mage_info ""
+
+  if [[ ${#failed[@]} -gt 0 ]]; then
+    for action in "${failed[@]}"; do
+      mage_check 1 "$action"
+    done
+    exit 1
+  fi
+
+  mage_check 0 "All tests passed"
+}
+
+# Echo the regex of the actions mage test blocks, as they change files: commands
+# such as rm and mv, also after xargs or -exec, find -delete, in place edits, the git
+# commands that change the working tree, mage nuke, and a redirect to anything but
+# /dev/null. It guards against mistakes, it is no sandbox, a shell can always get around it.
+function mage_test_blocked_pattern() {
+  local start="(?:^|[\\s;&|(\`'\"])"
+  local end="(?=[\\s;&|)\`'\"]|$)"
+  local commands="rm|rmdir|mv|cp|dd|truncate|shred|unlink|ln|chmod|chown|chgrp|tee|rsync|mkdir|touch"
+  local redirect=">>?+\\s*+(?!/dev/null${end}|&)"
+
+  printf '%s' "${start}(?:/\\S*/|\\./)?(?:${commands})${end}"
+  printf '%s' "|${start}-delete${end}"
+  printf '%s' "|${start}(?:sed|perl)\\s(?:[^;&|]*\\s)?-i"
+  printf '%s' "|${start}git\\s+(?:clean|reset|checkout|restore|rm|mv|stash|switch)${end}"
+  printf '%s' "|${start}mage\\s+(?:nuke|destroy)${end}"
+  printf '%s' "|(?<![-=0-9&])${redirect}|(?<![-=&])[0-9]${redirect}"
+}
+
+# Offer to create the mage.config.json of the project with the default test actions
+function mage_test_init() {
+  mage_notice "The project has no ${MAGE_PROJECT_FILE}, which lists the actions mage test runs"
+
+  if ! mage_confirm "Create it with the default actions?" y; then
+    mage_error "mage test needs a ${MAGE_PROJECT_FILE}"
+    return 1
+  fi
+
+  local template
+  template="$(mage_template_file "mage.config.json")"
+
+  if [[ -z "$template" ]]; then
+    mage_error "Could not get the 'mage.config.json' template from ${MAGE_TEMPLATES_ARCHIVE}"
+    return 1
+  fi
+
+  cp "$template" "$MAGE_PROJECT_FILE"
+  mage_check 0 "Created ${MAGE_PROJECT_FILE}"
+}
 # --- commands/build.sh
 # Build with the npm scripts of the package.json files in app/design and package-source.
-# Without a target every theme is built, a target matches part of the path, so it
-# can also pick a module. --watch runs the watch script of one target instead.
+# Without a target the build.themes of mage.config.json are built, or else every theme.
+# A target matches part of the path, so it can also pick a module.
+# --watch runs the watch script of one target instead.
 function mage_cmd_build() {
   local watch=0
   local target=""
@@ -2416,28 +2645,63 @@ function mage_cmd_build() {
     script="$MAGE_WATCH_SCRIPT"
   fi
 
-  if [[ $watch == 1 ]] && [[ -z "$target" ]]; then
+  mage_require_jq "Building"
+
+  local terms=()
+  local term
+
+  if [[ -n "$target" ]]; then
+    terms=("$target")
+  else
+    local themes
+    themes="$(mage_build_config_themes)" || exit 1
+
+    if [[ -n "$themes" ]]; then
+      while IFS= read -r term; do
+        terms+=("$term")
+      done <<< "$themes"
+    fi
+  fi
+
+  if [[ $watch == 1 ]] && [[ ${#terms[@]} -eq 0 ]]; then
     mage_error "Watching needs a target, such as 'mage build my-theme --watch'"
     exit 1
   fi
 
-  mage_require_jq "Building"
-
   local dirs=()
   local dir
+  local found
 
-  while IFS= read -r dir; do
-    dirs+=("$dir")
-  done < <(mage_build_targets "$script" "$target")
+  if [[ ${#terms[@]} -eq 0 ]]; then
+    while IFS= read -r dir; do
+      dirs+=("$dir")
+    done < <(mage_build_targets "$script" "")
 
-  if [[ ${#dirs[@]} -eq 0 ]]; then
-    if [[ -n "$target" ]]; then
-      mage_error "No package.json with a '${script}' script matches '${target}'"
-    else
+    if [[ ${#dirs[@]} -eq 0 ]]; then
       mage_error "No theme in app/design or package-source has a package.json with a '${script}' script"
+      exit 1
     fi
-    exit 1
   fi
+
+  for term in "${terms[@]}"; do
+    found=0
+
+    while IFS= read -r dir; do
+      found=1
+      if [[ " ${dirs[*]} " != *" ${dir} "* ]]; then
+        dirs+=("$dir")
+      fi
+    done < <(mage_build_targets "$script" "$term")
+
+    if [[ $found == 0 ]]; then
+      if [[ -n "$target" ]]; then
+        mage_error "No package.json with a '${script}' script matches '${term}'"
+      else
+        mage_error "No package.json with a '${script}' script matches '${term}' of the build.themes in ${MAGE_PROJECT_FILE}"
+      fi
+      exit 1
+    fi
+  done
 
   if [[ $watch == 1 ]]; then
     dir="$(mage_build_pick "${dirs[@]}")" || exit 1
@@ -2452,6 +2716,20 @@ function mage_cmd_build() {
   done
 
   return $status
+}
+
+# Echo the build.themes of mage.config.json, one per line, nothing without them
+function mage_build_config_themes() {
+  if [[ ! -f "$MAGE_PROJECT_FILE" ]] || ! jq -e 'has("build")' "$MAGE_PROJECT_FILE" &> /dev/null; then
+    return 0
+  fi
+
+  if ! jq -e '.build | type == "object" and (.themes | type == "array" and all(type == "string" and length > 0))' "$MAGE_PROJECT_FILE" &> /dev/null; then
+    mage_error "The build of ${MAGE_PROJECT_FILE} should hold a list of themes, such as { \"themes\": [\"my-theme\"] }"
+    return 1
+  fi
+
+  jq -r '.build.themes[]' "$MAGE_PROJECT_FILE"
 }
 
 # Echo the folders with a package.json that has the script. Without a term only
@@ -2597,7 +2875,7 @@ function mage_cmd_add() {
   if mage_handler_exists "$1" "${MAGE_ADD_HANDLERS[@]}"; then
     mage_handler_run add "$@"
   elif [[ "$1" == *.json ]]; then
-    mage_add_json "$1"
+    mage_add_json "$@"
   elif [[ "$1" == *.git ]]; then
     mage_add_git "$@"
   else
@@ -2608,7 +2886,7 @@ function mage_cmd_add() {
 function mage_add_help() {
   mage_help_header "Add"
   mage_help_cmd "add [PKG] [ARGS]"            "Run composer require, all arguments are passed as is"
-  mage_help_cmd "add [FILE].json"             "Apply a composer fragment: repositories, config, auth and packages"
+  mage_help_cmd "add [FILE].json [ARGS]"      "Apply a composer fragment: repositories, config, auth and packages"
   mage_help_cmd "add [GIT_URL] [ARGS]"        "Clone a git repository (ssh url ending in .git) into ${MAGE_PACKAGE_SOURCE} and require it"
   mage_handler_help add "${MAGE_ADD_HANDLERS[@]}"
 }
@@ -2737,23 +3015,39 @@ function mage_add_path_repository() {
 # --- commands/add-json.sh
 # mage add <file>.json applies a composer fragment: a json file with the
 # composer.json keys below. {{NAME}} placeholders are asked when applied.
-MAGE_ADD_JSON_KEYS="description repositories config auth require require-dev"
+MAGE_ADD_JSON_KEYS="description repositories config auth replace require require-dev"
 
-# Apply a composer fragment, in the order auth, repositories, config and packages,
-# so the packages can use the repositories and credentials they need
+# Apply a composer fragment, in the order auth, repositories, config, replace and packages,
+# so the packages can use the repositories and credentials they need.
+# With --keep-wildcard a * constraint is required as is, instead of as the latest version.
 function mage_add_json() {
   mage_require_jq "Adding from a json file"
 
+  local path="$1"
   local file
-  file="$(mage_resolve_path "$1")"
+  file="$(mage_resolve_path "$path")"
+  shift
+
+  local wildcard="latest"
+  local arg
+
+  for arg in "$@"; do
+    case "$arg" in
+      --keep-wildcard) wildcard="keep" ;;
+      *)
+        mage_error "Unknown option '${arg}'"
+        exit 1
+        ;;
+    esac
+  done
 
   if [[ ! -f "$file" ]]; then
-    mage_error "File not found: $1"
+    mage_error "File not found: ${path}"
     exit 1
   fi
 
   if ! jq -e 'type == "object"' "$file" &> /dev/null; then
-    mage_error "$1 is not a json object"
+    mage_error "${path} is not a json object"
     exit 1
   fi
 
@@ -2782,8 +3076,9 @@ function mage_add_json() {
   mage_add_json_auth "$json" &&
     mage_add_json_repositories "$json" &&
     mage_add_json_config "$json" &&
-    mage_add_json_require "$json" require &&
-    mage_add_json_require "$json" require-dev --dev
+    mage_add_json_replace "$json" &&
+    mage_add_json_require "$json" require "$wildcard" &&
+    mage_add_json_require "$json" require-dev "$wildcard" --dev
 }
 
 # Warn about keys that are not applied, such as a typo
@@ -2916,18 +3211,44 @@ function mage_add_json_config() {
   done < <(jq -r '.config // {} | paths(type != "object") as $p | if ($p | all(type == "string")) and (getpath($p) | type != "array") then [($p | join(".")), (getpath($p) | tostring)] | @tsv else empty end' <<< "$json")
 }
 
-# Require the packages of the given key in one composer run, with any extra arguments
+# Merge the replace into composer.json, as composer config cannot set it
+function mage_add_json_replace() {
+  local json="$1"
+  local package
+
+  if [[ "$(jq -r '.replace // {} | type' <<< "$json")" != "object" ]]; then
+    mage_error "The replace should be an object keyed by package"
+    return 1
+  fi
+
+  if [[ "$(jq '.replace // {} | length' <<< "$json")" == 0 ]]; then
+    return 0
+  fi
+
+  local composer
+  composer="$(jq --indent 4 --argjson replace "$(jq -c '.replace' <<< "$json")" '.replace += $replace' composer.json)" || return 1
+  printf '%s\n' "$composer" > composer.json
+
+  for package in $(jq -r '.replace | keys_unsorted[]' <<< "$json"); do
+    mage_check 0 "Replace ${package}"
+  done
+}
+
+# Require the packages of the given key in one composer run, with any extra arguments.
+# With wildcard 'latest' a * constraint is left out, so composer picks the latest version
+# and writes it as ^x.y.z, with 'keep' it is required as *.
 function mage_add_json_require() {
   local json="$1"
   local key="$2"
-  shift 2
+  local wildcard="$3"
+  shift 3
 
   local packages=()
   local package
 
   while IFS= read -r package; do
     packages+=("$package")
-  done < <(jq -r --arg key "$key" '.[$key] // {} | to_entries[] | "\(.key):\(.value)"' <<< "$json")
+  done < <(jq -r --arg key "$key" --arg wildcard "$wildcard" '.[$key] // {} | to_entries[] | if .value == "*" and $wildcard == "latest" then .key else "\(.key):\(.value)" end' <<< "$json")
 
   if [[ ${#packages[@]} -gt 0 ]]; then
     $COMPOSER_CLI require "$@" "${packages[@]}"
@@ -3326,11 +3647,13 @@ MAGE_ADD_HANDLERS+=("hyva|Add the Hyva Theme with a license, or with --dev from 
 # The fragment holds the composer part, so updating the packages needs no rebuild.
 function mage_add_hyva() {
   local fragment="composer-hyva.json"
+  local options=()
   local arg
 
   for arg in "$@"; do
     case "$arg" in
       --dev) fragment="composer-hyva-dev.json" ;;
+      --keep-wildcard) options+=("$arg") ;;
       *)
         mage_error "Unknown option '${arg}'"
         exit 1
@@ -3346,7 +3669,7 @@ function mage_add_hyva() {
     exit 1
   fi
 
-  mage_add_json "$file" || exit 1
+  mage_add_json "$file" "${options[@]}" || exit 1
 
   $MAGENTO_CLI setup:upgrade || exit 1
 
@@ -3363,8 +3686,8 @@ MAGE_ADD_HANDLERS+=("storeinfo|Add the Siteation StoreInfo modules")
 
 # The package list lives in its composer fragment, so it can change without a rebuild
 function mage_add_storeinfo() {
-  if [[ $# -gt 0 ]]; then
-    mage_error "No options are expected for 'add storeinfo'"
+  if [[ $# -gt 0 ]] && [[ "$*" != "--keep-wildcard" ]]; then
+    mage_error "Only --keep-wildcard is expected for 'add storeinfo'"
     exit 1
   fi
 
@@ -3376,7 +3699,7 @@ function mage_add_storeinfo() {
     exit 1
   fi
 
-  mage_add_json "$file" || exit 1
+  mage_add_json "$file" "$@" || exit 1
   $MAGENTO_CLI setup:upgrade
 }
 # --- commands/add/patch.sh
@@ -4358,6 +4681,12 @@ function mage_main() {
       ;;
     "watch")
       mage_cmd_watch
+      ;;
+    "lint")
+      mage_cmd_lint "${@:2}"
+      ;;
+    "test")
+      mage_cmd_test "${@:2}"
       ;;
     "build")
       mage_cmd_build "${@:2}"

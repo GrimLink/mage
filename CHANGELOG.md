@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.1.0] - 2026-11-16
+
 ### Added
 - **`mage lint`:** Check the code of a module or theme with the [Hyvä coding standard](https://github.com/hyva-themes/hyva-coding-standard), and fix what it can with `--fix`.
   It installs the coding standard on your machine, or runs another phpcs set in the config, such as the docker wrappers of Hyvä.
@@ -23,7 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`mage create`:** On Mage-OS, applies the new `composer-mage-os.json` template, which replaces `mage-os/module-passkey-auth` and `mage-os/module-theme-optimization`, so they are never installed.
 
 ### Fixed
-- **Templates:** A template the synced templates miss, as they come from an older mage, syncs them first, instead of failing.
+- **Templates:** A template missing from the templates an older mage synced, such as `mage.config.json`, now syncs them again instead of failing.
 - **`mage watch`:** The cache-clean of the project is run as an executable, as Composer installs `vendor/bin/cache-clean.js` as a shell wrapper, which failed with a `SyntaxError` when run with node.
 - **`mage setup`:** Disabling two factor auth no longer fails on Mage-OS projects that still have the passkeys.
   `MageOS_PasskeyAuth` depends on `Magento_TwoFactorAuth`, so it is now part of `MAGE_DISABLE_MODULES` and disabled along with it.
@@ -572,7 +574,8 @@ Anything mage does not know still runs `bin/magento`.
 
 Initial Release 🎉
 
-[Unreleased]: https://github.com/GrimLink/mage/compare/3.0.1...HEAD
+[Unreleased]: https://github.com/GrimLink/mage/compare/3.1.0...HEAD
+[3.1.0]: https://github.com/GrimLink/mage/compare/3.0.1...3.1.0
 [3.0.1]: https://github.com/GrimLink/mage/compare/3.0.0...3.0.1
 [3.0.0]: https://github.com/GrimLink/mage/compare/2.8.1...3.0.0
 [2.8.1]: https://github.com/GrimLink/mage/compare/2.8.0...2.8.1
