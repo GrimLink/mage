@@ -144,7 +144,7 @@ function setup() {
 
   [ "$MAGENTO_CLI" = "${HOME}/.magebox/bin/php bin/magento" ]
   [ "$MAGE_DB_HOST" = "127.0.0.1:33084" ]
-  [ "$MAGE_DB_NAME" = "my-shop" ]
+  [ "$MAGE_DB_NAME" = "my_shop" ]
   [ "$MAGE_DB_PASS" = "magebox" ]
 }
 

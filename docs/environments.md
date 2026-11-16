@@ -79,7 +79,7 @@ Works like local, with these differences:
 
 - **Commands:** `bin/magento`, composer and magerun run with the wrappers in `~/.magebox/bin`, which pick the PHP version of the project, also when they are not in your `PATH`.
 - **Services:** read from `.magebox.yaml`, with `.magebox.local.yaml` first.
-  The database is `root`/`magebox` on `127.0.0.1`, on the port of its version, such as `33080` for MySQL 8.0, and named after the `name` of the project.
+  The database is `root`/`magebox` on `127.0.0.1`, on the port of its version, such as `33080` for MySQL 8.0, and named after the `name` of the project, with underscores for its hyphens, like MageBox does.
   OpenSearch is `127.0.0.1:9200` and Redis `127.0.0.1`, the config settings do not apply.
   Stores use the `test` domain.
 - **Create:** not supported, as MageBox creates its own projects.

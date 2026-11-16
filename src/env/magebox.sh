@@ -27,6 +27,8 @@ function env_magebox_apply() {
   MAGE_DOMAIN="test"
   MAGE_DB_HOST="127.0.0.1:$(mage_magebox_db_port "$version")"
   MAGE_DB_NAME="${name:-$MAGE_DB_NAME}"
+  # The database name of MageBox, which replaces the hyphens of the project name
+  MAGE_DB_NAME="${MAGE_DB_NAME//-/_}"
   MAGE_DB_USER="root"
   MAGE_DB_PASS="magebox"
   MAGE_SEARCH_HOST="127.0.0.1"
