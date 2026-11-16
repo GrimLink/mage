@@ -84,16 +84,25 @@ function mage_lint_install() {
   fi
 
   mage_info "Installing ${MAGE_LINT_PACKAGE} in ${target}"
-  $LINT_PURGE_CLI "$temp_dir"
+  mage_lint_remove "$temp_dir"
 
   if ! $LINT_COMPOSER_CLI create-project --no-plugins --no-dev --no-interaction "$MAGE_LINT_PACKAGE" "$temp_dir"; then
-    $LINT_PURGE_CLI "$temp_dir"
+    mage_lint_remove "$temp_dir"
     mage_error "Could not install ${MAGE_LINT_PACKAGE}"
     return 1
   fi
 
-  $LINT_PURGE_CLI "$target"
+  mage_lint_remove "$target"
   mage_lint_move "$temp_dir" "$target"
+}
+
+# Remove a folder where lint runs, the container or your machine
+function mage_lint_remove() {
+  if [[ $LINT_IN_PROJECT == 1 ]]; then
+    $PURGE_CLI "$1"
+  else
+    rm -rf "$1"
+  fi
 }
 
 # Move a folder where lint runs, the container or your machine
