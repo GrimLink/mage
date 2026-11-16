@@ -1,6 +1,3 @@
-# The project file of mage, its test list holds the actions mage test runs
-MAGE_PROJECT_FILE="mage.config.json"
-
 # Run each action of the test list in mage.config.json as a shell command from the root,
 # where 'mage' is this mage, such as 'mage lint'. All run, and it fails when any fails.
 function mage_cmd_test() {

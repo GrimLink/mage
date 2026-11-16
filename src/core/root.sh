@@ -1,5 +1,7 @@
 MAGE_ROOT=""
 MAGE_CALL_DIR="$PWD"
+# The mage file of a project, in its root, with the test actions and the build themes
+MAGE_PROJECT_FILE="mage.config.json"
 
 # Echo the Magento root at or above the given folder
 function mage_find_root() {

@@ -1,6 +1,7 @@
 # Build with the npm scripts of the package.json files in app/design and package-source.
-# Without a target every theme is built, a target matches part of the path, so it
-# can also pick a module. --watch runs the watch script of one target instead.
+# Without a target the build.themes of mage.config.json are built, or else every theme.
+# A target matches part of the path, so it can also pick a module.
+# --watch runs the watch script of one target instead.
 function mage_cmd_build() {
   local watch=0
   local target=""
@@ -27,28 +28,63 @@ function mage_cmd_build() {
     script="$MAGE_WATCH_SCRIPT"
   fi
 
-  if [[ $watch == 1 ]] && [[ -z "$target" ]]; then
+  mage_require_jq "Building"
+
+  local terms=()
+  local term
+
+  if [[ -n "$target" ]]; then
+    terms=("$target")
+  else
+    local themes
+    themes="$(mage_build_config_themes)" || exit 1
+
+    if [[ -n "$themes" ]]; then
+      while IFS= read -r term; do
+        terms+=("$term")
+      done <<< "$themes"
+    fi
+  fi
+
+  if [[ $watch == 1 ]] && [[ ${#terms[@]} -eq 0 ]]; then
     mage_error "Watching needs a target, such as 'mage build my-theme --watch'"
     exit 1
   fi
 
-  mage_require_jq "Building"
-
   local dirs=()
   local dir
+  local found
 
-  while IFS= read -r dir; do
-    dirs+=("$dir")
-  done < <(mage_build_targets "$script" "$target")
+  if [[ ${#terms[@]} -eq 0 ]]; then
+    while IFS= read -r dir; do
+      dirs+=("$dir")
+    done < <(mage_build_targets "$script" "")
 
-  if [[ ${#dirs[@]} -eq 0 ]]; then
-    if [[ -n "$target" ]]; then
-      mage_error "No package.json with a '${script}' script matches '${target}'"
-    else
+    if [[ ${#dirs[@]} -eq 0 ]]; then
       mage_error "No theme in app/design or package-source has a package.json with a '${script}' script"
+      exit 1
     fi
-    exit 1
   fi
+
+  for term in "${terms[@]}"; do
+    found=0
+
+    while IFS= read -r dir; do
+      found=1
+      if [[ " ${dirs[*]} " != *" ${dir} "* ]]; then
+        dirs+=("$dir")
+      fi
+    done < <(mage_build_targets "$script" "$term")
+
+    if [[ $found == 0 ]]; then
+      if [[ -n "$target" ]]; then
+        mage_error "No package.json with a '${script}' script matches '${term}'"
+      else
+        mage_error "No package.json with a '${script}' script matches '${term}' of the build.themes in ${MAGE_PROJECT_FILE}"
+      fi
+      exit 1
+    fi
+  done
 
   if [[ $watch == 1 ]]; then
     dir="$(mage_build_pick "${dirs[@]}")" || exit 1
@@ -63,6 +99,20 @@ function mage_cmd_build() {
   done
 
   return $status
+}
+
+# Echo the build.themes of mage.config.json, one per line, nothing without them
+function mage_build_config_themes() {
+  if [[ ! -f "$MAGE_PROJECT_FILE" ]] || ! jq -e 'has("build")' "$MAGE_PROJECT_FILE" &> /dev/null; then
+    return 0
+  fi
+
+  if ! jq -e '.build | type == "object" and (.themes | type == "array" and all(type == "string" and length > 0))' "$MAGE_PROJECT_FILE" &> /dev/null; then
+    mage_error "The build of ${MAGE_PROJECT_FILE} should hold a list of themes, such as { \"themes\": [\"my-theme\"] }"
+    return 1
+  fi
+
+  jq -r '.build.themes[]' "$MAGE_PROJECT_FILE"
 }
 
 # Echo the folders with a package.json that has the script. Without a term only

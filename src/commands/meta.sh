@@ -50,7 +50,7 @@ function mage_cmd_help() {
   mage_help_cmd "show [OPTION]"               "Show project information, see 'mage show help' for all options"
   mage_help_cmd "run [ARGS]"                  "Run n98-magerun2"
   mage_help_cmd "watch"                       "Clean only the caches a file change affects, keeps running"
-  mage_help_cmd "build [TARGET]"              "Build every theme, or the npm packages matching the target"
+  mage_help_cmd "build [TARGET]"              "Build the themes of mage.config.json or every theme, or what matches the target"
   mage_help_cmd "  -w, --watch"               "Watch the one target instead, keeps running"
   mage_help_cmd "lint PATH"                   "Check the code of a module or theme with the Hyvä coding standard"
   mage_help_cmd "  --fix"                     "Fix what phpcbf can fix instead"

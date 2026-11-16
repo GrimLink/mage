@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`mage test`:** Run the test actions of the project, the shell commands listed in its `mage.config.json`, and offer to create one that runs `mage lint` on `app/code`.
   Actions that remove, move or write files, such as `rm`, `mv` or a `>` redirect, are blocked.
   The gitignore template ignores the `mage.config.json`, so it stays on your machine.
+- **`mage build`:** Without a target, builds the `build.themes` of the `mage.config.json` in the project, instead of every theme.
 - **`mage add <file>.json`:** Composer fragments take a `replace`, merged into the `replace` of `composer.json`.
 
 ### Changed
