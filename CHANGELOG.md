@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **`mage lint`:** Check the code of a module or theme with the [Hyvä coding standard](https://github.com/hyva-themes/hyva-coding-standard), and fix what it can with `--fix`.
+  It installs the coding standard on your machine, or runs another phpcs set in the config, such as the docker wrappers of Hyvä.
+- **`mage test`:** Run the test actions of the project, the shell commands listed in its `mage.config.json`, and offer to create one that runs `mage lint` on `app/code`.
+  Actions that remove, move or write files, such as `rm`, `mv` or a `>` redirect, are blocked.
+  The `mage.config.json` is part of the project, so the team shares it.
+- **`mage build`:** Without a target, builds the `build.themes` of the `mage.config.json` in the project, instead of every theme.
 - **`mage add <file>.json`:** Composer fragments take a `replace`, merged into the `replace` of `composer.json`.
 - **`mage add <file>.json`, `mage add hyva`, `mage add storeinfo`:** The option `--keep-wildcard` requires a `*` constraint as is, instead of as the latest version.
 
@@ -15,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`mage create`:** On Mage-OS, applies the new `composer-mage-os.json` template, which replaces `mage-os/module-passkey-auth` and `mage-os/module-theme-optimization`, so they are never installed.
 
 ### Fixed
+- **Templates:** A template the synced templates miss, as they come from an older mage, syncs them first, instead of failing.
 - **`mage watch`:** The cache-clean of the project is run as an executable, as Composer installs `vendor/bin/cache-clean.js` as a shell wrapper, which failed with a `SyntaxError` when run with node.
 - **`mage setup`:** Disabling two factor auth no longer fails on Mage-OS projects that still have the passkeys.
   `MageOS_PasskeyAuth` depends on `Magento_TwoFactorAuth`, so it is now part of `MAGE_DISABLE_MODULES` and disabled along with it.

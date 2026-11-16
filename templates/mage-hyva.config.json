@@ -1,0 +1,10 @@
+{
+  "docs": "https://grimlink.com/mage/docs/commands/test/",
+  "test": [
+    "composer validate vendor/hyva-themes/magento2-theme-module/composer.json",
+    "composer validate vendor/hyva-themes/magento2-default-theme/composer.json",
+    "find -H vendor/hyva-themes/magento2-theme-module vendor/hyva-themes/magento2-default-theme '(' -name '*.php' -o -name '*.phtml' ')' -not -path '*/node_modules/*' -exec sh -c 'for f; do php -d display_errors=stderr -d log_errors=0 -l \"$f\" > /dev/null || e=1; done; exit ${e:-0}' sh {} +",
+    "mage lint vendor/hyva-themes/magento2-theme-module",
+    "mage lint vendor/hyva-themes/magento2-default-theme"
+  ]
+}

@@ -55,6 +55,62 @@ function setup() {
   [[ "$output" == *"npm --prefix app/design/frontend/Vendor/shop/web/tailwind run build-prod"* ]]
 }
 
+@test "builds the build.themes of mage.config.json without a target" {
+  mkdir -p app/design/frontend/Vendor/other
+  touch app/design/frontend/Vendor/other/theme.xml
+  make_package app/design/frontend/Vendor/other/web/tailwind build watch
+  echo '{ "build": { "themes": ["shop", "Vendor/shop/web", "b2b"] } }' > mage.config.json
+
+  run mage_cmd_build
+  [ "$status" -eq 0 ]
+  [ "$(grep -c 'run build' <<< "$output")" -eq 2 ]
+  [[ "$output" == *"npm --prefix app/design/frontend/Vendor/shop/web/tailwind run build"* ]]
+  [[ "$output" == *"npm --prefix package-source/vendor/magento2-theme-b2b run build"* ]]
+  [[ "$output" != *"Vendor/other"* ]]
+}
+
+@test "a target goes before the build.themes of mage.config.json" {
+  echo '{ "build": { "themes": ["shop"] } }' > mage.config.json
+
+  run mage_cmd_build b2b
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"magento2-theme-b2b run build"* ]]
+  [[ "$output" != *"Vendor/shop"* ]]
+}
+
+@test "fails on a theme of mage.config.json that matches nothing" {
+  echo '{ "build": { "themes": ["shop", "missing"] } }' > mage.config.json
+
+  run mage_cmd_build
+  [ "$status" -eq 1 ]
+  [[ "$output" == *"matches 'missing' of the build.themes in mage.config.json"* ]]
+  [[ "$output" != *"npm"* ]]
+}
+
+@test "fails on a build of mage.config.json without a list of themes" {
+  echo '{ "build": ["shop"] }' > mage.config.json
+
+  run mage_cmd_build
+  [ "$status" -eq 1 ]
+  [[ "$output" == *"should hold a list of themes"* ]]
+}
+
+@test "builds every theme with a mage.config.json without a build" {
+  echo '{ "test": ["true"] }' > mage.config.json
+
+  run mage_cmd_build
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"Vendor/shop/web/tailwind run build"* ]]
+  [[ "$output" == *"magento2-theme-b2b run build"* ]]
+}
+
+@test "watches one of the build.themes of mage.config.json without a target" {
+  echo '{ "build": { "themes": ["shop", "b2b"] } }' > mage.config.json
+
+  run mage_cmd_build --watch <<< "2"
+  [ "${lines[${#lines[@]}-1]}" = "npm --prefix package-source/vendor/magento2-theme-b2b run watch" ]
+}
+
 @test "watching needs a target" {
   run mage_cmd_build --watch
   [ "$status" -eq 1 ]

@@ -83,6 +83,8 @@ Warden and DDEV always use the values of their containers, see [environments](en
 | ---------------------- | --------------------------------------------------------------------- | ------------------------------------------------------------ |
 | `MAGE_DISABLE_MODULES` | Two factor auth with `MageOS_PasskeyAuth`, `MageOS_ThemeOptimization` | The modules `mage setup` disables, when the install has them |
 | `MAGE_CLEAN_ALL`       | `files redis varnish`                                                 | The options `mage clean` and `mage purge` run, in order      |
+| `MAGE_LINT_PHPCS`      | Empty, the coding standard mage installs                              | The phpcs `mage lint` runs, see [lint](commands/lint.md)     |
+| `MAGE_LINT_PHPCBF`     | Empty, the coding standard mage installs                              | The phpcbf `mage lint --fix` runs                            |
 | `MAGE_BUILD_SCRIPT`    | `build`                                                               | The npm script `mage build` runs                             |
 | `MAGE_WATCH_SCRIPT`    | `watch`                                                               | The npm script `mage build --watch` runs                     |
 | `MAGE_OUTDATED_IGNORE` | `symfony/finder`, `symfony/process`                                   | Packages `mage outdated` leaves out, Magento pins these      |

@@ -59,6 +59,11 @@ MAGE_DISABLE_MODULES=(
   MageOS_ThemeOptimization
 )
 
+# The phpcs and phpcbf 'mage lint' runs, empty for the coding standard mage installs.
+# Such as the phpcs-docker and phpcbf-docker of the Hyva coding standard, without php on your machine.
+MAGE_LINT_PHPCS=""
+MAGE_LINT_PHPCBF=""
+
 # The npm scripts 'mage build' runs, and with --watch
 MAGE_BUILD_SCRIPT="build"
 MAGE_WATCH_SCRIPT="watch"

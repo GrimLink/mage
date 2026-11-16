@@ -36,7 +36,7 @@ wget https://raw.githubusercontent.com/GrimLink/mage/main/mage && chmod +x mage
 ```
 
 Move it to a folder in your `PATH`, such as `~/.local/bin`.
-Update it later with `mage self-update`, which also updates the [templates](docs/templates.md).
+Update it later with `mage self-update`, which also updates the [templates](docs/templates.md) and the coding standard of [`mage lint`](docs/commands/lint.md).
 
 ### Requirements
 
@@ -75,6 +75,8 @@ Anything mage does not know runs `bin/magento`, so `mage cache:clean` works as e
 | [`outdated`](docs/commands/outdated.md)                        | List the direct dependencies with a newer version                  |
 | [`watch`](docs/commands/watch.md)                              | Clean only the caches a file change affects                        |
 | [`build`](docs/commands/build.md)                              | Build themes with their npm scripts, or watch one                  |
+| [`lint`](docs/commands/lint.md)                                | Check a module or theme with the Hyvä coding standard              |
+| [`test`](docs/commands/test.md)                                | Run the test actions of the project, from its `mage.config.json`   |
 | [`log`](docs/commands/log.md)                                  | Follow a log in `var/log`                                          |
 | [`reindex`](docs/commands/reindex.md)                          | Reindex, then clean the cache                                      |
 | [`clean`](docs/commands/clean.md)                              | Clean caches and generated files (alias: `purge`)                  |

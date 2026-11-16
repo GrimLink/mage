@@ -6,7 +6,7 @@
 set -o pipefail
 
 MAGE_VERSION="dev"
-MAGE_SELF="${BASH_SOURCE[0]}"
+MAGE_SELF="$(cd "$(dirname "${BASH_SOURCE[0]}")" > /dev/null 2>&1 && pwd)/$(basename "${BASH_SOURCE[0]}")"
 MAGE_SRC="$(cd "$(dirname "${BASH_SOURCE[0]}")" > /dev/null 2>&1 && pwd)"
 
 source "${MAGE_SRC}/core/output.sh"
@@ -35,6 +35,8 @@ source "${MAGE_SRC}/commands/run.sh"
 source "${MAGE_SRC}/commands/open.sh"
 source "${MAGE_SRC}/commands/info.sh"
 source "${MAGE_SRC}/commands/watch.sh"
+source "${MAGE_SRC}/commands/lint.sh"
+source "${MAGE_SRC}/commands/test.sh"
 source "${MAGE_SRC}/commands/build.sh"
 source "${MAGE_SRC}/commands/reindex.sh"
 source "${MAGE_SRC}/commands/log.sh"
@@ -142,6 +144,12 @@ function mage_main() {
       ;;
     "watch")
       mage_cmd_watch
+      ;;
+    "lint")
+      mage_cmd_lint "${@:2}"
+      ;;
+    "test")
+      mage_cmd_test "${@:2}"
       ;;
     "build")
       mage_cmd_build "${@:2}"

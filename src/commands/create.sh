@@ -84,12 +84,6 @@ function mage_cmd_create() {
       ;;
   esac
 
-  # Templates synced before composer-mage-os.json was added miss it
-  if [[ "$edition" == "mage-os" ]] && [[ "$MAGE_VERSION" != "dev" ]] && ! mage_template_file "composer-mage-os.json" > /dev/null; then
-    mage_info "Updating the templates"
-    mage_sync_templates "$(mage_config_dir)/templates"
-  fi
-
   if [[ "$version" != "latest" ]]; then
     package="${package}=${version}"
   fi
