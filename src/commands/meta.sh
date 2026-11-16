@@ -54,7 +54,6 @@ function mage_cmd_help() {
   mage_help_cmd "  -w, --watch"               "Watch the one target instead, keeps running"
   mage_help_cmd "lint PATH"                   "Check the code of a module or theme with the Hyvä coding standard"
   mage_help_cmd "  --fix"                     "Fix what phpcbf can fix instead"
-  mage_help_cmd "  --update"                  "Reinstall the coding standard, with or without a path"
   mage_help_cmd "test [-y]"                   "Run the test commands of the project, from its mage.config.json, -y creates it without asking"
   mage_help_cmd "log [FILE]"                  "Follow a log in var/log, debug by default, keeps running"
   mage_help_cmd "reindex"                     "Reindex everything, then clean the cache"
