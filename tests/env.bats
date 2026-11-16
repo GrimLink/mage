@@ -170,3 +170,11 @@ function setup() {
 
   [ "${MAGE_SETUP_SESSION_ARGS[*]}" = "--session-save=db" ]
 }
+
+@test "reads quoted magebox values with a comment" {
+  printf "name: 'shop' # the store\nservices:\n  mysql:\n  mariadb: \"10.6\"  # pinned\n" > .magebox.yaml
+  mage_env_use magebox
+
+  [ "$MAGE_DB_NAME" = "shop" ]
+  [ "$MAGE_DB_HOST" = "127.0.0.1:33106" ]
+}

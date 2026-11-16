@@ -21,10 +21,11 @@ function env_magebox_apply() {
   COMPOSER_CLI="${MAGEBOX_BIN}/composer"
 
   local name
-  name="$(mage_magebox_value name "")"
+  local version
+  { read -r name; read -r version; } < <(mage_magebox_values)
 
   MAGE_DOMAIN="test"
-  MAGE_DB_HOST="127.0.0.1:$(mage_magebox_db_port)"
+  MAGE_DB_HOST="127.0.0.1:$(mage_magebox_db_port "$version")"
   MAGE_DB_NAME="${name:-$MAGE_DB_NAME}"
   MAGE_DB_USER="root"
   MAGE_DB_PASS="magebox"
@@ -47,36 +48,41 @@ function mage_magebox_config() {
   return 1
 }
 
-# Echo the value of a key in the project config, the local override first.
-# A plain line match on the key with the given indent, such as "" for a top level
-# key, enough for the simple keys mage reads.
-function mage_magebox_value() {
-  local key="$1"
-  local indent="$2"
+# Echo the name and the database version of the project, a line each, read in one
+# pass with the local override first. A line match, not a YAML parser, enough for
+# the top level name and the mysql or mariadb under services.
+function mage_magebox_values() {
+  local files=()
   local file
-  local value
 
   for file in .magebox.local.yaml "$(mage_magebox_config)"; do
-    if [[ ! -f "$file" ]]; then
-      continue
-    fi
-
-    value="$(sed -n -E "s/^${indent}${key}:[[:space:]]*[\"']?([^\"'[:space:]#]+).*/\1/p" "$file" | head -n 1)"
-
-    if [[ -n "$value" ]]; then
-      echo "$value"
-      return 0
+    if [[ -f "$file" ]]; then
+      files+=("$file")
     fi
   done
 
-  return 1
+  if [[ ${#files[@]} -eq 0 ]]; then
+    printf '\n\n'
+    return
+  fi
+
+  awk '
+    function value(line) {
+      sub(/^[^:]*:[ \t]*/, "", line)
+      sub(/[ \t]+#.*$/, "", line)
+      gsub(/["\047 \t]/, "", line)
+      return line
+    }
+    /^name:/ && name == "" { name = value($0) }
+    /^[ \t]+(mysql|mariadb):/ && db == "" { db = value($0) }
+    END { print name; print db }
+  ' "${files[@]}"
 }
 
 # Echo the port of the database container, MageBox runs one per version on
 # 33000 plus the version without its dot, such as 33080 for MySQL 8.0
 function mage_magebox_db_port() {
-  local version
-  version="$(mage_magebox_value mysql "[[:space:]]+" || mage_magebox_value mariadb "[[:space:]]+")"
+  local version="$1"
 
   if [[ ! "$version" =~ ^[0-9]+\.[0-9]+$ ]]; then
     version="8.0"
