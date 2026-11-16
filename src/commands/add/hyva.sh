@@ -4,11 +4,13 @@ MAGE_ADD_HANDLERS+=("hyva|Add the Hyva Theme with a license, or with --dev from 
 # The fragment holds the composer part, so updating the packages needs no rebuild.
 function mage_add_hyva() {
   local fragment="composer-hyva.json"
+  local options=()
   local arg
 
   for arg in "$@"; do
     case "$arg" in
       --dev) fragment="composer-hyva-dev.json" ;;
+      --keep-wildcard) options+=("$arg") ;;
       *)
         mage_error "Unknown option '${arg}'"
         exit 1
@@ -24,7 +26,7 @@ function mage_add_hyva() {
     exit 1
   fi
 
-  mage_add_json "$file" || exit 1
+  mage_add_json "$file" "${options[@]}" || exit 1
 
   $MAGENTO_CLI setup:upgrade || exit 1
 

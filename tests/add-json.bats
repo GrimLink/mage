@@ -26,8 +26,25 @@ EOF
   [[ "${lines[1]}" == "composer config --global --auth http-basic.repo.example.com user secret" ]]
   [[ "$output" == *'composer config --append repositories.example {"type":"composer","url":"https://repo.example.com/"}'* ]]
   [[ "$output" == *"composer config allow-plugins.vendor/plugin true"* ]]
-  [[ "$output" == *"composer require vendor/a:* vendor/b:^1.0"* ]]
+  [[ "$output" == *"composer require vendor/a vendor/b:^1.0"* ]]
   [[ "$output" == *"composer require --dev vendor/c:dev-main"* ]]
+}
+
+@test "requires a * constraint as is with --keep-wildcard" {
+  echo '{ "require": { "vendor/a": "*", "vendor/b": "^1.0" }, "require-dev": { "vendor/c": "*" } }' > fragment.json
+
+  run mage_cmd_add fragment.json --keep-wildcard
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"composer require vendor/a:* vendor/b:^1.0"* ]]
+  [[ "$output" == *"composer require --dev vendor/c:*"* ]]
+}
+
+@test "rejects unknown options" {
+  echo '{ "require": { "vendor/a": "*" } }' > fragment.json
+
+  run mage_cmd_add fragment.json --unknown
+  [ "$status" -eq 1 ]
+  [[ "$output" == *"Unknown option '--unknown'"* ]]
 }
 
 @test "stores a token auth with its single value" {
@@ -72,7 +89,7 @@ EOF
   MAGE_CALL_DIR="${BATS_TEST_TMPDIR}/nested"
 
   run mage_cmd_add ./fragment.json
-  [[ "$output" == *"composer require vendor/a:*"* ]]
+  [[ "$output" == *"composer require vendor/a"* ]]
 }
 
 @test "warns about unknown keys and config lists" {
@@ -108,7 +125,7 @@ EOF
   [ "$status" -eq 0 ]
   [[ "$output" == *"--auth http-basic.hyva-themes.repo.packagist.com token key"* ]]
   [[ "$output" == *'"url":"https://hyva-themes.repo.packagist.com/acme/"'* ]]
-  [[ "$output" == *"composer require hyva-themes/magento2-theme-module:* hyva-themes/magento2-default-theme:*"* ]]
+  [[ "$output" == *"composer require hyva-themes/magento2-theme-module hyva-themes/magento2-default-theme"* ]]
 }
 
 @test "skips credentials the global auth already has, without asking for them" {
@@ -119,7 +136,7 @@ EOF
   [ "$status" -eq 0 ]
   [[ "$output" == *"Using the http-basic credentials for repo.example.com from the global composer auth"* ]]
   [[ "$output" != *"composer config --global --auth http-basic.repo.example.com"* ]]
-  [[ "$output" == *"composer require vendor/a:*"* ]]
+  [[ "$output" == *"composer require vendor/a"* ]]
 }
 
 @test "still asks for credentials of other hosts" {

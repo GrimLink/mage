@@ -13,5 +13,6 @@ Applies the bundled [composer fragment](../composer-fragments.md) `composer-stor
 - `siteation/magento2-storeinfo-usps`
 - `siteation/magento2-storeinfo-payments`
 
+The packages are required as their latest version, `--keep-wildcard` requires them as `*`.
 Then runs `setup:upgrade`.
 The package list lives in the fragment, so it is updated with `mage self-update`.

@@ -7,6 +7,9 @@ mage add hyva         # with a license
 mage add hyva --dev   # from the Hyvä GitLab
 ```
 
+The packages are required as their latest version, such as `^1.5.4`.
+Add `--keep-wildcard` to require them as `*`.
+
 ## Steps
 
 1. Applies the bundled [composer fragment](../composer-fragments.md) `composer-hyva.json`, or `composer-hyva-dev.json` with `--dev`.

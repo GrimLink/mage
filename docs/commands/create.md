@@ -35,6 +35,27 @@ The name is a folder name, and must not exist yet.
 
 Edition `community` and `enterprise` need your Magento marketplace keys in the composer auth.
 
+## Keeping the Mage-OS modules
+
+To use a replaced module after all, such as `mage-os/module-theme-optimization`:
+
+1. Remove its line from the `replace` of `composer.json`.
+2. Require it, with `mage add mage-os/module-theme-optimization`.
+3. Enable it, with `mage run module:enable MageOS_ThemeOptimization`, as the setup disables it.
+
+To keep it enabled on the next `mage setup`, leave it out of `MAGE_DISABLE_MODULES` in the [configuration](../config.md):
+
+```bash
+# ~/.config/mage/config
+MAGE_DISABLE_MODULES=(
+  MageOS_PasskeyAuth
+  Magento_AdminAdobeImsTwoFactorAuth
+  Magento_TwoFactorAuth
+)
+```
+
+`mage-os/module-passkey-auth` needs two factor auth, so keep that enabled as well, by leaving out the first three.
+
 # mage setup
 
 Install Magento in an existing project, which is also how a project is reinstalled.

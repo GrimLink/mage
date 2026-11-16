@@ -60,6 +60,8 @@ Further arguments, such as `--dev`, go to composer.
 
 ```bash
 mage add composer-hyva.json
+mage add composer-hyva.json --keep-wildcard
 ```
 
 Applies the repositories, config, auth and packages of a json file, see [composer fragments](../composer-fragments.md).
+A `*` constraint is required as the latest version, `--keep-wildcard` requires it as `*`.

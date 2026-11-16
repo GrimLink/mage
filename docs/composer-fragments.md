@@ -72,6 +72,13 @@ They are appended after the existing repositories, so the `local-packages` path 
 Values are strings, numbers or booleans.
 Lists are skipped with a warning.
 
+### require and require-dev
+
+An object keyed by package, with the version constraint as value.
+A `*` constraint leaves the version to composer, which requires the latest version that fits the project and writes it as `^x.y.z`.
+Any other constraint is passed as is.
+To require `*` as is, add `--keep-wildcard`, such as `mage add fragment.json --keep-wildcard`.
+
 ### auth
 
 The same format as composer's `auth.json`.
