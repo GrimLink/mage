@@ -34,3 +34,10 @@ function setup() {
   jq -e 'has("replace") | not' composer.json
 }
 
+
+@test "refuses magebox, which creates its own projects" {
+  run mage_cmd_create acme -y --edition=community --env=magebox
+  [ "$status" -eq 1 ]
+  [[ "$output" == *"'magebox new'"* ]]
+  [ ! -e acme ]
+}

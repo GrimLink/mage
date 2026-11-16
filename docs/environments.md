@@ -7,6 +7,7 @@ The first environment that matches wins, in this order:
 | ----------------------------------------------- | -------------------------------------------------------- | ----------------------------------------------------- |
 | [Warden](https://github.com/wardenenv/warden)   | `warden` is installed and `.env` holds `WARDEN_ENV_NAME` | In the `php-fpm` container, through `warden env exec` |
 | [DDEV](https://ddev.com/)                       | `ddev` is installed and `.ddev/config.yaml` exists       | In the web container, through `ddev`                  |
+| [MageBox](https://magebox.dev/)                 | `magebox` is installed and `.magebox.yaml` exists        | On your machine, with the PHP of the project          |
 | [Laravel Valet](https://laravel.com/docs/valet) | `valet` is installed                                     | On your machine                                       |
 | Local                                           | Always                                                   | On your machine                                       |
 
@@ -14,6 +15,7 @@ Inside a Warden or DDEV container their command is not installed, so mage runs t
 
 When creating a project, there is nothing to detect yet.
 `mage create` asks which environment to use, defaulting to the first one installed, or takes `--env=warden`, `--env=ddev`, `--env=valet` or `--env=local`.
+MageBox creates its own projects, see below.
 
 ## Local
 
@@ -69,3 +71,21 @@ Works like local, and adds:
 - **Restore:** `ddev import-db`.
 
 Note that `mage run` uses the magerun on your machine for DDEV, which cannot reach the DDEV database.
+
+## MageBox
+
+PHP and Nginx run on your machine, the services in containers that all projects share.
+Works like local, with these differences:
+
+- **Commands:** `bin/magento`, composer and magerun run with the wrappers in `~/.magebox/bin`, which pick the PHP version of the project, also when they are not in your `PATH`.
+- **Services:** read from `.magebox.yaml`, with `.magebox.local.yaml` first.
+  The database is `root`/`magebox` on `127.0.0.1`, on the port of its version, such as `33080` for MySQL 8.0, and named after the `name` of the project.
+  OpenSearch is `127.0.0.1:9200` and Redis `127.0.0.1`, the config settings do not apply.
+  Stores use the `test` domain.
+- **Create:** not supported, as MageBox creates its own projects.
+  Create one with `magebox new`, or run `magebox init` in an existing project, then `magebox start` and [`mage setup`](commands/create.md#mage-setup).
+- **Setup:** creates the database with `mysql`, like local, the certificate and vhost come from `magebox start`.
+  Sessions are stored in the database, as the projects share one Redis.
+- **Nuke:** cleans and drops like local, then `magebox stop`.
+- **Add store:** `magebox domain add <domain> --store-code=<code>`, which adds the vhost and certificate.
+- **Open mail:** `magebox mailpit open`.

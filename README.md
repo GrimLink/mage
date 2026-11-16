@@ -17,7 +17,7 @@ It provides shortcuts and custom functions to save you time and effort.
 
 - **Easy installation of Magento:** create and install a Mage-OS, Magento Open Source or Adobe Commerce project in one command.
 - **Works from anywhere in a project:** run mage from any nested folder, it finds the Magento root on its own.
-- **Environment aware:** the same commands work on your machine, with [Laravel Valet], [Warden] and [DDEV].
+- **Environment aware:** the same commands work on your machine, with [Laravel Valet], [Warden], [DDEV] and [MageBox].
 - **One place to add things:** composer packages, git repositories, composer fragments from a json file, and generators for themes and modules.
 - **Everything else goes to `bin/magento`:** any command mage does not know is passed on as is.
 
@@ -111,6 +111,7 @@ Mage works on **macOS** and **most Linux platforms**, and detects these environm
 - **[Laravel Valet]**
 - **[Warden]:** supported with thanks to [@tdgroot](https://github.com/tdgroot).
 - **[DDEV]**
+- **[MageBox]:** for existing projects, `mage create` does not support it.
 
 ## Contributing
 
@@ -133,3 +134,4 @@ See the LICENSE file for details.
 [Laravel Valet]: https://laravel.com/docs/valet
 [Warden]: https://github.com/wardenenv/warden
 [DDEV]: https://ddev.com/
+[MageBox]: https://magebox.dev/
