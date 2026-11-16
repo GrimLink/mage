@@ -3,6 +3,7 @@ load helper
 function setup() {
   load_mage
   cd "$BATS_TEST_TMPDIR"
+  MAGEBOX_GLOBAL_CONFIG="${BATS_TEST_TMPDIR}/magebox-config.yaml"
 }
 
 @test "uses local when nothing is installed" {
@@ -132,12 +133,6 @@ function setup() {
   [ "$(mage_env_detect)" = "magebox" ]
 }
 
-@test "never offers magebox to create" {
-  use_stub_bins valet magebox
-
-  [ "$(mage_env_available create)" = "valet local" ]
-}
-
 @test "applies the magebox wrappers and services from its config" {
   printf 'name: my-shop\nphp: "8.3"\nservices:\n  mysql: "8.4"\n  redis: true\ncommands:\n  name: other\n' > .magebox.yaml
   mage_env_use magebox
@@ -146,6 +141,19 @@ function setup() {
   [ "$MAGE_DB_HOST" = "127.0.0.1:33084" ]
   [ "$MAGE_DB_NAME" = "my_shop" ]
   [ "$MAGE_DB_PASS" = "magebox" ]
+  [ "$MAGE_DOMAIN" = "test" ]
+}
+
+@test "takes the tld of the global magebox config" {
+  printf 'name: shop
+' > .magebox.yaml
+  printf 'tld: local
+name: other
+' > "$MAGEBOX_GLOBAL_CONFIG"
+  mage_env_use magebox
+
+  [ "$MAGE_DOMAIN" = "local" ]
+  [ "$MAGE_DB_NAME" = "shop" ]
 }
 
 @test "takes the magebox database version of the local override" {

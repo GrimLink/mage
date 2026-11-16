@@ -14,8 +14,7 @@ The first environment that matches wins, in this order:
 Inside a Warden or DDEV container their command is not installed, so mage runs there as local.
 
 When creating a project, there is nothing to detect yet.
-`mage create` asks which environment to use, defaulting to the first one installed, or takes `--env=warden`, `--env=ddev`, `--env=valet` or `--env=local`.
-MageBox creates its own projects, see below.
+`mage create` asks which environment to use, defaulting to the first one installed, or takes `--env=warden`, `--env=ddev`, `--env=magebox`, `--env=valet` or `--env=local`.
 
 ## Local
 
@@ -81,9 +80,10 @@ Works like local, with these differences:
 - **Services:** read from `.magebox.yaml`, with `.magebox.local.yaml` first.
   The database is `root`/`magebox` on `127.0.0.1`, on the port of its version, such as `33080` for MySQL 8.0, and named after the `name` of the project, with underscores for its hyphens, like MageBox does.
   OpenSearch is `127.0.0.1:9200` and Redis `127.0.0.1`, the config settings do not apply.
-  Stores use the `test` domain.
-- **Create:** not supported, as MageBox creates its own projects.
-  Create one with `magebox new`, or run `magebox init` in an existing project, then `magebox start` and [`mage setup`](commands/create.md#mage-setup).
+  Stores use the `tld` of the global MageBox config, `test` by default.
+- **Create:** creates the composer project, then runs `magebox init` and `magebox start` for the config, vhost, certificate and database.
+  Mage installs Magento itself, so `magebox new` is not used.
+  The PHP version comes from the `composer.json` of the project, or the MageBox default, change it later with `magebox php`.
 - **Setup:** creates the database with `mysql`, like local, the certificate and vhost come from `magebox start`.
   Sessions are stored in the database, as the projects share one Redis.
 - **Nuke:** cleans and drops like local, then `magebox stop`.

@@ -1,8 +1,9 @@
 # MageBox, PHP and Nginx run on the host, the services in shared containers,
-# see https://magebox.dev/. mage create does not support it, 'magebox new' or
-# 'magebox init' sets up the project, after which mage takes over.
+# see https://magebox.dev/. Mage creates and installs the project itself,
+# MageBox only adds its config, vhost, certificate and database.
 
 MAGEBOX_BIN="${HOME}/.magebox/bin"
+MAGEBOX_GLOBAL_CONFIG="${HOME}/.magebox/config.yaml"
 
 function env_magebox_available() {
   command -v magebox &> /dev/null
@@ -22,9 +23,10 @@ function env_magebox_apply() {
 
   local name
   local version
-  { read -r name; read -r version; } < <(mage_magebox_values)
+  local tld
+  { read -r name; read -r version; read -r tld; } < <(mage_magebox_values)
 
-  MAGE_DOMAIN="test"
+  MAGE_DOMAIN="${tld:-test}"
   MAGE_DB_HOST="127.0.0.1:$(mage_magebox_db_port "$version")"
   MAGE_DB_NAME="${name:-$MAGE_DB_NAME}"
   # The database name of MageBox, which replaces the hyphens of the project name
@@ -50,34 +52,36 @@ function mage_magebox_config() {
   return 1
 }
 
-# Echo the name and the database version of the project, a line each, read in one
-# pass with the local override first. A line match, not a YAML parser, enough for
-# the top level name and the mysql or mariadb under services.
+# Echo the name and the database version of the project, and the tld of the global
+# config, a line each. Read in one pass, with the local override of the project first.
+# A line match, not a YAML parser, enough for these top level keys and the mysql
+# or mariadb under services.
 function mage_magebox_values() {
   local files=()
   local file
 
-  for file in .magebox.local.yaml "$(mage_magebox_config)"; do
+  for file in .magebox.local.yaml "$(mage_magebox_config)" "$MAGEBOX_GLOBAL_CONFIG"; do
     if [[ -f "$file" ]]; then
       files+=("$file")
     fi
   done
 
   if [[ ${#files[@]} -eq 0 ]]; then
-    printf '\n\n'
+    printf '\n\n\n'
     return
   fi
 
-  awk '
+  awk -v global="$MAGEBOX_GLOBAL_CONFIG" '
     function value(line) {
       sub(/^[^:]*:[ \t]*/, "", line)
       sub(/[ \t]+#.*$/, "", line)
       gsub(/["\047 \t]/, "", line)
       return line
     }
+    FILENAME == global { if (/^tld:/ && tld == "") tld = value($0); next }
     /^name:/ && name == "" { name = value($0) }
     /^[ \t]+(mysql|mariadb):/ && db == "" { db = value($0) }
-    END { print name; print db }
+    END { print name; print db; print tld }
   ' "${files[@]}"
 }
 
@@ -91,6 +95,20 @@ function mage_magebox_db_port() {
   fi
 
   echo $((33000 + 10#${version//./}))
+}
+
+# Create the composer project, then its MageBox config, vhost, certificate and database.
+# Without --install composer only needs a PHP that runs it, the project PHP comes
+# from 'magebox init', which reads it from composer.json or takes the MageBox default.
+function env_magebox_create_project() {
+  local name="$1"
+
+  env_local_create_project "$@" || return 1
+
+  magebox init "$name" < /dev/null || return 1
+  magebox start || return 1
+
+  env_magebox_apply
 }
 
 function env_magebox_nuke() {

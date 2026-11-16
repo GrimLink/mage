@@ -3,8 +3,6 @@
 # and env_<name>_apply, and may add any other hook, see env_call.
 MAGE_ENVS="warden ddev magebox valet local"
 MAGE_ENV="local"
-# Environments mage create does not offer, as they create the project themselves
-MAGE_CREATE_SKIP_ENVS="magebox"
 
 # Echo the environment used by the current folder
 function mage_env_detect() {
@@ -20,17 +18,12 @@ function mage_env_detect() {
   echo "local"
 }
 
-# Echo the environments that are installed on this machine,
-# with 'create' only those mage create can use
+# Echo the environments that are installed on this machine
 function mage_env_available() {
   local env
   local available=()
 
   for env in $MAGE_ENVS; do
-    if [[ "$1" == "create" ]] && [[ " $MAGE_CREATE_SKIP_ENVS " == *" $env "* ]]; then
-      continue
-    fi
-
     if "env_${env}_available"; then
       available+=("$env")
     fi

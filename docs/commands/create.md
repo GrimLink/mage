@@ -8,12 +8,12 @@ mage create my-shop --edition=community --version=2.4.8 --env=warden
 mage create my-shop -y
 ```
 
-| Option              | Does                                                                           |
-| ------------------- | ------------------------------------------------------------------------------ |
-| `--edition=EDITION` | `mage-os`, `community` or `enterprise`, defaults to `MAGE_EDITION` (`mage-os`) |
-| `--version=VERSION` | The Magento version, defaults to `latest`                                      |
-| `--env=ENV`         | `warden`, `ddev`, `valet` or `local`, defaults to the first one installed      |
-| `-y`, `--yes`       | Use the defaults for anything not given, instead of asking                     |
+| Option              | Does                                                                                 |
+| ------------------- | ------------------------------------------------------------------------------------ |
+| `--edition=EDITION` | `mage-os`, `community` or `enterprise`, defaults to `MAGE_EDITION` (`mage-os`)       |
+| `--version=VERSION` | The Magento version, defaults to `latest`                                            |
+| `--env=ENV`         | `warden`, `ddev`, `magebox`, `valet` or `local`, defaults to the first one installed |
+| `-y`, `--yes`       | Use the defaults for anything not given, instead of asking                           |
 
 Anything not given as an option is asked.
 The name is a folder name, and must not exist yet.

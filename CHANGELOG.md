@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Actions that remove, move or write files, such as `rm`, `mv` or a `>` redirect, are blocked.
   The `mage.config.json` is part of the project, so the team shares it.
 - **MageBox:** A new [environment](docs/environments.md#magebox) for projects with a `.magebox.yaml`, with the PHP wrappers and services of [MageBox](https://magebox.dev/).
-  `mage create` does not support it, as MageBox creates its own projects.
+  `mage create --env=magebox` creates the project, and lets MageBox add its config, vhost, certificate and database.
 - **`mage build`:** Without a target, builds the `build.themes` of the `mage.config.json` in the project, instead of every theme.
 - **`mage add <file>.json`:** Composer fragments take a `replace`, merged into the `replace` of `composer.json`.
 - **`mage add <file>.json`, `mage add hyva`, `mage add storeinfo`:** The option `--keep-wildcard` requires a `*` constraint as is, instead of as the latest version.

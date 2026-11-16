@@ -39,7 +39,7 @@ function mage_cmd_create() {
   fi
 
   local available_envs
-  available_envs="$(mage_env_available create)"
+  available_envs="$(mage_env_available)"
   local default_env="${available_envs%% *}"
 
   if [[ -z "$edition" ]]; then
@@ -52,11 +52,6 @@ function mage_cmd_create() {
 
   if [[ -z "$env" ]]; then
     env="$(mage_ask "Environment [${available_envs}]" "$default_env")" || exit 1
-  fi
-
-  if [[ "$env" == "magebox" ]]; then
-    mage_error "mage create does not support MageBox, create the project with 'magebox new', then run 'mage setup' in it"
-    exit 1
   fi
 
   if [[ " $available_envs " != *" $env "* ]]; then

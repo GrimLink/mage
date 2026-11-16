@@ -111,7 +111,7 @@ Mage works on **macOS** and **most Linux platforms**, and detects these environm
 - **[Laravel Valet]**
 - **[Warden]:** supported with thanks to [@tdgroot](https://github.com/tdgroot).
 - **[DDEV]**
-- **[MageBox]:** for existing projects, `mage create` does not support it.
+- **[MageBox]**
 
 ## Contributing
 
