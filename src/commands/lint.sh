@@ -1,6 +1,7 @@
 # Check the code with the Hyvä coding standard, which extends the Magento one.
 # Hyvä advises against adding it to the project, as it shares dependencies with
 # Magento, so it is installed once in the mage config and runs on your machine.
+# MAGE_LINT_PHPCS and MAGE_LINT_PHPCBF run it elsewhere, such as in docker.
 MAGE_LINT_PACKAGE="hyva-themes/hyva-coding-standard"
 MAGE_LINT_STANDARD="HyvaThemes"
 
@@ -25,11 +26,22 @@ function mage_cmd_lint() {
     exit 1
   fi
 
+  local cli="$MAGE_LINT_PHPCS"
+
+  if [[ "$bin" == "phpcbf" ]]; then
+    cli="$MAGE_LINT_PHPCBF"
+  fi
+
+  # -p shows the progress, as phpcs shows nothing else until it is done
+  if [[ -n "$cli" ]]; then
+    $cli --standard="$MAGE_LINT_STANDARD" -p "${options[@]}" "${paths[@]}"
+    return
+  fi
+
   if [[ ! -f "$(mage_lint_dir)/vendor/bin/${bin}" ]]; then
     mage_lint_install || exit 1
   fi
 
-  # -p shows the progress, as phpcs shows nothing else until it is done
   $HOST_PHP_CLI "$(mage_lint_dir)/vendor/bin/${bin}" --standard="$MAGE_LINT_STANDARD" -p "${options[@]}" "${paths[@]}"
 }
 
@@ -46,7 +58,7 @@ function mage_lint_install() {
   local temp_dir="${target}.tmp"
 
   if ! command -v "${HOST_PHP_CLI%% *}" &> /dev/null || ! command -v "${HOST_COMPOSER_CLI%% *}" &> /dev/null; then
-    mage_error "Linting needs php and composer on your machine, also with Warden or DDEV"
+    mage_error "Linting needs php and composer on your machine, or MAGE_LINT_PHPCS and MAGE_LINT_PHPCBF in the config"
     return 1
   fi
 

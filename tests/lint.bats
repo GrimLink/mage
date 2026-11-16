@@ -64,3 +64,17 @@ function fake_lint_composer() {
   [ -f "$(mage_lint_dir)/vendor/bin/phpcs" ]
   [ ! -e "$(mage_lint_dir).tmp" ]
 }
+
+@test "runs the phpcs and phpcbf of the config, without installing" {
+  rm -rf "$(mage_lint_dir)"
+  MAGE_LINT_PHPCS="echo phpcs-docker"
+  MAGE_LINT_PHPCBF="echo phpcbf-docker"
+
+  run mage_cmd_lint app/code
+  [ "$status" -eq 0 ]
+  [ "$output" = "phpcs-docker --standard=HyvaThemes -p app/code" ]
+
+  run mage_cmd_lint app/code --fix
+  [ "$output" = "phpcbf-docker --standard=HyvaThemes -p app/code" ]
+  [ ! -e "$(mage_lint_dir)" ]
+}

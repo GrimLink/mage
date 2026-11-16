@@ -22,3 +22,31 @@ So the first run installs it once, stand-alone, in `~/.config/mage/hyva-coding-s
 
 It runs with the `php` and `composer` of your machine, also with Warden and DDEV.
 The sniffs read the PHP version of the project from its `composer.json`.
+
+## Docker
+
+Without PHP on your machine, run the coding standard in docker instead, with the [docker wrappers of Hyvä](https://github.com/hyva-themes/hyva-coding-standard#usage-with-docker-no-local-php-required).
+It is one container next to every project, whatever its environment.
+
+1. Clone the coding standard, and put its wrappers in your `PATH`:
+
+   ```bash
+   git clone https://github.com/hyva-themes/hyva-coding-standard.git ~/hyva-coding-standard
+   ln -s ~/hyva-coding-standard/bin/phpcs-docker ~/.local/bin/phpcs-docker
+   ln -s ~/hyva-coding-standard/bin/phpcbf-docker ~/.local/bin/phpcbf-docker
+   ```
+
+2. Point mage at them in the [configuration](../config.md):
+
+   ```bash
+   # ~/.config/mage/config
+   MAGE_LINT_PHPCS="phpcs-docker"
+   MAGE_LINT_PHPCBF="phpcbf-docker"
+   ```
+
+Mage then runs those instead, and installs nothing.
+The first run builds the image, and a `git pull` in `~/hyva-coding-standard` updates it, `mage self-update` does not.
+The wrapper only mounts the current folder, and mage runs from the Magento root, so the paths to lint have to be in the project.
+For a path outside it, set `HYVA_PHPCS_MOUNT` to a folder above both.
+
+The settings take any command, such as the `phpcs` of a coding standard you installed yourself, like `~/hyva-coding-standard/vendor/bin/phpcs`.
