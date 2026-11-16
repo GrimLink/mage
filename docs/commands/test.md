@@ -47,7 +47,8 @@ Without a `mage.config.json`, it offers to create one from the [template](../tem
 With `-y` or `MAGE_YES=1` it creates it without asking.
 Its `docs` key links to this page, mage does not read it.
 The same file holds the themes [`mage build`](build.md#the-themes-of-a-project) builds.
-The [gitignore template](../templates.md) ignores it, so each developer keeps their own, and a clone never brings actions along that run on your machine.
+Commit it, so the whole team runs the same tests.
+A clone brings its actions along, which run on your machine, so check them in a project you do not know.
 
 For working on the Hyvä theme module and default theme, the template `mage-hyva.config.json` is a sample.
 It validates their `composer.json`, checks the PHP syntax and lints both.
