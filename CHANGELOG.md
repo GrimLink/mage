@@ -7,9 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
 - **MageBox:** A new [environment](docs/environments.md#magebox) for projects with a `.magebox.yaml`, with the PHP wrappers and services of [MageBox](https://magebox.dev/).
   `mage create --env=magebox` creates the project, and lets MageBox add its config, vhost, certificate and database.
+
+### Added
+- **`mage create`:** The editions `mage-os-minimal`, Mage-OS with fewer modules, and `mage-os-mirror`, Magento Open Source from the Mage-OS mirror.
+- **Config:** `MAGE_ENV_CONFIG`, store config that `mage setup` and `mage restore` write to `app/etc/env.php` with `config:set --lock-env`.
+
+### Fixed
+- **`mage setup`:** The admin session lifetime of a day is now locked in `app/etc/env.php`.
+  Mage-OS bundles `aligent/magento2-pci-4-compatibility`, which caps the admin field at 900 seconds, so saving the Admin config section failed with the longer lifetime.
+
+### Changed
+- **`mage create`:** Pick the edition and environment from a numbered list, by number or name.
+- **`mage add sample`:** Pick the sample data set from a numbered list, by number or name.
 
 ## [3.1.0] - 2026-11-16
 

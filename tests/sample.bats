@@ -28,6 +28,14 @@ function setup() {
   [[ "$output" == *"magento hyva:sampledata:deploy"* ]]
 }
 
+@test "picks the set by its number" {
+  mkdir -p vendor/hyva-themes/magento2-theme-module
+
+  run mage_cmd_add sample <<< $'1\ny'
+  [[ "$output" == *"magento sampledata:deploy"* ]]
+  [[ "$output" != *"hyva:sampledata:deploy"* ]]
+}
+
 @test "defaults to magento without Hyva" {
   run mage_cmd_add sample <<< $'\n'
   [[ "$output" == *"magento sampledata:deploy"* ]]

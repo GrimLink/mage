@@ -98,19 +98,33 @@ function mage_setup() {
   mage_add_gitignore
 }
 
-# Set the store config of MAGE_STORE_CONFIG, where each entry is 'path value'
+# Set the store config of MAGE_STORE_CONFIG, and MAGE_ENV_CONFIG locked in
+# app/etc/env.php, where each entry is 'path value'
 function mage_set_store_config() {
   local entry
-  local value
 
   for entry in "${MAGE_STORE_CONFIG[@]}"; do
-    value=""
-    if [[ "$entry" == *" "* ]]; then
-      value="${entry#* }"
-    fi
-
-    $MAGENTO_CLI config:set "${entry%% *}" "$value" &> /dev/null
+    mage_set_config_entry "$entry"
   done
+
+  for entry in "${MAGE_ENV_CONFIG[@]}"; do
+    mage_set_config_entry "$entry" --lock-env
+  done
+}
+
+# Set one 'path value' entry, an entry without a value sets it empty
+#
+# @param $1 The 'path value' entry
+# @param $2 Optional extra option for config:set, such as --lock-env
+function mage_set_config_entry() {
+  local entry="$1"
+  local value=""
+
+  if [[ "$entry" == *" "* ]]; then
+    value="${entry#* }"
+  fi
+
+  $MAGENTO_CLI config:set ${2:+"$2"} "${entry%% *}" "$value" &> /dev/null
 }
 
 # Disable the modules of MAGE_DISABLE_MODULES that the install has, as not
