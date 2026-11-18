@@ -1,4 +1,4 @@
-MAGE_EDITIONS="mage-os community enterprise"
+MAGE_EDITIONS="mage-os mage-os-minimal mage-os-mirror community enterprise"
 
 # Create a new Magento project, install it and set it up.
 # Anything not given as an option is asked, or defaulted with -y.
@@ -64,6 +64,7 @@ function mage_cmd_create() {
 
   # See the versions at:
   # - https://github.com/mage-os/mageos-magento2
+  # - https://mirror.mage-os.org/
   # - https://experienceleague.adobe.com/docs/commerce-operations/release/versions.html
   case "$edition" in
     "community")
@@ -77,6 +78,14 @@ function mage_cmd_create() {
     "mage-os")
       package="mage-os/project-community-edition"
       repository="https://repo.mage-os.org/"
+      ;;
+    "mage-os-minimal")
+      package="mage-os/project-minimal-edition"
+      repository="https://repo.mage-os.org/"
+      ;;
+    "mage-os-mirror")
+      package="magento/project-community-edition"
+      repository="https://mirror.mage-os.org/"
       ;;
     *)
       mage_error "Unknown edition '${edition}', use one of: ${MAGE_EDITIONS}"
