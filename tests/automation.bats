@@ -40,6 +40,34 @@ function setup() {
   [ "$status" -eq 1 ]
 }
 
+@test "a choice takes a number, a name or the default" {
+  run mage_choose "Edition" "mage-os" mage-os community enterprise <<< "2"
+  [ "${lines[${#lines[@]}-1]}" = "community" ]
+
+  run mage_choose "Edition" "mage-os" mage-os community enterprise <<< "enterprise"
+  [ "${lines[${#lines[@]}-1]}" = "enterprise" ]
+
+  run mage_choose "Edition" "mage-os" mage-os community enterprise <<< ""
+  [ "${lines[${#lines[@]}-1]}" = "mage-os" ]
+}
+
+@test "a choice outside the options stops with an error" {
+  run mage_choose "Edition" "mage-os" mage-os community enterprise <<< "4"
+  [ "$status" -eq 1 ]
+  [[ "$output" == *"Pick a number from 1 to 3"* ]]
+
+  run mage_choose "Edition" "mage-os" mage-os community enterprise <<< "magento"
+  [ "$status" -eq 1 ]
+  [[ "$output" == *"Unknown 'magento'"* ]]
+}
+
+@test "MAGE_YES takes the default choice without listing the options" {
+  MAGE_YES=1
+
+  run mage_choose "Edition" "mage-os" mage-os community enterprise < /dev/null
+  [ "$output" = "mage-os" ]
+}
+
 @test "typing a name to confirm always needs an answer" {
   MAGE_YES=1
 

@@ -38,7 +38,7 @@ function mage_add_sample() {
       default="hyva"
     fi
 
-    set="$(mage_ask "Sample data [${names}]" "$default")" || exit 1
+    set="$(mage_choose "Sample data" "$default" $names)" || exit 1
   fi
 
   if ! mage_handler_exists "$set" "${MAGE_SAMPLE_SETS[@]}"; then

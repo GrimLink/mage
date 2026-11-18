@@ -9,6 +9,7 @@ mage add sample hyva      # the Koti sample data of Hyvä
 ```
 
 Without a set it asks, defaulting to `hyva` when Hyvä is installed, otherwise `magento`.
+Pick the set from the numbered list, by number or name.
 Further arguments go to the deploy command of the set.
 
 Both sets add their styles to the page head, which any other theme would load too.

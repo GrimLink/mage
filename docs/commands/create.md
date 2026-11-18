@@ -16,6 +16,7 @@ mage create my-shop -y
 | `-y`, `--yes`       | Use the defaults for anything not given, instead of asking                     |
 
 Anything not given as an option is asked.
+The edition and environment are picked from a numbered list, by number or name.
 The name is a folder name, and must not exist yet.
 
 ## Steps
