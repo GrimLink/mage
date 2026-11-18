@@ -75,7 +75,7 @@ When Magento is already installed, it asks first, as this drops the database.
    The admin url is `<project>_admin`, the store url `https://<project>.<MAGE_DOMAIN>/`.
    Sessions go to the database for local and Valet, so they are dropped with it on nuke, and to Redis for DDEV and Warden, which each run their own.
 3. Gives OpenSearch and the Redis caches a prefix named after the database, so projects sharing a service stay apart.
-4. Sets the store name and the store config from `MAGE_STORE_CONFIG`.
+4. Sets the store name and the store config from `MAGE_STORE_CONFIG`, and locks the one from `MAGE_ENV_CONFIG` in `app/etc/env.php`.
 5. Sets the developer mode, and disables the modules in `MAGE_DISABLE_MODULES` the install has: two factor authentication (with `MageOS_PasskeyAuth` on Mage-OS, which depends on it), and on Mage-OS `MageOS_ThemeOptimization`, whose bfcache conflicts with the BFCache patches and does not work with Hyvä, see [mage-os/module-theme-optimization#28](https://github.com/mage-os/module-theme-optimization/issues/28).
 6. Writes the `.valet-env.php` with Valet.
 7. Moves the `*.sample` files of the root to `dev/sample-files`, and adds a `.gitignore` when the project has none.

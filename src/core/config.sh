@@ -93,12 +93,17 @@ MAGE_STORE_CONFIG=(
   "general/country/default NL"
   "general/country/allow AT,BE,BG,HR,CY,CZ,DK,EE,FI,FR,DE,GR,HU,IE,IT,LV,LT,LU,MT,NL,PL,PT,RO,SK,SI,ES,SE,CH,NO,IS,LI,GB"
   "admin/usage/enabled 0"
-  "admin/security/session_lifetime 86400"
   "admin/security/password_lifetime"
   "admin/security/password_is_forced 0"
   "catalog/seo/category_canonical_tag 1"
   "catalog/seo/product_canonical_tag 1"
   "siteation_debugbar/general/enabled 1"
+)
+
+# Like MAGE_STORE_CONFIG, but written to app/etc/env.php and locked in the admin.
+# Mage-OS caps the session lifetime at 900 in the admin form, so a longer one must be locked
+MAGE_ENV_CONFIG=(
+  "admin/security/session_lifetime 86400"
 )
 
 # Defaults for the {{NAME}} placeholders in json files for 'mage add' go in the
