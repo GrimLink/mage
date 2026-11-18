@@ -25,6 +25,46 @@ function mage_ask() {
   echo "${answer:-$default}"
 }
 
+# Ask to pick one of the options, by its number or its name.
+# An empty answer takes the default, which -y takes without asking or checking.
+function mage_choose() {
+  local question="$1"
+  local default="$2"
+  shift 2
+
+  if [[ $MAGE_YES == 1 ]] && [[ -n "$default" ]]; then
+    echo "$default"
+    return
+  fi
+
+  local i=1
+  local option
+
+  for option in "$@"; do
+    mage_info "  ${i}) ${option}" >&2
+    i=$((i + 1))
+  done
+
+  local answer
+  answer="$(mage_ask "${question} [1-$#]" "$default")" || return 1
+
+  if [[ "$answer" =~ ^[0-9]+$ ]]; then
+    if [[ $answer -lt 1 ]] || [[ $answer -gt $# ]]; then
+      mage_error "Pick a number from 1 to $#"
+      return 1
+    fi
+
+    answer="${!answer}"
+  fi
+
+  if [[ " $* " != *" ${answer} "* ]]; then
+    mage_error "Unknown '${answer}', pick a number from 1 to $# or one of: $*"
+    return 1
+  fi
+
+  echo "$answer"
+}
+
 # Ask a yes/no question, where an empty answer takes the default of 'n' or 'y'
 function mage_confirm() {
   local question="$1"

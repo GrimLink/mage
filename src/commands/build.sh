@@ -158,23 +158,7 @@ function mage_build_pick() {
     return
   fi
 
-  local i=1
-  local dir
-
-  for dir in "$@"; do
-    mage_info "  ${i}) ${dir}" >&2
-    i=$((i + 1))
-  done
-
-  local choice
-  choice="$(mage_ask "Which one to watch [1-$#]")" || return 1
-
-  if [[ ! "$choice" =~ ^[0-9]+$ ]] || [[ $choice -lt 1 ]] || [[ $choice -gt $# ]]; then
-    mage_error "Pick a number from 1 to $#"
-    return 1
-  fi
-
-  echo "${!choice}"
+  mage_choose "Which one to watch" "" "$@"
 }
 
 # Run an npm script in a folder, installing its packages first when they are missing

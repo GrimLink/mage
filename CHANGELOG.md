@@ -14,6 +14,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`mage setup`:** The admin session lifetime of a day is now locked in `app/etc/env.php`.
   Mage-OS bundles `aligent/magento2-pci-4-compatibility`, which caps the admin field at 900 seconds, so saving the Admin config section failed with the longer lifetime.
 
+### Changed
+- **`mage create`:** Pick the edition and environment from a numbered list, by number or name.
+- **`mage add sample`:** Pick the sample data set from a numbered list, by number or name.
+
 ## [3.1.0] - 2026-11-16
 
 ### Added

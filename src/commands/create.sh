@@ -43,7 +43,7 @@ function mage_cmd_create() {
   local default_env="${available_envs%% *}"
 
   if [[ -z "$edition" ]]; then
-    edition="$(mage_ask "Edition [${MAGE_EDITIONS}]" "$MAGE_EDITION")" || exit 1
+    edition="$(mage_choose "Edition" "$MAGE_EDITION" $MAGE_EDITIONS)" || exit 1
   fi
 
   if [[ -z "$version" ]]; then
@@ -51,7 +51,7 @@ function mage_cmd_create() {
   fi
 
   if [[ -z "$env" ]]; then
-    env="$(mage_ask "Environment [${available_envs}]" "$default_env")" || exit 1
+    env="$(mage_choose "Environment" "$default_env" $available_envs)" || exit 1
   fi
 
   if [[ " $available_envs " != *" $env "* ]]; then
