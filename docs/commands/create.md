@@ -33,6 +33,7 @@ The name is a folder name, and must not exist yet.
    Templates synced before this fragment existed are updated first, and without it, it warns and continues.
 6. Runs `composer install`.
 7. Runs the setup below.
+8. Generates the XML catalog of the Magento schemas in `.vscode/catalog.xml`, for VS Code and Zed, see [XML catalog](../xml-catalog.md).
 
 Edition `community` and `enterprise` need your Magento marketplace keys in the composer auth.
 

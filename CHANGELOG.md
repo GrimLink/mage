@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **`mage create`:** Generates the XML catalog of the Magento schemas in `.vscode/catalog.xml`, for VS Code and Zed, see [XML catalog](docs/xml-catalog.md).
+
 ### Changed
 - **`mage create`:** Pick the edition and environment from a numbered list, by number or name.
 - **`mage add sample`:** Pick the sample data set from a numbered list, by number or name.

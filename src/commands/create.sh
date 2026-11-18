@@ -99,7 +99,19 @@ function mage_cmd_create() {
   mage_create_composer_setup "$edition" || exit 1
   MAGE_ROOT="$PWD"
   mage_setup "$name" || exit 1
+  mage_create_urn_catalog
   mage_getting_started "$name" true
+}
+
+# Generate the XML catalog for the XML language server of VS Code and Zed.
+# Magento writes each schema as '../<path>', so it has to be one folder below the root.
+function mage_create_urn_catalog() {
+  mkdir -p .vscode
+
+  mage_info "Generating the XML catalog in .vscode/catalog.xml"
+  if ! $MAGENTO_CLI dev:urn-catalog:generate --ide=vscode .vscode/catalog.xml; then
+    mage_warn "Could not generate the XML catalog"
+  fi
 }
 
 # Configure composer for local development and install the project of the given edition
