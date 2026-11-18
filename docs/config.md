@@ -39,19 +39,20 @@ Used by `mage create` and `mage setup` to create the admin user, and as the defa
 
 | Setting             | Default                                                              | Used for                                                                   |
 | ------------------- | -------------------------------------------------------------------- | -------------------------------------------------------------------------- |
-| `MAGE_EDITION`      | `mage-os`                                                            | The edition `mage create` suggests: `mage-os`, `community` or `enterprise` |
+| `MAGE_EDITION`      | `mage-os`                                                            | The [edition](commands/create.md#editions) `mage create` suggests          |
 | `MAGE_DOMAIN`       | `test`                                                               | Stores are served as `https://<project>.<MAGE_DOMAIN>/`                    |
 | `MAGE_MAIL_URL`     | `http://localhost:8025`                                              | The mail catcher `mage open mail` opens, locally and with Valet            |
 | `MAGE_PACKAGES`     | See below                                                            | Packages `mage create` requires in every new project                       |
 | `MAGE_DEV_PACKAGES` | `avstudnitz/scopehint2`, `spatie/ray`, `siteation/magento2-debugbar` | Dev packages `mage create` requires in every new project                   |
 | `MAGE_STORE_CONFIG` | See below                                                            | Store config `mage setup` sets after the install                           |
+| `MAGE_ENV_CONFIG`   | See below                                                            | Store config `mage setup` locks in `app/etc/env.php` after the install     |
 
 `MAGE_PACKAGES` defaults to `cweagans/composer-patches`, `yireo/magento2-theme-commands` (used to switch themes, see [`mage add hyva`](commands/add-hyva.md)), `swissup/module-ignition` and `community-engineering/language-nl_nl`.
 Set it to `()` to add none.
 
 `MAGE_STORE_CONFIG` holds one `path value` entry per config value.
 An entry without a value sets it empty.
-The defaults use the Euro (with Pounds allowed), the Netherlands as the default country with the European countries allowed, turn off the admin usage tracking and forced password changes, keep the admin session for a day, enable the canonical tags for categories and products, and enable the Siteation Debug Bar.
+The defaults use the Euro (with Pounds allowed), the Netherlands as the default country with the European countries allowed, turn off the admin usage tracking and forced password changes, enable the canonical tags for categories and products, and enable the Siteation Debug Bar.
 
 ```bash
 MAGE_STORE_CONFIG=(
@@ -61,6 +62,11 @@ MAGE_STORE_CONFIG=(
   "general/country/default US"
 )
 ```
+
+`MAGE_ENV_CONFIG` takes the same entries, but writes them with `config:set --lock-env`.
+They land in `app/etc/env.php`, so they only apply to this environment, win over the database (also after `mage restore` imports a backup) and are locked in the admin.
+The default keeps the admin session for a day.
+It is locked, as Mage-OS bundles `aligent/magento2-pci-4-compatibility`, which caps the admin field at 900 seconds and blocks saving the section otherwise.
 
 ### Services
 

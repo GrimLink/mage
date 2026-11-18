@@ -71,7 +71,7 @@ To keep the config of the repository, run `git checkout app/etc/config.php` befo
    With Valet it links and secures each domain and adds it to `.valet-env.php`, with Warden it signs the certificate, the others show what to add.
    A domain shared by several store views goes to the default store view of their store.
 5. Cleans the cache, and runs `setup:upgrade` when the modules of this device differ from the backup, such as the dev packages.
-6. Sets the store config from `MAGE_STORE_CONFIG` and the developer mode.
+6. Sets the store config from `MAGE_STORE_CONFIG`, locks the one from `MAGE_ENV_CONFIG` in `app/etc/env.php`, and sets the developer mode.
 7. Reindexes and cleans the cache, see [`mage reindex`](reindex.md).
 
 ## After the restore
