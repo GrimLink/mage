@@ -15,7 +15,8 @@ The files mage generates come from the `templates` folder of this repository:
 | `composer-storeinfo.json`       | [`mage add storeinfo`](commands/add-storeinfo.md)                                   |
 | `mage.config.json`              | [`mage test`](commands/test.md), when the project has none                          |
 | `mage-hyva.config.json`         | [`mage test`](commands/test.md), a sample for working on Hyvä, copied by hand       |
-| `composer-mage-os.json`         | [`mage create`](commands/create.md) with Mage-OS                                    |
+| `composer-create-default.json`  | [`mage create`](commands/create.md#templates), the `default` template               |
+| `composer-create-mage-os.json`  | [`mage create`](commands/create.md#templates), the `mage-os` template               |
 
 ## Sync
 

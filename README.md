@@ -42,7 +42,7 @@ Update it later with `mage self-update`, which also updates the [templates](docs
 
 - **bash** 3.2 or newer, the version macOS ships with is enough.
 - **git**, and **curl** or **wget**.
-- **[jq]** for `mage add <file>.json` and `mage add patch`, for removing or updating packages by term, and for `mage show modules` and `themes`.
+- **[jq]** for `mage create`, `mage add <file>.json` and `mage add patch`, for removing or updating packages by term, and for `mage show modules` and `themes`.
 
 ## Commands
 

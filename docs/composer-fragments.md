@@ -78,6 +78,7 @@ An object keyed by package, with the version constraint as value.
 A `*` constraint leaves the version to composer, which requires the latest version that fits the project and writes it as `^x.y.z`.
 Any other constraint is passed as is.
 To require `*` as is, add `--keep-wildcard`, such as `mage add fragment.json --keep-wildcard`.
+To only write the packages to `composer.json`, without installing them, add `--no-update`.
 
 ### auth
 
@@ -125,4 +126,4 @@ Mage ships these fragments in its [templates](templates.md), used by the matchin
 - `composer-hyva-dev.json`: Hyvä from the Hyvä GitLab.
 - `composer-hyva-sample-dev.json`: the repositories of the Koti sample data on the Hyvä GitLab.
 - `composer-storeinfo.json`: the Siteation StoreInfo modules.
-- `composer-mage-os.json`: the Mage-OS modules [`mage create`](commands/create.md) leaves out.
+- `composer-create-default.json` and `composer-create-mage-os.json`: the [templates](commands/create.md#templates) of `mage create`.

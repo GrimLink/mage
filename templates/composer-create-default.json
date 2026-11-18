@@ -1,0 +1,19 @@
+{
+  "description": "the default packages",
+  "config": {
+    "allow-plugins": {
+      "cweagans/composer-patches": true
+    }
+  },
+  "require": {
+    "cweagans/composer-patches": "*",
+    "yireo/magento2-theme-commands": "*",
+    "swissup/module-ignition": "*",
+    "community-engineering/language-nl_nl": "*"
+  },
+  "require-dev": {
+    "avstudnitz/scopehint2": "*",
+    "spatie/ray": "*",
+    "siteation/magento2-debugbar": "*"
+  }
+}

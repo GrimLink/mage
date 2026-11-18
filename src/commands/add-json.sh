@@ -4,7 +4,9 @@ MAGE_ADD_JSON_KEYS="description repositories config auth replace require require
 
 # Apply a composer fragment, in the order auth, repositories, config, replace and packages,
 # so the packages can use the repositories and credentials they need.
-# With --keep-wildcard a * constraint is required as is, instead of as the latest version.
+# With --keep-wildcard a * constraint is required as is, instead of as the latest version,
+# with --no-update the packages are only written to composer.json.
+# The fragment with its answers is kept in MAGE_ADD_JSON_APPLIED, for the handler that applied it.
 function mage_add_json() {
   mage_require_jq "Adding from a json file"
 
@@ -14,11 +16,13 @@ function mage_add_json() {
   shift
 
   local wildcard="latest"
+  local require_args=()
   local arg
 
   for arg in "$@"; do
     case "$arg" in
       --keep-wildcard) wildcard="keep" ;;
+      --no-update) require_args+=(--no-update) ;;
       *)
         mage_error "Unknown option '${arg}'"
         exit 1
@@ -52,6 +56,8 @@ function mage_add_json() {
     exit 1
   fi
 
+  MAGE_ADD_JSON_APPLIED="$json"
+
   local description
   description="$(jq -r '.description // empty' <<< "$json")"
   if [[ -n "$description" ]]; then
@@ -62,8 +68,8 @@ function mage_add_json() {
     mage_add_json_repositories "$json" &&
     mage_add_json_config "$json" &&
     mage_add_json_replace "$json" &&
-    mage_add_json_require "$json" require "$wildcard" &&
-    mage_add_json_require "$json" require-dev "$wildcard" --dev
+    mage_add_json_require "$json" require "$wildcard" ${require_args[@]+"${require_args[@]}"} &&
+    mage_add_json_require "$json" require-dev "$wildcard" ${require_args[@]+"${require_args[@]}"} --dev
 }
 
 # Warn about keys that are not applied, such as a typo

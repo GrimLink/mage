@@ -195,3 +195,12 @@ EOF
   [[ "$output" == *"object keyed by package"* ]]
   jq -e 'has("replace") | not' composer.json
 }
+
+@test "only writes the packages to composer.json with --no-update" {
+  echo '{ "require": { "vendor/a": "*" }, "require-dev": { "vendor/b": "*" } }' > fragment.json
+
+  run mage_cmd_add fragment.json --no-update
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"composer require --no-update vendor/a"* ]]
+  [[ "$output" == *"composer require --no-update --dev vendor/b"* ]]
+}
