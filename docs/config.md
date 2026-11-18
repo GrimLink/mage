@@ -39,7 +39,7 @@ Used by `mage create` and `mage setup` to create the admin user, and as the defa
 
 | Setting             | Default                                                              | Used for                                                                   |
 | ------------------- | -------------------------------------------------------------------- | -------------------------------------------------------------------------- |
-| `MAGE_EDITION`      | `mage-os`                                                            | The edition `mage create` suggests: `mage-os`, `community` or `enterprise` |
+| `MAGE_EDITION`      | `mage-os`                                                            | The [edition](commands/create.md#editions) `mage create` suggests          |
 | `MAGE_DOMAIN`       | `test`                                                               | Stores are served as `https://<project>.<MAGE_DOMAIN>/`                    |
 | `MAGE_MAIL_URL`     | `http://localhost:8025`                                              | The mail catcher `mage open mail` opens, locally and with Valet            |
 | `MAGE_PACKAGES`     | See below                                                            | Packages `mage create` requires in every new project                       |

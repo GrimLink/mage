@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **`mage create`:** The editions `mage-os-minimal`, Mage-OS with fewer modules, and `mage-os-mirror`, Magento Open Source from the Mage-OS mirror.
 - **Config:** `MAGE_ENV_CONFIG`, store config that `mage setup` and `mage restore` write to `app/etc/env.php` with `config:set --lock-env`.
 
 ### Fixed

@@ -17,7 +17,7 @@ MAGE_ADMIN_PASS="magento_123$"
 # Take the defaults and confirm without asking, as -y does, such as for scripts and agents
 MAGE_YES="${MAGE_YES:-0}"
 
-# The edition 'mage create' defaults to: mage-os, community or enterprise
+# The edition 'mage create' defaults to: mage-os, mage-os-minimal, mage-os-mirror, community or enterprise
 MAGE_EDITION="mage-os"
 
 # Stores are served as https://<project>.<MAGE_DOMAIN>/
