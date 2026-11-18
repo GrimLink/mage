@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - **`mage create`:** The editions `mage-os-minimal`, Mage-OS with fewer modules, and `mage-os-mirror`, Magento Open Source from the Mage-OS mirror.
 
+### Changed
+- **`mage create`:** Pick the edition and environment from a numbered list, by number or name.
+- **`mage add sample`:** Pick the sample data set from a numbered list, by number or name.
+
 ## [3.1.0] - 2026-11-16
 
 ### Added
