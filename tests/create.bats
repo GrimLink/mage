@@ -34,3 +34,11 @@ function setup() {
   jq -e 'has("replace") | not' composer.json
 }
 
+@test "generates the XML catalog in a new folder" {
+  MAGENTO_CLI="echo bin/magento"
+
+  run mage_create_urn_catalog
+  [ "$status" -eq 0 ]
+  [ -d .vscode ]
+  [ "${lines[${#lines[@]}-1]}" = "bin/magento dev:urn-catalog:generate --ide=vscode .vscode/catalog.xml" ]
+}

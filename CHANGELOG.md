@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **`mage create`:** Generates the XML catalog of the Magento schemas in `.vscode/catalog.xml`, for VS Code and Zed, see [XML catalog](docs/xml-catalog.md).
 - **`mage create`:** The editions `mage-os-minimal`, Mage-OS with fewer modules, and `mage-os-mirror`, Magento Open Source from the Mage-OS mirror.
 - **Config:** `MAGE_ENV_CONFIG`, store config that `mage setup` and `mage restore` write to `app/etc/env.php` with `config:set --lock-env`.
 
