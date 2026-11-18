@@ -34,3 +34,25 @@ function setup() {
   jq -e 'has("replace") | not' composer.json
 }
 
+
+@test "creates a magebox project, then its config and services" {
+  MAGEBOX_GLOBAL_CONFIG="${BATS_TEST_TMPDIR}/magebox-config.yaml"
+  function magebox() {
+    echo "magebox $*"
+    if [[ "$1" == "init" ]]; then
+      printf 'name: %s\nservices:\n  mysql: "8.4"\n' "$2" > .magebox.yaml
+    fi
+  }
+  function fake_create_composer() {
+    echo "composer $*"
+    mkdir -p "${@: -1}"
+  }
+  mage_env_use magebox
+  COMPOSER_CLI="fake_create_composer"
+
+  env_call create_project my-shop mage-os/project-community-edition https://repo.mage-os.org/
+  [ "$(basename "$PWD")" = "my-shop" ]
+  [ -f .magebox.yaml ]
+  [ "$MAGE_DB_NAME" = "my_shop" ]
+  [ "$MAGE_DB_HOST" = "127.0.0.1:33084" ]
+}

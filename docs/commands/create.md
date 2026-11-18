@@ -12,7 +12,7 @@ mage create my-shop -y
 | ------------------- | ---------------------------------------------------------------------------- |
 | `--edition=EDITION` | One of the [editions](#editions), defaults to `MAGE_EDITION` (`mage-os`)     |
 | `--version=VERSION` | The Magento version, defaults to `latest`                                    |
-| `--env=ENV`         | `warden`, `ddev`, `valet` or `local`, defaults to the first one installed    |
+| `--env=ENV`         | `warden`, `ddev`, `magebox`, `valet` or `local`, defaults to the first one installed |
 | `-y`, `--yes`       | Use the defaults for anything not given, instead of asking                   |
 
 Anything not given as an option is asked.
