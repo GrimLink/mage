@@ -50,6 +50,7 @@ The `mage-os` edition picks the `mage-os` template on its own, which leaves out 
 - **`mage create`:** Defaults to the `mage-os-mirror` edition instead of `mage-os`, see above.
 - **`mage create`:** The default packages, and the allowed composer patches plugin, come from the templates `composer-create-default.json` and `composer-create-mage-os.json`.
   The `mage-os` template also replaces `mage-os/module-passkey-auth` and `mage-os/module-theme-optimization`, as `composer-mage-os.json` did.
+- **`mage create`:** The `default` template adds the Mage-OS admin theme `mage-os/theme-adminhtml-m137` again, which 3.0.0 dropped as the Mage-OS edition installs it itself.
 - **`mage create`:** No longer adds `spatie/ray` as a dev package, the [Siteation Debug Bar](https://github.com/Siteation/magento2-debugbar) covers it.
 - **`mage create`:** Requires jq, which is checked before anything is created.
 - **`mage create`, `mage add sample`:** Pick the edition, environment and sample data set from a numbered list, by number or name.

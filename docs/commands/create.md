@@ -44,11 +44,12 @@ Without `--template`, it uses `MAGE_CREATE_TEMPLATE` from the [configuration](..
 
 | Template  | Bundled as                     | Adds                                                              |
 | --------- | ------------------------------ | ----------------------------------------------------------------- |
-| `default` | `composer-create-default.json` | The default packages                                              |
+| `default` | `composer-create-default.json` | The default packages, with the Mage-OS admin theme                |
 | `mage-os` | `composer-create-mage-os.json` | The default packages, and replaces two Mage-OS modules, see below |
 
 The default packages are `cweagans/composer-patches` (for [`mage add patch`](add-patch.md)), `yireo/magento2-theme-commands` (to switch themes, see [`mage add hyva`](add-hyva.md)), `swissup/module-ignition` and `community-engineering/language-nl_nl`.
 The dev packages are `avstudnitz/scopehint2` and `siteation/magento2-debugbar`.
+The `default` template also adds the admin theme of Mage-OS, `mage-os/theme-adminhtml-m137`, which the `mage-os` edition already has.
 Each is required as its latest version.
 
 A path to a json file uses your own template, such as a copy of a bundled one from `~/.config/mage/templates`.

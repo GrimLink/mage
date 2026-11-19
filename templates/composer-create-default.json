@@ -6,6 +6,7 @@
     }
   },
   "require": {
+    "mage-os/theme-adminhtml-m137": "*",
     "cweagans/composer-patches": "*",
     "yireo/magento2-theme-commands": "*",
     "swissup/module-ignition": "*",
