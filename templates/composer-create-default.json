@@ -13,7 +13,6 @@
   },
   "require-dev": {
     "avstudnitz/scopehint2": "*",
-    "spatie/ray": "*",
     "siteation/magento2-debugbar": "*"
   }
 }

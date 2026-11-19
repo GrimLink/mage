@@ -48,7 +48,7 @@ Without `--template`, it uses `MAGE_CREATE_TEMPLATE` from the [configuration](..
 | `mage-os` | `composer-create-mage-os.json` | The default packages, and replaces two Mage-OS modules, see below |
 
 The default packages are `cweagans/composer-patches` (for [`mage add patch`](add-patch.md)), `yireo/magento2-theme-commands` (to switch themes, see [`mage add hyva`](add-hyva.md)), `swissup/module-ignition` and `community-engineering/language-nl_nl`.
-The dev packages are `avstudnitz/scopehint2`, `spatie/ray` and `siteation/magento2-debugbar`.
+The dev packages are `avstudnitz/scopehint2` and `siteation/magento2-debugbar`.
 Each is required as its latest version.
 
 A path to a json file uses your own template, such as a copy of a bundled one from `~/.config/mage/templates`.
