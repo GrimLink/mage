@@ -132,11 +132,10 @@ function mage_create_urn_catalog() {
 
 # Echo the template 'mage create' applies to an edition without --template
 function mage_create_default_template() {
-  if [[ "$1" == "mage-os" ]]; then
-    echo "mage-os"
-  else
-    echo "default"
-  fi
+  case "$1" in
+    mage-os | mage-os-minimal) echo "$1" ;;
+    *) echo "default" ;;
+  esac
 }
 
 # Echo the composer fragment of a template: a json file, or the name of a bundled

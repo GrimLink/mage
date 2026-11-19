@@ -40,16 +40,18 @@ It is Magento Open Source from the Mage-OS mirror, so it needs no Magento market
 ## Templates
 
 A template is a [composer fragment](../composer-fragments.md) that sets up the packages of a new project.
-Without `--template`, it uses `MAGE_CREATE_TEMPLATE` from the [configuration](../config.md), or when that is empty, the one of the edition: `mage-os` for the `mage-os` edition, `default` for the others.
+Without `--template`, it uses `MAGE_CREATE_TEMPLATE` from the [configuration](../config.md), or when that is empty, the one of the edition: `mage-os` and `mage-os-minimal` for those editions, `default` for the others.
 
-| Template  | Bundled as                     | Adds                                                              |
-| --------- | ------------------------------ | ----------------------------------------------------------------- |
-| `default` | `composer-create-default.json` | The default packages, with the Mage-OS admin theme                |
-| `mage-os` | `composer-create-mage-os.json` | The default packages, and replaces two Mage-OS modules, see below |
+| Template          | Bundled as                             | Adds                                                              |
+| ----------------- | -------------------------------------- | ----------------------------------------------------------------- |
+| `default`         | `composer-create-default.json`         | The default packages, with the Mage-OS admin theme                |
+| `mage-os`         | `composer-create-mage-os.json`         | The default packages, and replaces two Mage-OS modules, see below |
+| `mage-os-minimal` | `composer-create-mage-os-minimal.json` | The default packages, without the Mage-OS admin theme             |
 
 The default packages are `cweagans/composer-patches` (for [`mage add patch`](add-patch.md)), `yireo/magento2-theme-commands` (to switch themes, see [`mage add hyva`](add-hyva.md)), `swissup/module-ignition` and `community-engineering/language-nl_nl`.
 The dev packages are `avstudnitz/scopehint2` and `siteation/magento2-debugbar`.
 The `default` template also adds the admin theme of Mage-OS, `mage-os/theme-adminhtml-m137`, which the `mage-os` edition already has.
+The `mage-os-minimal` edition comes with its own admin theme, so its template leaves it out.
 Each is required as its latest version.
 
 A path to a json file uses your own template, such as a copy of a bundled one from `~/.config/mage/templates`.

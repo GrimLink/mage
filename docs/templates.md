@@ -2,21 +2,22 @@
 
 The files mage generates come from the `templates` folder of this repository:
 
-| Template                        | Used by                                                                             |
-| ------------------------------- | ----------------------------------------------------------------------------------- |
-| `theme/`                        | [`mage add theme`](commands/add-theme.md)                                           |
-| `module/`                       | [`mage add module`](commands/add-module.md)                                         |
-| `module-hyva/`                  | [`mage add module`](commands/add-module.md), the extra files of a Hyvä module       |
-| `magento.gitignore`             | [`mage setup`](commands/create.md#mage-setup), when the project has no `.gitignore` |
-| `LocalValetDriver.php`          | [`mage setup`](commands/create.md#mage-setup) with Valet, when the project has none |
-| `composer-hyva.json`            | [`mage add hyva`](commands/add-hyva.md)                                             |
-| `composer-hyva-dev.json`        | [`mage add hyva --dev`](commands/add-hyva.md)                                       |
-| `composer-hyva-sample-dev.json` | [`mage add sample hyva`](commands/add-sample.md), without a Hyvä license            |
-| `composer-storeinfo.json`       | [`mage add storeinfo`](commands/add-storeinfo.md)                                   |
-| `mage.config.json`              | [`mage test`](commands/test.md), when the project has none                          |
-| `mage-hyva.config.json`         | [`mage test`](commands/test.md), a sample for working on Hyvä, copied by hand       |
-| `composer-create-default.json`  | [`mage create`](commands/create.md#templates), the `default` template               |
-| `composer-create-mage-os.json`  | [`mage create`](commands/create.md#templates), the `mage-os` template               |
+| Template                               | Used by                                                                             |
+| -------------------------------------- | ----------------------------------------------------------------------------------- |
+| `theme/`                               | [`mage add theme`](commands/add-theme.md)                                           |
+| `module/`                              | [`mage add module`](commands/add-module.md)                                         |
+| `module-hyva/`                         | [`mage add module`](commands/add-module.md), the extra files of a Hyvä module       |
+| `magento.gitignore`                    | [`mage setup`](commands/create.md#mage-setup), when the project has no `.gitignore` |
+| `LocalValetDriver.php`                 | [`mage setup`](commands/create.md#mage-setup) with Valet, when the project has none |
+| `composer-hyva.json`                   | [`mage add hyva`](commands/add-hyva.md)                                             |
+| `composer-hyva-dev.json`               | [`mage add hyva --dev`](commands/add-hyva.md)                                       |
+| `composer-hyva-sample-dev.json`        | [`mage add sample hyva`](commands/add-sample.md), without a Hyvä license            |
+| `composer-storeinfo.json`              | [`mage add storeinfo`](commands/add-storeinfo.md)                                   |
+| `mage.config.json`                     | [`mage test`](commands/test.md), when the project has none                          |
+| `mage-hyva.config.json`                | [`mage test`](commands/test.md), a sample for working on Hyvä, copied by hand       |
+| `composer-create-default.json`         | [`mage create`](commands/create.md#templates), the `default` template               |
+| `composer-create-mage-os.json`         | [`mage create`](commands/create.md#templates), the `mage-os` template               |
+| `composer-create-mage-os-minimal.json` | [`mage create`](commands/create.md#templates), the `mage-os-minimal` template       |
 
 ## Sync
 

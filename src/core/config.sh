@@ -21,7 +21,7 @@ MAGE_YES="${MAGE_YES:-0}"
 MAGE_EDITION="mage-os-mirror"
 
 # The template 'mage create' applies: the name of a bundled template or a path to a json file.
-# Empty picks one by edition, mage-os for Mage-OS and default for the others.
+# Empty picks one by edition: mage-os and mage-os-minimal for those, default for the others.
 MAGE_CREATE_TEMPLATE=""
 
 # Stores are served as https://<project>.<MAGE_DOMAIN>/

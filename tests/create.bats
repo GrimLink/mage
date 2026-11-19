@@ -10,6 +10,7 @@ function setup() {
 
 @test "picks the template by edition" {
   [ "$(mage_create_default_template mage-os)" = "mage-os" ]
+  [ "$(mage_create_default_template mage-os-minimal)" = "mage-os-minimal" ]
   [ "$(mage_create_default_template mage-os-mirror)" = "default" ]
   [ "$(mage_create_default_template community)" = "default" ]
 }
@@ -45,7 +46,8 @@ function setup() {
 @test "refuses an unknown template, listing the bundled ones" {
   run mage_create_template_file unknown
   [ "$status" -eq 1 ]
-  [[ "$output" == *"Unknown template 'unknown', use one of: default, mage-os or a path"* ]]
+  [[ "$output" == *"Unknown template 'unknown', use one of: "*" or a path to a json file"* ]]
+  [[ "$output" == *"default"* && "$output" == *"mage-os, "* && "$output" == *"mage-os-minimal"* ]]
 }
 
 @test "still requires the deprecated default packages with a warning" {

@@ -38,8 +38,8 @@ Or for a single project, use `mage create my-shop --edition=mage-os`.
 The `mage-os` edition picks the `mage-os` template on its own, which leaves out the passkeys and theme optimization as 3.1.0 did.
 
 ### Added
-- **`mage create --template`:** A template is a composer fragment with the packages of a new project: the bundled `default` or `mage-os`, or your own json file, see [templates](docs/commands/create.md#templates).
-  Without it, the `mage-os` edition uses `mage-os` and the others use `default`, set your own default with `MAGE_CREATE_TEMPLATE`.
+- **`mage create --template`:** A template is a composer fragment with the packages of a new project: the bundled `default`, `mage-os` or `mage-os-minimal`, or your own json file, see [templates](docs/commands/create.md#templates).
+  Without it, the `mage-os` and `mage-os-minimal` editions use the template of their name and the others use `default`, set your own default with `MAGE_CREATE_TEMPLATE`.
 - **`mage create`:** The editions `mage-os-mirror`, Magento Open Source from the Mage-OS mirror, and `mage-os-minimal`, Mage-OS with fewer modules.
 - **`mage create`:** Generates the XML catalog of the Magento schemas in `.vscode/catalog.xml`, for VS Code and Zed, see [XML catalog](docs/xml-catalog.md).
 - **`mage add hyva`:** Caches the Hyvä license key in `var/composer_home/auth.json`, the composer home Magento uses for the sample data deploy, so `mage add sample hyva` no longer asks for it.
@@ -48,9 +48,10 @@ The `mage-os` edition picks the `mage-os` template on its own, which leaves out 
 
 ### Changed
 - **`mage create`:** Defaults to the `mage-os-mirror` edition instead of `mage-os`, see above.
-- **`mage create`:** The default packages, and the allowed composer patches plugin, come from the templates `composer-create-default.json` and `composer-create-mage-os.json`.
+- **`mage create`:** The default packages, and the allowed composer patches plugin, come from the templates `composer-create-default.json`, `composer-create-mage-os.json` and `composer-create-mage-os-minimal.json`.
   The `mage-os` template also replaces `mage-os/module-passkey-auth` and `mage-os/module-theme-optimization`, as `composer-mage-os.json` did.
 - **`mage create`:** The `default` template adds the Mage-OS admin theme `mage-os/theme-adminhtml-m137` again, which 3.0.0 dropped as the Mage-OS edition installs it itself.
+  The `mage-os-minimal` template leaves it out, as that edition has its own admin theme.
 - **`mage create`:** No longer adds `spatie/ray` as a dev package, the [Siteation Debug Bar](https://github.com/Siteation/magento2-debugbar) covers it.
 - **`mage create`:** Requires jq, which is checked before anything is created.
 - **`mage create`, `mage add sample`:** Pick the edition, environment and sample data set from a numbered list, by number or name.
