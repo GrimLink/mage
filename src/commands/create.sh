@@ -7,6 +7,7 @@ function mage_cmd_create() {
   local edition=""
   local version=""
   local env=""
+  local template="$MAGE_CREATE_TEMPLATE"
   local arg
 
   for arg in "$@"; do
@@ -14,6 +15,7 @@ function mage_cmd_create() {
       --edition=*) edition="${arg#*=}" ;;
       --version=*) version="${arg#*=}" ;;
       --env=*) env="${arg#*=}" ;;
+      --template=*) template="${arg#*=}" ;;
       -y | --yes) MAGE_YES=1 ;;
       -*)
         mage_error "Unknown option '${arg}'"
@@ -37,6 +39,8 @@ function mage_cmd_create() {
     mage_error "'${name}' already exists, aborting.."
     exit 1
   fi
+
+  mage_require_jq "Creating a project"
 
   local available_envs
   available_envs="$(mage_env_available)"
@@ -97,6 +101,9 @@ function mage_cmd_create() {
     package="${package}=${version}"
   fi
 
+  local fragment
+  fragment="$(mage_create_template_file "${template:-$(mage_create_default_template "$edition")}")" || exit 1
+
   mage_env_use "$env"
   mage_info "Creating '${name}' from ${package} using ${env}"
 
@@ -105,7 +112,7 @@ function mage_cmd_create() {
     exit 1
   fi
 
-  mage_create_composer_setup "$edition" || exit 1
+  mage_create_composer_setup "$fragment" || exit 1
   MAGE_ROOT="$PWD"
   mage_setup "$name" || exit 1
   mage_create_urn_catalog
@@ -123,43 +130,86 @@ function mage_create_urn_catalog() {
   fi
 }
 
-# Configure composer for local development and install the project of the given edition
+# Echo the template 'mage create' applies to an edition without --template
+function mage_create_default_template() {
+  case "$1" in
+    mage-os | mage-os-minimal) echo "$1" ;;
+    *) echo "default" ;;
+  esac
+}
+
+# Echo the composer fragment of a template: a json file, or the name of a bundled
+# composer-create-<name>.json. Resolved before the project exists, as creating it changes folder.
+function mage_create_template_file() {
+  local template="$1"
+
+  if [[ "$template" == *.json ]]; then
+    if [[ "$template" != /* ]]; then
+      template="${PWD}/${template}"
+    fi
+
+    if [[ ! -f "$template" ]]; then
+      mage_error "Template file not found: ${1}"
+      return 1
+    fi
+
+    echo "$template"
+    return
+  fi
+
+  if ! mage_template_file "composer-create-${template}.json"; then
+    mage_error "Unknown template '${template}', use one of: $(mage_create_templates) or a path to a json file"
+    return 1
+  fi
+}
+
+# Echo the names of the bundled templates
+function mage_create_templates() {
+  local dir
+  local file
+  local names=""
+
+  dir="$(mage_templates_dir)" || return 0
+
+  for file in "$dir"/composer-create-*.json; do
+    [[ -f "$file" ]] || continue
+    file="${file##*/composer-create-}"
+    names="${names:+$names, }${file%.json}"
+  done
+
+  echo "$names"
+}
+
+# Configure composer for local development, apply the template and install the project
 function mage_create_composer_setup() {
-  local edition="$1"
+  local fragment="$1"
 
   mage_info "Adjusting composer settings to allow dev packages"
   $COMPOSER_CLI config minimum-stability dev
   $COMPOSER_CLI config prefer-stable true
-  $COMPOSER_CLI config allow-plugins.cweagans/composer-patches true
 
   mage_add_path_repository
 
+  mage_add_json "$fragment" --no-update || return 1
+  mage_create_legacy_packages
+
+  mage_info "Running installation.. Enjoy a cup of coffee in the meantime"
+  $COMPOSER_CLI install
+}
+
+# MAGE_PACKAGES and MAGE_DEV_PACKAGES are deprecated for templates, and will be dropped
+function mage_create_legacy_packages() {
+  if [[ ${#MAGE_PACKAGES[@]} -eq 0 ]] && [[ ${#MAGE_DEV_PACKAGES[@]} -eq 0 ]]; then
+    return 0
+  fi
+
+  mage_warn "MAGE_PACKAGES and MAGE_DEV_PACKAGES are deprecated, move them to a template, see 'mage create' in the docs"
+
   if [[ ${#MAGE_PACKAGES[@]} -gt 0 ]]; then
-    mage_info "Adding default packages"
     $COMPOSER_CLI require --no-update "${MAGE_PACKAGES[@]}"
   fi
 
   if [[ ${#MAGE_DEV_PACKAGES[@]} -gt 0 ]]; then
     $COMPOSER_CLI require --no-update --dev "${MAGE_DEV_PACKAGES[@]}"
   fi
-
-  if [[ "$edition" == "mage-os" ]]; then
-    mage_create_mage_os_replace || return 1
-  fi
-
-  mage_info "Running installation.. Enjoy a cup of coffee in the meantime"
-  $COMPOSER_CLI install
-}
-
-# Replace the Mage-OS modules mage leaves out, so composer never installs them
-function mage_create_mage_os_replace() {
-  local fragment
-  fragment="$(mage_template_file "composer-mage-os.json")"
-
-  if [[ -z "$fragment" ]]; then
-    mage_warn "Keeping all Mage-OS modules, could not get the 'composer-mage-os.json' template from ${MAGE_TEMPLATES_ARCHIVE}"
-    return 0
-  fi
-
-  mage_add_json "$fragment"
 }

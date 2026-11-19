@@ -60,3 +60,41 @@ function setup() {
   [[ "$output" != *"--auth http-basic.hyva-themes.repo.packagist.com token"* ]]
   [[ "$output" == *"hyva-themes.repo.packagist.com/acme/"* ]]
 }
+
+@test "saves the Hyva license in var/composer_home for the sample data" {
+  run mage_cmd_add hyva <<< $'\n'
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"Saved the Hyva license in var/composer_home/auth.json"* ]]
+  jq -e '."http-basic"["hyva-themes.repo.packagist.com"] == { "username": "token", "password": "key" }' var/composer_home/auth.json
+}
+
+@test "caches the entered Hyva license key over the config" {
+  mkdir -p var/composer_home
+  echo '{ "http-basic": { "repo.magento.com": { "username": "a", "password": "b" } } }' > var/composer_home/auth.json
+
+  run mage_cmd_add hyva <<< $'entered\n'
+  [ "$status" -eq 0 ]
+  jq -e '."http-basic"["hyva-themes.repo.packagist.com"].password == "entered" and ."http-basic"["repo.magento.com"].password == "b"' var/composer_home/auth.json
+}
+
+@test "caches the Hyva license key of the config when it was not asked" {
+  FAKE_AUTH="http-basic.hyva-themes.repo.packagist.com"
+
+  run mage_cmd_add hyva <<< $'\n'
+  [ "$status" -eq 0 ]
+  jq -e '."http-basic"["hyva-themes.repo.packagist.com"].password == "key"' var/composer_home/auth.json
+}
+
+@test "saves no Hyva license without a key" {
+  unset MAGE_VAR_HYVA_LICENSE_KEY
+
+  run mage_hyva_save_auth
+  [ "$status" -eq 0 ]
+  [ ! -e var/composer_home/auth.json ]
+}
+
+@test "saves no Hyva license for Hyva from the GitLab" {
+  run mage_cmd_add hyva --dev
+  [ "$status" -eq 0 ]
+  [ ! -e var/composer_home/auth.json ]
+}
