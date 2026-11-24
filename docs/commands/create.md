@@ -9,13 +9,13 @@ mage create my-shop --template=composer-create-agency.json
 mage create my-shop -y
 ```
 
-| Option                | Does                                                                            |
-| --------------------- | ------------------------------------------------------------------------------- |
-| `--edition=EDITION`   | One of the [editions](#editions), defaults to `MAGE_EDITION` (`mage-os-mirror`) |
-| `--version=VERSION`   | The Magento version, defaults to `latest`                                       |
-| `--env=ENV`           | `warden`, `ddev`, `valet` or `local`, defaults to the first one installed       |
-| `--template=TEMPLATE` | One of the [templates](#templates) or a json file, defaults to one by edition   |
-| `-y`, `--yes`         | Use the defaults for anything not given, instead of asking                      |
+| Option                | Does                                                                                 |
+| --------------------- | ------------------------------------------------------------------------------------ |
+| `--edition=EDITION`   | One of the [editions](#editions), defaults to `MAGE_EDITION` (`mage-os-mirror`)      |
+| `--version=VERSION`   | The Magento version, defaults to `latest`                                            |
+| `--env=ENV`           | `warden`, `ddev`, `magebox`, `valet` or `local`, defaults to the first one installed |
+| `--template=TEMPLATE` | One of the [templates](#templates) or a json file, defaults to one by edition        |
+| `-y`, `--yes`         | Use the defaults for anything not given, instead of asking                           |
 
 Anything not given as an option is asked, except the template.
 It requires [jq](https://jqlang.org/).

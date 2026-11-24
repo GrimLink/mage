@@ -3,6 +3,7 @@ load helper
 function setup() {
   load_mage
   cd "$BATS_TEST_TMPDIR"
+  MAGEBOX_GLOBAL_CONFIG="${BATS_TEST_TMPDIR}/magebox-config.yaml"
 }
 
 @test "uses local when nothing is installed" {
@@ -115,4 +116,73 @@ function setup() {
 @test "rejects an unknown environment" {
   run mage_env_use nope
   [ "$status" -eq 1 ]
+}
+
+@test "uses magebox for a magebox project, over valet" {
+  use_stub_bins valet magebox
+  touch .magebox.yaml
+
+  [ "$(mage_env_detect)" = "magebox" ]
+  [ "$(mage_env_available)" = "magebox valet local" ]
+}
+
+@test "detects the legacy .magebox file" {
+  use_stub_bins magebox
+  touch .magebox
+
+  [ "$(mage_env_detect)" = "magebox" ]
+}
+
+@test "applies the magebox wrappers and services from its config" {
+  printf 'name: my-shop\nphp: "8.3"\nservices:\n  mysql: "8.4"\n  redis: true\ncommands:\n  name: other\n' > .magebox.yaml
+  mage_env_use magebox
+
+  [ "$MAGENTO_CLI" = "${HOME}/.magebox/bin/php bin/magento" ]
+  [ "$MAGE_DB_HOST" = "127.0.0.1:33084" ]
+  [ "$MAGE_DB_NAME" = "my_shop" ]
+  [ "$MAGE_DB_PASS" = "magebox" ]
+  [ "$MAGE_DOMAIN" = "test" ]
+}
+
+@test "takes the tld of the global magebox config" {
+  printf 'name: shop
+' > .magebox.yaml
+  printf 'tld: local
+name: other
+' > "$MAGEBOX_GLOBAL_CONFIG"
+  mage_env_use magebox
+
+  [ "$MAGE_DOMAIN" = "local" ]
+  [ "$MAGE_DB_NAME" = "shop" ]
+}
+
+@test "takes the magebox database version of the local override" {
+  printf 'name: shop\nservices:\n  mariadb: "10.6"\n' > .magebox.yaml
+  printf 'services:\n  mariadb: "11.4"\n' > .magebox.local.yaml
+  mage_env_use magebox
+
+  [ "$MAGE_DB_HOST" = "127.0.0.1:33114" ]
+}
+
+@test "falls back to the magebox MySQL 8.0 port without a version" {
+  printf 'name: shop\n' > .magebox.yaml
+  mage_env_use magebox
+
+  [ "$MAGE_DB_HOST" = "127.0.0.1:33080" ]
+}
+
+@test "sets up sessions in the database for magebox, as its redis is shared" {
+  printf 'name: shop\n' > .magebox.yaml
+  mage_env_use magebox
+  env_call setup_session_args
+
+  [ "${MAGE_SETUP_SESSION_ARGS[*]}" = "--session-save=db" ]
+}
+
+@test "reads quoted magebox values with a comment" {
+  printf "name: 'shop' # the store\nservices:\n  mysql:\n  mariadb: \"10.6\"  # pinned\n" > .magebox.yaml
+  mage_env_use magebox
+
+  [ "$MAGE_DB_NAME" = "shop" ]
+  [ "$MAGE_DB_HOST" = "127.0.0.1:33106" ]
 }

@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **MageBox:** A new [environment](docs/environments.md#magebox) for projects with a `.magebox.yaml`, with the PHP wrappers and services of [MageBox](https://magebox.dev/).
+  `mage create --env=magebox` creates the project, and lets MageBox add its config, vhost, certificate and database.
+
 ## [3.2.0] - 2026-11-24
 
 This release is about `mage create`.
