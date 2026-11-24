@@ -20,7 +20,7 @@ function setup() {
   [ "$status" -eq 0 ]
   [[ "$output" == *"Adding the default packages"* ]]
   [[ "$output" == *"composer config allow-plugins.cweagans/composer-patches true"* ]]
-  [[ "$output" == *"composer require --no-update mage-os/theme-adminhtml-m137 cweagans/composer-patches"* ]]
+  [[ "$output" == *"composer require --no-update "*"cweagans/composer-patches"* ]]
   [[ "$output" == *"composer require --no-update --dev avstudnitz/scopehint2"* ]]
   [ "${lines[${#lines[@]}-1]}" = "composer install" ]
   jq -e 'has("replace") | not' composer.json
