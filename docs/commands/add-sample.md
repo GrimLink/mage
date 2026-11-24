@@ -30,6 +30,8 @@ Runs `bin/magento hyva:sampledata:deploy`, then `setup:upgrade`, see the [Hyvä 
 It needs the Hyvä Theme, `Hyva_Theme` 1.4.7 or later.
 
 The Koti packages come with a Hyvä license, through the `https://hyva-themes.repo.packagist.com/` repository in `composer.json`.
+The deploy installs them with the composer home of Magento, `var/composer_home`, where [`mage add hyva`](add-hyva.md#with-a-license) caches the license key.
+After [`mage clean files`](clean.md) the cache is gone, and the deploy asks for the key.
 Without that repository, such as for Hyvä from the Hyvä GitLab ([`mage add hyva --dev`](add-hyva.md)) or from `package-source`, mage first adds the Koti repositories of the GitLab from the bundled `composer-hyva-sample-dev.json`, read over ssh.
 
 With the Luma sample data installed, it asks whether to replace it, which removes all products, orders and customers, or to keep it, which gives Koti its own website.

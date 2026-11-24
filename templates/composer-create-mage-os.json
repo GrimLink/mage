@@ -1,0 +1,22 @@
+{
+  "description": "the default packages, without the Mage-OS passkeys and theme optimization",
+  "config": {
+    "allow-plugins": {
+      "cweagans/composer-patches": true
+    }
+  },
+  "replace": {
+    "mage-os/module-passkey-auth": "*",
+    "mage-os/module-theme-optimization": "*"
+  },
+  "require": {
+    "cweagans/composer-patches": "*",
+    "yireo/magento2-theme-commands": "*",
+    "swissup/module-ignition": "*",
+    "community-engineering/language-nl_nl": "*"
+  },
+  "require-dev": {
+    "avstudnitz/scopehint2": "*",
+    "siteation/magento2-debugbar": "*"
+  }
+}

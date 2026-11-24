@@ -1,7 +1,0 @@
-{
-  "description": "Mage-OS module removals",
-  "replace": {
-    "mage-os/module-passkey-auth": "*",
-    "mage-os/module-theme-optimization": "*"
-  }
-}

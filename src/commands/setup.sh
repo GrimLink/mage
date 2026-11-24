@@ -128,7 +128,7 @@ function mage_set_config_entry() {
 }
 
 # Disable the modules of MAGE_DISABLE_MODULES that the install has, as not
-# every edition has all of them, such as MageOS_ThemeOptimization
+# every edition has all of them
 function mage_setup_disable_modules() {
   local modules=()
   local module

@@ -14,9 +14,7 @@ MAGE_EDITION="community"
 MAGE_ADMIN_PASS="my_own_password1"
 MAGE_DB_PASS=""
 
-MAGE_PACKAGES+=(
-  vendor/my-default-module
-)
+MAGE_CREATE_TEMPLATE="$HOME/projects/shared/composer-create-agency.json"
 
 MAGE_VAR_HYVA_PROJECT="acme"
 ```
@@ -37,18 +35,18 @@ Used by `mage create` and `mage setup` to create the admin user, and as the defa
 
 ### New projects
 
-| Setting             | Default                                                              | Used for                                                                   |
-| ------------------- | -------------------------------------------------------------------- | -------------------------------------------------------------------------- |
-| `MAGE_EDITION`      | `mage-os`                                                            | The [edition](commands/create.md#editions) `mage create` suggests          |
-| `MAGE_DOMAIN`       | `test`                                                               | Stores are served as `https://<project>.<MAGE_DOMAIN>/`                    |
-| `MAGE_MAIL_URL`     | `http://localhost:8025`                                              | The mail catcher `mage open mail` opens, locally and with Valet            |
-| `MAGE_PACKAGES`     | See below                                                            | Packages `mage create` requires in every new project                       |
-| `MAGE_DEV_PACKAGES` | `avstudnitz/scopehint2`, `spatie/ray`, `siteation/magento2-debugbar` | Dev packages `mage create` requires in every new project                   |
-| `MAGE_STORE_CONFIG` | See below                                                            | Store config `mage setup` sets after the install                           |
-| `MAGE_ENV_CONFIG`   | See below                                                            | Store config `mage setup` locks in `app/etc/env.php` after the install     |
+| Setting                | Default                 | Used for                                                                       |
+| ---------------------- | ----------------------- | ------------------------------------------------------------------------------ |
+| `MAGE_EDITION`         | `mage-os-mirror`        | The [edition](commands/create.md#editions) `mage create` suggests              |
+| `MAGE_CREATE_TEMPLATE` | Empty, by edition       | The [template](commands/create.md#templates) `mage create` applies             |
+| `MAGE_DOMAIN`          | `test`                  | Stores are served as `https://<project>.<MAGE_DOMAIN>/`                        |
+| `MAGE_MAIL_URL`        | `http://localhost:8025` | The mail catcher `mage open mail` opens, locally and with Valet                |
+| `MAGE_PACKAGES`        | Empty, deprecated       | Packages `mage create` requires after the template, use a template instead     |
+| `MAGE_DEV_PACKAGES`    | Empty, deprecated       | Dev packages `mage create` requires after the template, use a template instead |
+| `MAGE_STORE_CONFIG`    | See below               | Store config `mage setup` sets after the install                               |
+| `MAGE_ENV_CONFIG`      | See below               | Store config `mage setup` locks in `app/etc/env.php` after the install         |
 
-`MAGE_PACKAGES` defaults to `cweagans/composer-patches`, `yireo/magento2-theme-commands` (used to switch themes, see [`mage add hyva`](commands/add-hyva.md)), `swissup/module-ignition` and `community-engineering/language-nl_nl`.
-Set it to `()` to add none.
+`MAGE_PACKAGES` and `MAGE_DEV_PACKAGES` will be dropped, the default packages are now in the [templates](commands/create.md#templates) of `mage create`.
 
 `MAGE_STORE_CONFIG` holds one `path value` entry per config value.
 An entry without a value sets it empty.
@@ -85,18 +83,18 @@ Warden and DDEV always use the values of their containers, see [environments](en
 
 ### Commands
 
-| Setting                | Default                                                               | Used for                                                     |
-| ---------------------- | --------------------------------------------------------------------- | ------------------------------------------------------------ |
-| `MAGE_DISABLE_MODULES` | Two factor auth with `MageOS_PasskeyAuth`, `MageOS_ThemeOptimization` | The modules `mage setup` disables, when the install has them |
-| `MAGE_CLEAN_ALL`       | `files redis varnish`                                                 | The options `mage clean` and `mage purge` run, in order      |
-| `MAGE_LINT_PHPCS`      | Empty, the coding standard mage installs                              | The phpcs `mage lint` runs, see [lint](commands/lint.md)     |
-| `MAGE_LINT_PHPCBF`     | Empty, the coding standard mage installs                              | The phpcbf `mage lint --fix` runs                            |
-| `MAGE_BUILD_SCRIPT`    | `build`                                                               | The npm script `mage build` runs                             |
-| `MAGE_WATCH_SCRIPT`    | `watch`                                                               | The npm script `mage build --watch` runs                     |
-| `MAGE_OUTDATED_IGNORE` | `symfony/finder`, `symfony/process`                                   | Packages `mage outdated` leaves out, Magento pins these      |
-| `MAGE_BACKUP_DIR`      | `var/backups`                                                         | Where `mage backup` writes to, relative to the root          |
-| `MAGE_BACKUP_STRIP`    | `@stripped`                                                           | The magerun2 table groups `mage backup` leaves out           |
-| `MAGE_SYNC_PATH`       | `/data/web/magento2`                                                  | The Magento root on the server `mage sync` pulls from        |
+| Setting                | Default                                   | Used for                                                     |
+| ---------------------- | ----------------------------------------- | ------------------------------------------------------------ |
+| `MAGE_DISABLE_MODULES` | Two factor auth with `MageOS_PasskeyAuth` | The modules `mage setup` disables, when the install has them |
+| `MAGE_CLEAN_ALL`       | `files redis varnish`                     | The options `mage clean` and `mage purge` run, in order      |
+| `MAGE_LINT_PHPCS`      | Empty, the coding standard mage installs  | The phpcs `mage lint` runs, see [lint](commands/lint.md)     |
+| `MAGE_LINT_PHPCBF`     | Empty, the coding standard mage installs  | The phpcbf `mage lint --fix` runs                            |
+| `MAGE_BUILD_SCRIPT`    | `build`                                   | The npm script `mage build` runs                             |
+| `MAGE_WATCH_SCRIPT`    | `watch`                                   | The npm script `mage build --watch` runs                     |
+| `MAGE_OUTDATED_IGNORE` | `symfony/finder`, `symfony/process`       | Packages `mage outdated` leaves out, Magento pins these      |
+| `MAGE_BACKUP_DIR`      | `var/backups`                             | Where `mage backup` writes to, relative to the root          |
+| `MAGE_BACKUP_STRIP`    | `@stripped`                               | The magerun2 table groups `mage backup` leaves out           |
+| `MAGE_SYNC_PATH`       | `/data/web/magento2`                      | The Magento root on the server `mage sync` pulls from        |
 
 ### Placeholders in json files
 
