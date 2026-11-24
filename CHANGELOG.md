@@ -7,18 +7,69 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.2.0] - 2026-11-24
+
+This release is about `mage create`.
+It now creates Magento Open Source from the Mage-OS mirror by default, and its default packages move to templates you can pick or replace.
+Existing projects are not affected.
+
+### Why the Mage-OS mirror
+
+Version 3.0.0 made the Mage-OS distribution the default, as it needs no Magento marketplace keys.
+But Mage-OS adds modules on top of Magento that got in the way of development, and each one needed a workaround in mage:
+
+- 3.0.0 disabled `MageOS_ThemeOptimization`, as its bfcache conflicts with the BFCache patches and Hyvä.
+- 3.1.0 also disabled `MageOS_PasskeyAuth`, as it broke disabling two factor auth, and then replaced both modules, so they are never installed.
+- This release locks the admin session lifetime, as the bundled `aligent/magento2-pci-4-compatibility` blocked saving the Admin config.
+
+The `mage-os-mirror` edition needs no marketplace keys either, and it is the same code as Magento Open Source, which extensions, patches and the Magento docs are made for.
+So new projects get fewer surprises, and fewer workarounds.
+
+### Going back to Mage-OS
+
+The Mage-OS editions stay available.
+To create Mage-OS projects as before, set the edition in `~/.config/mage/config`:
+
+```bash
+MAGE_EDITION="mage-os"
+```
+
+Or for a single project, use `mage create my-shop --edition=mage-os`.
+The `mage-os` edition picks the `mage-os` template on its own, which leaves out the passkeys and theme optimization as 3.1.0 did.
+
 ### Added
+- **`mage create --template`:** A template is a composer fragment with the packages of a new project: the bundled `default`, `mage-os` or `mage-os-minimal`, or your own json file, see [templates](docs/commands/create.md#templates).
+  Without it, the `mage-os` and `mage-os-minimal` editions use the template of their name and the others use `default`, set your own default with `MAGE_CREATE_TEMPLATE`.
+- **`mage create`:** The editions `mage-os-mirror`, Magento Open Source from the Mage-OS mirror, and `mage-os-minimal`, Mage-OS with fewer modules.
 - **`mage create`:** Generates the XML catalog of the Magento schemas in `.vscode/catalog.xml`, for VS Code and Zed, see [XML catalog](docs/xml-catalog.md).
-- **`mage create`:** The editions `mage-os-minimal`, Mage-OS with fewer modules, and `mage-os-mirror`, Magento Open Source from the Mage-OS mirror.
+- **`mage add hyva`:** Caches the Hyvä license key in `var/composer_home/auth.json`, the composer home Magento uses for the sample data deploy, so `mage add sample hyva` no longer asks for it.
+- **`mage add <file>.json --no-update`:** Only writes the packages to `composer.json`, without installing them.
 - **Config:** `MAGE_ENV_CONFIG`, store config that `mage setup` and `mage restore` write to `app/etc/env.php` with `config:set --lock-env`.
+
+### Changed
+- **`mage create`:** Defaults to the `mage-os-mirror` edition instead of `mage-os`, see above.
+- **`mage create`:** The default packages, and the allowed composer patches plugin, come from the templates `composer-create-default.json`, `composer-create-mage-os.json` and `composer-create-mage-os-minimal.json`.
+  The `mage-os` template also replaces `mage-os/module-passkey-auth` and `mage-os/module-theme-optimization`, as `composer-mage-os.json` did.
+- **`mage create`:** The `default` template adds the Mage-OS admin theme `mage-os/theme-adminhtml-m137` again, which 3.0.0 dropped as the Mage-OS edition installs it itself.
+  The `mage-os-minimal` template leaves it out, as that edition has its own admin theme.
+- **`mage create`:** No longer adds `spatie/ray` as a dev package, the [Siteation Debug Bar](https://github.com/Siteation/magento2-debugbar) covers it.
+- **`mage create`:** Requires jq, which is checked before anything is created.
+- **`mage create`, `mage add sample`:** Pick the edition, environment and sample data set from a numbered list, by number or name.
+- **`mage setup`:** `MAGE_DISABLE_MODULES` no longer has `MageOS_ThemeOptimization`, as the `mage-os` template keeps it out of the project.
+
+### Deprecated
+- **Config:** `MAGE_PACKAGES` and `MAGE_DEV_PACKAGES` are now empty, and will be dropped in a next major version.
+  When your config still sets them, `mage create` requires them after the template, with a warning.
+  Move them to your own template.
+- **Config:** `MageOS_PasskeyAuth` in the default `MAGE_DISABLE_MODULES`.
+  It only matters for Mage-OS projects created before 3.1.0, and will be removed.
+
+### Removed
+- **Templates:** `composer-mage-os.json`, now part of `composer-create-mage-os.json`.
 
 ### Fixed
 - **`mage setup`:** The admin session lifetime of a day is now locked in `app/etc/env.php`.
   Mage-OS bundles `aligent/magento2-pci-4-compatibility`, which caps the admin field at 900 seconds, so saving the Admin config section failed with the longer lifetime.
-
-### Changed
-- **`mage create`:** Pick the edition and environment from a numbered list, by number or name.
-- **`mage add sample`:** Pick the sample data set from a numbered list, by number or name.
 
 ## [3.1.0] - 2026-11-16
 
@@ -585,7 +636,8 @@ Anything mage does not know still runs `bin/magento`.
 
 Initial Release 🎉
 
-[Unreleased]: https://github.com/GrimLink/mage/compare/3.1.0...HEAD
+[Unreleased]: https://github.com/GrimLink/mage/compare/3.2.0...HEAD
+[3.2.0]: https://github.com/GrimLink/mage/compare/3.1.0...3.2.0
 [3.1.0]: https://github.com/GrimLink/mage/compare/3.0.1...3.1.0
 [3.0.1]: https://github.com/GrimLink/mage/compare/3.0.0...3.0.1
 [3.0.0]: https://github.com/GrimLink/mage/compare/2.8.1...3.0.0

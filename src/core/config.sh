@@ -18,7 +18,11 @@ MAGE_ADMIN_PASS="magento_123$"
 MAGE_YES="${MAGE_YES:-0}"
 
 # The edition 'mage create' defaults to: mage-os, mage-os-minimal, mage-os-mirror, community or enterprise
-MAGE_EDITION="mage-os"
+MAGE_EDITION="mage-os-mirror"
+
+# The template 'mage create' applies: the name of a bundled template or a path to a json file.
+# Empty picks one by edition: mage-os and mage-os-minimal for those, default for the others.
+MAGE_CREATE_TEMPLATE=""
 
 # Stores are served as https://<project>.<MAGE_DOMAIN>/
 MAGE_DOMAIN="test"
@@ -36,27 +40,17 @@ MAGE_SEARCH_HOST="localhost"
 MAGE_SEARCH_PORT="9200"
 MAGE_REDIS_HOST="127.0.0.1"
 
-MAGE_PACKAGES=(
-  cweagans/composer-patches
-  yireo/magento2-theme-commands
-  swissup/module-ignition
-  community-engineering/language-nl_nl
-)
+# Deprecated, to be dropped: the packages are in the 'mage create' templates
+MAGE_PACKAGES=()
+MAGE_DEV_PACKAGES=()
 
-MAGE_DEV_PACKAGES=(
-  avstudnitz/scopehint2
-  spatie/ray
-  siteation/magento2-debugbar
-)
-
-# The modules mage setup disables, when the install has them: two factor auth,
-# with the Mage-OS passkeys that depend on it, and the bfcache of Mage-OS,
-# which conflicts with the BFCache patches and Hyva
+# The modules mage setup disables, when the install has them.
+# MageOS_PasskeyAuth depends on two factor auth, it is only for Mage-OS projects
+# created before the mage-os template replaced it, and will be removed.
 MAGE_DISABLE_MODULES=(
   MageOS_PasskeyAuth
   Magento_AdminAdobeImsTwoFactorAuth
   Magento_TwoFactorAuth
-  MageOS_ThemeOptimization
 )
 
 # The phpcs and phpcbf 'mage lint' runs, empty for the coding standard mage installs.

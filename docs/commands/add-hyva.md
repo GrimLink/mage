@@ -13,6 +13,7 @@ Add `--keep-wildcard` to require them as `*`.
 ## Steps
 
 1. Applies the bundled [composer fragment](../composer-fragments.md) `composer-hyva.json`, or `composer-hyva-dev.json` with `--dev`.
+   With a license, it also caches the key in `var/composer_home/auth.json`, see below.
 2. Runs `setup:upgrade`.
 3. Disables the Magento captcha, which the Hyvä default theme does not support.
 4. Switches to `Hyva/default` when the project has `yireo/magento2-theme-commands`, otherwise it tells you to select the theme in the admin.
@@ -31,6 +32,11 @@ Hyvä Checkout and Hyvä Commerce are not either, add their repositories with [`
 
 Your first answer for `HYVA_PROJECT` is saved as `MAGE_VAR_HYVA_PROJECT` in the [configuration](../config.md), so next time an enter is enough.
 The license key is never saved there, only in the composer auth.
+
+The key is also cached in `var/composer_home/auth.json` of the project.
+That is the composer home of Magento, which [`mage add sample hyva`](add-sample.md#hyva) uses to install the Koti packages, so it does not ask for the key again.
+When the key is not asked, as the global composer auth already has it, the cache uses `MAGE_VAR_HYVA_LICENSE_KEY` when set.
+`var` is ignored by git.
 
 ## For development
 

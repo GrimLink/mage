@@ -1,0 +1,18 @@
+{
+  "description": "the default packages for Mage-OS minimal",
+  "config": {
+    "allow-plugins": {
+      "cweagans/composer-patches": true
+    }
+  },
+  "require": {
+    "cweagans/composer-patches": "*",
+    "yireo/magento2-theme-commands": "*",
+    "swissup/module-ignition": "*",
+    "community-engineering/language-nl_nl": "*"
+  },
+  "require-dev": {
+    "avstudnitz/scopehint2": "*",
+    "siteation/magento2-debugbar": "*"
+  }
+}
