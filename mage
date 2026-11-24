@@ -5,7 +5,7 @@
 
 set -o pipefail
 
-MAGE_VERSION="3.1.0"
+MAGE_VERSION="3.2.0"
 MAGE_SELF="$(cd "$(dirname "${BASH_SOURCE[0]}")" > /dev/null 2>&1 && pwd)/$(basename "${BASH_SOURCE[0]}")"
 
 # --- core/output.sh
@@ -72,8 +72,12 @@ MAGE_ADMIN_PASS="magento_123$"
 # Take the defaults and confirm without asking, as -y does, such as for scripts and agents
 MAGE_YES="${MAGE_YES:-0}"
 
-# The edition 'mage create' defaults to: mage-os, community or enterprise
-MAGE_EDITION="mage-os"
+# The edition 'mage create' defaults to: mage-os, mage-os-minimal, mage-os-mirror, community or enterprise
+MAGE_EDITION="mage-os-mirror"
+
+# The template 'mage create' applies: the name of a bundled template or a path to a json file.
+# Empty picks one by edition: mage-os and mage-os-minimal for those, default for the others.
+MAGE_CREATE_TEMPLATE=""
 
 # Stores are served as https://<project>.<MAGE_DOMAIN>/
 MAGE_DOMAIN="test"
@@ -91,27 +95,17 @@ MAGE_SEARCH_HOST="localhost"
 MAGE_SEARCH_PORT="9200"
 MAGE_REDIS_HOST="127.0.0.1"
 
-MAGE_PACKAGES=(
-  cweagans/composer-patches
-  yireo/magento2-theme-commands
-  swissup/module-ignition
-  community-engineering/language-nl_nl
-)
+# Deprecated, to be dropped: the packages are in the 'mage create' templates
+MAGE_PACKAGES=()
+MAGE_DEV_PACKAGES=()
 
-MAGE_DEV_PACKAGES=(
-  avstudnitz/scopehint2
-  spatie/ray
-  siteation/magento2-debugbar
-)
-
-# The modules mage setup disables, when the install has them: two factor auth,
-# with the Mage-OS passkeys that depend on it, and the bfcache of Mage-OS,
-# which conflicts with the BFCache patches and Hyva
+# The modules mage setup disables, when the install has them.
+# MageOS_PasskeyAuth depends on two factor auth, it is only for Mage-OS projects
+# created before the mage-os template replaced it, and will be removed.
 MAGE_DISABLE_MODULES=(
   MageOS_PasskeyAuth
   Magento_AdminAdobeImsTwoFactorAuth
   Magento_TwoFactorAuth
-  MageOS_ThemeOptimization
 )
 
 # The phpcs and phpcbf 'mage lint' runs, empty for the coding standard mage installs.
@@ -148,12 +142,17 @@ MAGE_STORE_CONFIG=(
   "general/country/default NL"
   "general/country/allow AT,BE,BG,HR,CY,CZ,DK,EE,FI,FR,DE,GR,HU,IE,IT,LV,LT,LU,MT,NL,PL,PT,RO,SK,SI,ES,SE,CH,NO,IS,LI,GB"
   "admin/usage/enabled 0"
-  "admin/security/session_lifetime 86400"
   "admin/security/password_lifetime"
   "admin/security/password_is_forced 0"
   "catalog/seo/category_canonical_tag 1"
   "catalog/seo/product_canonical_tag 1"
   "siteation_debugbar/general/enabled 1"
+)
+
+# Like MAGE_STORE_CONFIG, but written to app/etc/env.php and locked in the admin.
+# Mage-OS caps the session lifetime at 900 in the admin form, so a longer one must be locked
+MAGE_ENV_CONFIG=(
+  "admin/security/session_lifetime 86400"
 )
 
 # Defaults for the {{NAME}} placeholders in json files for 'mage add' go in the
@@ -408,6 +407,46 @@ function mage_ask() {
   fi
 
   echo "${answer:-$default}"
+}
+
+# Ask to pick one of the options, by its number or its name.
+# An empty answer takes the default, which -y takes without asking or checking.
+function mage_choose() {
+  local question="$1"
+  local default="$2"
+  shift 2
+
+  if [[ $MAGE_YES == 1 ]] && [[ -n "$default" ]]; then
+    echo "$default"
+    return
+  fi
+
+  local i=1
+  local option
+
+  for option in "$@"; do
+    mage_info "  ${i}) ${option}" >&2
+    i=$((i + 1))
+  done
+
+  local answer
+  answer="$(mage_ask "${question} [1-$#]" "$default")" || return 1
+
+  if [[ "$answer" =~ ^[0-9]+$ ]]; then
+    if [[ $answer -lt 1 ]] || [[ $answer -gt $# ]]; then
+      mage_error "Pick a number from 1 to $#"
+      return 1
+    fi
+
+    answer="${!answer}"
+  fi
+
+  if [[ " $* " != *" ${answer} "* ]]; then
+    mage_error "Unknown '${answer}', pick a number from 1 to $# or one of: $*"
+    return 1
+  fi
+
+  echo "$answer"
 }
 
 # Ask a yes/no question, where an empty answer takes the default of 'n' or 'y'
@@ -1287,7 +1326,8 @@ function mage_cmd_help() {
 
   mage_help_header "Project"
   mage_help_cmd "create [NAME]"               "Create, install and set up a new Magento 2 project"
-  mage_help_cmd "  --edition=[EDITION]"       "mage-os, community or enterprise (default: ${MAGE_EDITION})"
+  mage_help_cmd "  --edition=[EDITION]"       "mage-os, mage-os-minimal, mage-os-mirror, community or enterprise (default: ${MAGE_EDITION})"
+  mage_help_cmd "  --template=[TEMPLATE]"     "default, mage-os, mage-os-minimal or a json file (default: by edition)"
   mage_help_cmd "  --version=[VERSION]"       "Magento version (default: latest)"
   mage_help_cmd "  --env=[ENV]"               "warden, ddev, valet or local (default: first one installed)"
   mage_help_cmd "  -y, --yes"                 "Use the defaults instead of asking"
@@ -1373,7 +1413,7 @@ function mage_cmd_self_update() {
   "$target" version
 }
 # --- commands/create.sh
-MAGE_EDITIONS="mage-os community enterprise"
+MAGE_EDITIONS="mage-os mage-os-minimal mage-os-mirror community enterprise"
 
 # Create a new Magento project, install it and set it up.
 # Anything not given as an option is asked, or defaulted with -y.
@@ -1382,6 +1422,7 @@ function mage_cmd_create() {
   local edition=""
   local version=""
   local env=""
+  local template="$MAGE_CREATE_TEMPLATE"
   local arg
 
   for arg in "$@"; do
@@ -1389,6 +1430,7 @@ function mage_cmd_create() {
       --edition=*) edition="${arg#*=}" ;;
       --version=*) version="${arg#*=}" ;;
       --env=*) env="${arg#*=}" ;;
+      --template=*) template="${arg#*=}" ;;
       -y | --yes) MAGE_YES=1 ;;
       -*)
         mage_error "Unknown option '${arg}'"
@@ -1413,12 +1455,14 @@ function mage_cmd_create() {
     exit 1
   fi
 
+  mage_require_jq "Creating a project"
+
   local available_envs
   available_envs="$(mage_env_available)"
   local default_env="${available_envs%% *}"
 
   if [[ -z "$edition" ]]; then
-    edition="$(mage_ask "Edition [${MAGE_EDITIONS}]" "$MAGE_EDITION")" || exit 1
+    edition="$(mage_choose "Edition" "$MAGE_EDITION" $MAGE_EDITIONS)" || exit 1
   fi
 
   if [[ -z "$version" ]]; then
@@ -1426,7 +1470,7 @@ function mage_cmd_create() {
   fi
 
   if [[ -z "$env" ]]; then
-    env="$(mage_ask "Environment [${available_envs}]" "$default_env")" || exit 1
+    env="$(mage_choose "Environment" "$default_env" $available_envs)" || exit 1
   fi
 
   if [[ " $available_envs " != *" $env "* ]]; then
@@ -1439,6 +1483,7 @@ function mage_cmd_create() {
 
   # See the versions at:
   # - https://github.com/mage-os/mageos-magento2
+  # - https://mirror.mage-os.org/
   # - https://experienceleague.adobe.com/docs/commerce-operations/release/versions.html
   case "$edition" in
     "community")
@@ -1453,6 +1498,14 @@ function mage_cmd_create() {
       package="mage-os/project-community-edition"
       repository="https://repo.mage-os.org/"
       ;;
+    "mage-os-minimal")
+      package="mage-os/project-minimal-edition"
+      repository="https://repo.mage-os.org/"
+      ;;
+    "mage-os-mirror")
+      package="magento/project-community-edition"
+      repository="https://mirror.mage-os.org/"
+      ;;
     *)
       mage_error "Unknown edition '${edition}', use one of: ${MAGE_EDITIONS}"
       exit 1
@@ -1463,6 +1516,9 @@ function mage_cmd_create() {
     package="${package}=${version}"
   fi
 
+  local fragment
+  fragment="$(mage_create_template_file "${template:-$(mage_create_default_template "$edition")}")" || exit 1
+
   mage_env_use "$env"
   mage_info "Creating '${name}' from ${package} using ${env}"
 
@@ -1471,51 +1527,106 @@ function mage_cmd_create() {
     exit 1
   fi
 
-  mage_create_composer_setup "$edition" || exit 1
+  mage_create_composer_setup "$fragment" || exit 1
   MAGE_ROOT="$PWD"
   mage_setup "$name" || exit 1
+  mage_create_urn_catalog
   mage_getting_started "$name" true
 }
 
-# Configure composer for local development and install the project of the given edition
+# Generate the XML catalog for the XML language server of VS Code and Zed.
+# Magento writes each schema as '../<path>', so it has to be one folder below the root.
+function mage_create_urn_catalog() {
+  mkdir -p .vscode
+
+  mage_info "Generating the XML catalog in .vscode/catalog.xml"
+  if ! $MAGENTO_CLI dev:urn-catalog:generate --ide=vscode .vscode/catalog.xml; then
+    mage_warn "Could not generate the XML catalog"
+  fi
+}
+
+# Echo the template 'mage create' applies to an edition without --template
+function mage_create_default_template() {
+  case "$1" in
+    mage-os | mage-os-minimal) echo "$1" ;;
+    *) echo "default" ;;
+  esac
+}
+
+# Echo the composer fragment of a template: a json file, or the name of a bundled
+# composer-create-<name>.json. Resolved before the project exists, as creating it changes folder.
+function mage_create_template_file() {
+  local template="$1"
+
+  if [[ "$template" == *.json ]]; then
+    if [[ "$template" != /* ]]; then
+      template="${PWD}/${template}"
+    fi
+
+    if [[ ! -f "$template" ]]; then
+      mage_error "Template file not found: ${1}"
+      return 1
+    fi
+
+    echo "$template"
+    return
+  fi
+
+  if ! mage_template_file "composer-create-${template}.json"; then
+    mage_error "Unknown template '${template}', use one of: $(mage_create_templates) or a path to a json file"
+    return 1
+  fi
+}
+
+# Echo the names of the bundled templates
+function mage_create_templates() {
+  local dir
+  local file
+  local names=""
+
+  dir="$(mage_templates_dir)" || return 0
+
+  for file in "$dir"/composer-create-*.json; do
+    [[ -f "$file" ]] || continue
+    file="${file##*/composer-create-}"
+    names="${names:+$names, }${file%.json}"
+  done
+
+  echo "$names"
+}
+
+# Configure composer for local development, apply the template and install the project
 function mage_create_composer_setup() {
-  local edition="$1"
+  local fragment="$1"
 
   mage_info "Adjusting composer settings to allow dev packages"
   $COMPOSER_CLI config minimum-stability dev
   $COMPOSER_CLI config prefer-stable true
-  $COMPOSER_CLI config allow-plugins.cweagans/composer-patches true
 
   mage_add_path_repository
 
+  mage_add_json "$fragment" --no-update || return 1
+  mage_create_legacy_packages
+
+  mage_info "Running installation.. Enjoy a cup of coffee in the meantime"
+  $COMPOSER_CLI install
+}
+
+# MAGE_PACKAGES and MAGE_DEV_PACKAGES are deprecated for templates, and will be dropped
+function mage_create_legacy_packages() {
+  if [[ ${#MAGE_PACKAGES[@]} -eq 0 ]] && [[ ${#MAGE_DEV_PACKAGES[@]} -eq 0 ]]; then
+    return 0
+  fi
+
+  mage_warn "MAGE_PACKAGES and MAGE_DEV_PACKAGES are deprecated, move them to a template, see 'mage create' in the docs"
+
   if [[ ${#MAGE_PACKAGES[@]} -gt 0 ]]; then
-    mage_info "Adding default packages"
     $COMPOSER_CLI require --no-update "${MAGE_PACKAGES[@]}"
   fi
 
   if [[ ${#MAGE_DEV_PACKAGES[@]} -gt 0 ]]; then
     $COMPOSER_CLI require --no-update --dev "${MAGE_DEV_PACKAGES[@]}"
   fi
-
-  if [[ "$edition" == "mage-os" ]]; then
-    mage_create_mage_os_replace || return 1
-  fi
-
-  mage_info "Running installation.. Enjoy a cup of coffee in the meantime"
-  $COMPOSER_CLI install
-}
-
-# Replace the Mage-OS modules mage leaves out, so composer never installs them
-function mage_create_mage_os_replace() {
-  local fragment
-  fragment="$(mage_template_file "composer-mage-os.json")"
-
-  if [[ -z "$fragment" ]]; then
-    mage_warn "Keeping all Mage-OS modules, could not get the 'composer-mage-os.json' template from ${MAGE_TEMPLATES_ARCHIVE}"
-    return 0
-  fi
-
-  mage_add_json "$fragment"
 }
 # --- commands/setup.sh
 # Install Magento in an existing project, optionally in the given folder
@@ -1618,23 +1729,37 @@ function mage_setup() {
   mage_add_gitignore
 }
 
-# Set the store config of MAGE_STORE_CONFIG, where each entry is 'path value'
+# Set the store config of MAGE_STORE_CONFIG, and MAGE_ENV_CONFIG locked in
+# app/etc/env.php, where each entry is 'path value'
 function mage_set_store_config() {
   local entry
-  local value
 
   for entry in "${MAGE_STORE_CONFIG[@]}"; do
-    value=""
-    if [[ "$entry" == *" "* ]]; then
-      value="${entry#* }"
-    fi
+    mage_set_config_entry "$entry"
+  done
 
-    $MAGENTO_CLI config:set "${entry%% *}" "$value" &> /dev/null
+  for entry in "${MAGE_ENV_CONFIG[@]}"; do
+    mage_set_config_entry "$entry" --lock-env
   done
 }
 
+# Set one 'path value' entry, an entry without a value sets it empty
+#
+# @param $1 The 'path value' entry
+# @param $2 Optional extra option for config:set, such as --lock-env
+function mage_set_config_entry() {
+  local entry="$1"
+  local value=""
+
+  if [[ "$entry" == *" "* ]]; then
+    value="${entry#* }"
+  fi
+
+  $MAGENTO_CLI config:set ${2:+"$2"} "${entry%% *}" "$value" &> /dev/null
+}
+
 # Disable the modules of MAGE_DISABLE_MODULES that the install has, as not
-# every edition has all of them, such as MageOS_ThemeOptimization
+# every edition has all of them
 function mage_setup_disable_modules() {
   local modules=()
   local module
@@ -2775,23 +2900,7 @@ function mage_build_pick() {
     return
   fi
 
-  local i=1
-  local dir
-
-  for dir in "$@"; do
-    mage_info "  ${i}) ${dir}" >&2
-    i=$((i + 1))
-  done
-
-  local choice
-  choice="$(mage_ask "Which one to watch [1-$#]")" || return 1
-
-  if [[ ! "$choice" =~ ^[0-9]+$ ]] || [[ $choice -lt 1 ]] || [[ $choice -gt $# ]]; then
-    mage_error "Pick a number from 1 to $#"
-    return 1
-  fi
-
-  echo "${!choice}"
+  mage_choose "Which one to watch" "" "$@"
 }
 
 # Run an npm script in a folder, installing its packages first when they are missing
@@ -3019,7 +3128,9 @@ MAGE_ADD_JSON_KEYS="description repositories config auth replace require require
 
 # Apply a composer fragment, in the order auth, repositories, config, replace and packages,
 # so the packages can use the repositories and credentials they need.
-# With --keep-wildcard a * constraint is required as is, instead of as the latest version.
+# With --keep-wildcard a * constraint is required as is, instead of as the latest version,
+# with --no-update the packages are only written to composer.json.
+# The fragment with its answers is kept in MAGE_ADD_JSON_APPLIED, for the handler that applied it.
 function mage_add_json() {
   mage_require_jq "Adding from a json file"
 
@@ -3029,11 +3140,13 @@ function mage_add_json() {
   shift
 
   local wildcard="latest"
+  local require_args=()
   local arg
 
   for arg in "$@"; do
     case "$arg" in
       --keep-wildcard) wildcard="keep" ;;
+      --no-update) require_args+=(--no-update) ;;
       *)
         mage_error "Unknown option '${arg}'"
         exit 1
@@ -3067,6 +3180,8 @@ function mage_add_json() {
     exit 1
   fi
 
+  MAGE_ADD_JSON_APPLIED="$json"
+
   local description
   description="$(jq -r '.description // empty' <<< "$json")"
   if [[ -n "$description" ]]; then
@@ -3077,8 +3192,8 @@ function mage_add_json() {
     mage_add_json_repositories "$json" &&
     mage_add_json_config "$json" &&
     mage_add_json_replace "$json" &&
-    mage_add_json_require "$json" require "$wildcard" &&
-    mage_add_json_require "$json" require-dev "$wildcard" --dev
+    mage_add_json_require "$json" require "$wildcard" ${require_args[@]+"${require_args[@]}"} &&
+    mage_add_json_require "$json" require-dev "$wildcard" ${require_args[@]+"${require_args[@]}"} --dev
 }
 
 # Warn about keys that are not applied, such as a typo
@@ -3643,6 +3758,8 @@ function mage_add_module() {
 # --- commands/add/hyva.sh
 MAGE_ADD_HANDLERS+=("hyva|Add the Hyva Theme with a license, or with --dev from the Hyva GitLab")
 
+MAGE_HYVA_HOST="hyva-themes.repo.packagist.com"
+
 # Install Hyva from its composer fragment, then make it the active theme where possible.
 # The fragment holds the composer part, so updating the packages needs no rebuild.
 function mage_add_hyva() {
@@ -3669,7 +3786,11 @@ function mage_add_hyva() {
     exit 1
   fi
 
-  mage_add_json "$file" "${options[@]}" || exit 1
+  mage_add_json "$file" ${options[@]+"${options[@]}"} || exit 1
+
+  if [[ "$fragment" == "composer-hyva.json" ]]; then
+    mage_hyva_save_auth "$(jq -r --arg host "$MAGE_HYVA_HOST" '.auth."http-basic"[$host].password // empty' <<< "$MAGE_ADD_JSON_APPLIED")"
+  fi
 
   $MAGENTO_CLI setup:upgrade || exit 1
 
@@ -3681,6 +3802,31 @@ function mage_add_hyva() {
   mage_info "Done! For more information, see https://docs.hyva.io/hyva-themes/getting-started/"
 }
 
+# Cache the Hyva license key in var/composer_home/auth.json, as hyva:sampledata:deploy runs
+# composer with that composer home and would ask for it. Without a key, as the global composer
+# auth already had one and it was not asked, MAGE_VAR_HYVA_LICENSE_KEY is used when set.
+function mage_hyva_save_auth() {
+  local file="var/composer_home/auth.json"
+  local key="${1:-${MAGE_VAR_HYVA_LICENSE_KEY:-}}"
+
+  if [[ -z "$key" ]]; then
+    return 0
+  fi
+
+  local auth="{}"
+  if [[ -f "$file" ]]; then
+    auth="$(cat "$file")"
+  fi
+
+  if ! auth="$(jq --indent 4 --arg host "$MAGE_HYVA_HOST" --arg key "$key" '."http-basic"[$host] = {username: "token", password: $key}' <<< "$auth" 2> /dev/null)"; then
+    mage_warn "Could not save the Hyva license, ${file} is not valid json"
+    return 0
+  fi
+
+  mkdir -p "${file%/*}"
+  (umask 077 && printf '%s\n' "$auth" > "$file")
+  mage_check 0 "Saved the Hyva license in ${file}, for the sample data"
+}
 # --- commands/add/storeinfo.sh
 MAGE_ADD_HANDLERS+=("storeinfo|Add the Siteation StoreInfo modules")
 
@@ -4117,7 +4263,7 @@ function mage_add_sample() {
       default="hyva"
     fi
 
-    set="$(mage_ask "Sample data [${names}]" "$default")" || exit 1
+    set="$(mage_choose "Sample data" "$default" $names)" || exit 1
   fi
 
   if ! mage_handler_exists "$set" "${MAGE_SAMPLE_SETS[@]}"; then

@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [3.2.0] - 2026-11-?
+## [3.2.0] - 2026-11-24
 
 This release is about `mage create`.
 It now creates Magento Open Source from the Mage-OS mirror by default, and its default packages move to templates you can pick or replace.
