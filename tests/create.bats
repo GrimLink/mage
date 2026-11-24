@@ -20,7 +20,7 @@ function setup() {
   [ "$status" -eq 0 ]
   [[ "$output" == *"Adding the default packages"* ]]
   [[ "$output" == *"composer config allow-plugins.cweagans/composer-patches true"* ]]
-  [[ "$output" == *"composer require --no-update cweagans/composer-patches"* ]]
+  [[ "$output" == *"composer require --no-update mage-os/theme-adminhtml-m137 cweagans/composer-patches"* ]]
   [[ "$output" == *"composer require --no-update --dev avstudnitz/scopehint2"* ]]
   [ "${lines[${#lines[@]}-1]}" = "composer install" ]
   jq -e 'has("replace") | not' composer.json
@@ -47,7 +47,8 @@ function setup() {
   run mage_create_template_file unknown
   [ "$status" -eq 1 ]
   [[ "$output" == *"Unknown template 'unknown', use one of: "*" or a path to a json file"* ]]
-  [[ "$output" == *"default"* && "$output" == *"mage-os, "* && "$output" == *"mage-os-minimal"* ]]
+  [[ "$output" == *"default"* && "$output" == *"mage-os-minimal"* ]]
+  [[ "$output" == *" mage-os,"* || "$output" == *" mage-os or"* ]]
 }
 
 @test "still requires the deprecated default packages with a warning" {
